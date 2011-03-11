@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FalseSecureMobile</string>
+    <string name="loginscreen_username">Username</string>
+    <string name="loginscreen_password">Password</string>
+    <string name="loginscreen_login_button">Login</string>
+    <string name="summaryscreen_accounts_button">Accounts</string>
+    <string name="summaryscreen_transfer_button">Transfer</string>
+    <string name="summaryscreen_statement_button">Statement</string>
+    <string name="statementscreen_download_button">Download Statement</string>
+    <string name="transferscreen_fromtext">From</string>
+    <string name="transferscreen_totext">To</string>
+    <string name="transferscreen_transfer_button">Transfer</string>
+    
+    <!-- 
+    <string name=""></string>
+     -->
+</resources>
