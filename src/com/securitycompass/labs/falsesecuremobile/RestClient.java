@@ -8,7 +8,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONException;
@@ -155,6 +157,13 @@ public class RestClient {
             System.err.println("Unknown HTTP Login error (No code returned)");
             return false;
         }
+    }
+    
+    public List<Account> httpGetAccounts(String server, String port){
+        ArrayList<Account> accounts=new ArrayList();
+        String url = "http://" + server + ":" + port + "/accounts";
+        
+        return accounts;
     }
 
 }
