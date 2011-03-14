@@ -1,3 +1,5 @@
+/** Copyright 2011 Security Compass */
+
 package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.BufferedReader;
@@ -6,32 +8,29 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RestClient {
 
     private static final String TAG = "RestClient";
 
-    private ApplicationState appState;
-    
-    //TODO: Store this elsewhere, more sensibly
-    private int mHttpPort=8080;
+    private BankingApplication appState;
 
     /**
      * Creates the RestClient and connects it to the state of the application. This allows for it to
      * modify the state based on what happens during requests.
      */
-    public RestClient(ApplicationState appState) {
+    public RestClient(BankingApplication appState) {
         this.appState = appState;
     }
 
     /**
      * Performs a simple HTTP GET and returns the result
-     * 
-     * @param urlName
-     *            API Service endpoint.
+     * @param urlName API Service endpoint.
      * @return HttpContent from the url.
      */
     private String getHttpContent(String urlName) {
@@ -60,50 +59,14 @@ public class RestClient {
         return result;
     }
 
-    /** Performs an HTTP POST */
- /*   public HttpResponse doPost(String url, HashMap<String, String> hm, String username,
-            String password, DefaultHttpClient httpClient) {
-
-        HttpResponse response = null;
-        if (username != null && password != null) {
-            httpClient.getCredentialsProvider().setCredentials(
-                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-                    new UsernamePasswordCredentials(username, password));
-        }
-
-        HttpPost postMethod = new HttpPost(url);
-        if (hm == null)
-            return null;
-        try {
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            Iterator<String> it = hm.keySet().iterator();
-            String k, v;
-            while (it.hasNext()) {
-                k = it.next();
-                v = hm.get(k);
-                nameValuePairs.add(new BasicNameValuePair(k, v));
-            }
-            postMethod.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            response = httpClient.execute(postMethod);
-            Log.i(TAG, "STATUS CODE: " + String.valueOf(response.getStatusLine().getStatusCode()));
-        } catch (Exception e) {
-            Log.e("Exception", e.getMessage());
-        } finally {
-        }
-        return response;
-    }*/
-
     /**
      * Performs an HTTP POST with the given data
-     * 
-     * @param urlString
-     *            The URL to POST to
-     * @param postData
-     *            the data to POST
+     * @param urlString The URL to POST to
+     * @param postData the data to POST
      * @return The data passed back from the server, as a String
      */
-    public String postHttpContent(String urlString, Map<String,String> variables) {
-        String response="";
+    public String postHttpContent(String urlString, Map<String, String> variables) {
+        String response = "";
         try {
             URL url = new URL(urlString);
             HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
@@ -111,34 +74,37 @@ public class RestClient {
             httpConnection.setDoOutput(true);
             httpConnection.setUseCaches(false);
             httpConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            
-            //Assemble a String out of the parameters we're posting
-            String postData="";
-            for(String key : variables.keySet()){
-                postData+="&" + key + "=" + variables.get(key);
+
+            // Assemble a String out of the parameters we're posting
+            String postData = "";
+            for (String key : variables.keySet()) {
+                postData += "&" + key + "=" + variables.get(key);
             }
-            postData=postData.substring(1);
-            
-            //Send the POST data
-            DataOutputStream postOut=new DataOutputStream(httpConnection.getOutputStream());
+            postData = postData.substring(1);
+
+            // Send the POST data
+            DataOutputStream postOut = new DataOutputStream(httpConnection.getOutputStream());
             postOut.writeBytes(postData);
             postOut.flush();
             postOut.close();
-            
-            //Now get the response the server gives us
-            int responseCode=httpConnection.getResponseCode();
-            if(responseCode == HttpURLConnection.HTTP_OK){
+
+            // Now get the response the server gives us
+            int responseCode = httpConnection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
                 String line;
-                BufferedReader br=new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-                while((line = br.readLine()) != null){
-                    response+=line;
+                BufferedReader br = new BufferedReader(new InputStreamReader(httpConnection
+                        .getInputStream()));
+                while ((line = br.readLine()) != null) {
+                    response += line;
                 }
-            } else{
-                response=null;
-                System.err.println("HTTP request failed on: " + urlString + " With error code: " + responseCode);
+            } else {
+                response = null;
+                System.err.println("HTTP request failed on: " + urlString + " With error code: "
+                        + responseCode);
             }
-            
+
         } catch (Exception e) {
+            response = null;
             System.err.println("Exception while making HttpConnection to  URL: " + urlString
                     + "\n\tException: " + e);
         }
@@ -147,23 +113,48 @@ public class RestClient {
 
     /**
      * Logs into the REST service, generating a new session key
-     * 
-     * @param username
-     *            Username to log in with
-     * @param password
-     *            Password to log in with
+     * @param username Username to log in with
+     * @param password Password to log in with
      * @return Whether the login was successful
      */
-    public String performHTTPLogin(String server, String username, String password) {
-        String url = "http://" + server + ":8080/login";
-        Map<String, String> parameters=new HashMap();
+    public boolean performHTTPLogin(String server, String port, String username, String password) {
+        // First perform the RESTful operation
+        String url = "http://" + server + ":" + port + "/login";
+        Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("username", username);
         parameters.put("password", password);
-        String response=postHttpContent(url, parameters);
-        System.err.println("Login response: " + response);
-        // POST to /login with parameters "username" and "password"
-        // JSON { "error" : "E1"} indiciates failure
-        return null;
+        String JsonResponse = postHttpContent(url, parameters);
+        System.err.println("Login response: " + JsonResponse);
+
+        // Now parse out the JSON response and act accordingly
+        //TODO: remove error checking to make code cleaner
+        String errorCode = null, key = null, created = null;
+        boolean error = false;
+        try {
+            JSONObject jsonObject = new JSONObject(JsonResponse);
+            key = jsonObject.getString("key");
+            created = jsonObject.getString("created");
+        } catch (JSONException e) {
+            System.err.println("Error parsing JSON from login:" + e);
+        }
+        if (error) {
+            try {
+                JSONObject jsonObject = new JSONObject(JsonResponse);
+                errorCode = jsonObject.getString("error").trim();
+            } catch (JSONException e) {
+                System.err.println("Error parsing JSON error code from login:" + e);
+            }
+        }
+        if (errorCode != null && errorCode.toLowerCase().matches("e[0-9]")) {
+            System.err.println("Login error: " + errorCode);
+            return false;
+        } else if ((key != null && created != null)) {
+            appState.setSession(key, created);
+            return true;
+        } else {
+            System.err.println("Unknown HTTP Login error (No code returned)");
+            return false;
+        }
     }
 
 }

@@ -12,6 +12,7 @@
 	<string name="transferscreen_totext">To</string>
 	<string name="transferscreen_transfer_button">Transfer</string>
 	<string name="accountsscreen_text_summary">Account 1\n\n\tChecking Account\n\tBalance: $53.00\n\nAccount 2\n\n\tSavings Account\n\tBalance: $2876.28\n</string>
+	<string name="toast_loginfailed">Login failed</string>
 
 	<!-- 
     <string name=""></string>

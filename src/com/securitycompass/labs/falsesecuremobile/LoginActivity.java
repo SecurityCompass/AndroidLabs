@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /*
  * Graphical class which allows the user to enter a username and password, 
@@ -27,22 +28,18 @@ public class LoginActivity extends Activity {
     private EditText mUsernameField;
     /** The text field to collect/hold the password. */
     private EditText mPasswordField;
-    /** The REST client used to perform network operations */
-    private RestClient mRestClient;
-    
-    //TODO: Decide whether this needs to be a member field, or if we can just call ApplicationState.getInstance() when we need it.
     /** Central data store, state, and operations */
-    private ApplicationState mApplicationState;
+    private BankingApplication mThisApplication;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         mCtx=this;
         
+        mThisApplication=(BankingApplication) getApplication();
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loginactivity);
-
-        mRestClient=new RestClient(ApplicationState.getInstance());
         
         mLoginButton = (Button) findViewById(R.id.loginscreen_login_button);
         mUsernameField= (EditText) findViewById(R.id.loginscreen_username);
@@ -62,6 +59,8 @@ public class LoginActivity extends Activity {
     
     private void populateCredentialFields(){
         //TODO: Populate username and password from the DB
+        mUsernameField.setText("jdoe");
+        mPasswordField.setText("password");
     }
 
     /** Grabs the username and password and attempts to log in with them */
@@ -70,10 +69,12 @@ public class LoginActivity extends Activity {
         String password=mPasswordField.getText().toString();
         
         System.err.println("Logging in with user/pass: " + username + " / " + password);
-        String loginResult=mRestClient.performHTTPLogin(ApplicationState.getInstance().getRestServer(), username, password);
-        
-        Intent launchIntent = new Intent(mCtx, SummaryActivity.class);
-        startActivity(launchIntent);
+        if(mThisApplication.performLogin(username, password)){
+            Intent launchIntent = new Intent(mCtx, SummaryActivity.class);
+            startActivity(launchIntent);   
+        } else {
+            Toast.makeText(mCtx, R.string.toast_loginfailed, Toast.LENGTH_SHORT).show();
+        }
     }
 
 }
