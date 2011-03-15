@@ -72,6 +72,11 @@ public class DatabaseAdapter {
         c.close();
         return accountList;
     }
+    
+    /** Syncs all provided accounts into the DB */
+    public void updateAccounts(List<Account> accounts){
+        //TODO: Implement
+    }
 
     /** Returns a the username and password stored in the database. 
      * @return 2 element array containing the username and password

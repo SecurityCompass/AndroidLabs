@@ -4,10 +4,15 @@
 
 package com.securitycompass.labs.falsesecuremobile;
 
+import java.io.IOException;
+
+import org.json.JSONException;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -30,6 +35,8 @@ public class LoginActivity extends Activity {
     private EditText mPasswordField;
     /** Central data store, state, and operations */
     private BankingApplication mThisApplication;
+    
+    private static final String TAG="LoginActivity";
 
     /** Called when the activity is first created. */
     @Override
@@ -69,7 +76,20 @@ public class LoginActivity extends Activity {
         String password=mPasswordField.getText().toString();
         
         System.err.println("Logging in with user/pass: " + username + " / " + password);
-        if(mThisApplication.performLogin(username, password)){
+        int statusCode=RestClient.NULL_ERROR;
+        try{
+            statusCode=mThisApplication.performLogin(username, password);
+            Log.i(TAG, "Login completed");
+        } catch (JSONException e){
+            Toast.makeText(mCtx, R.string.error_toast_json_problem, Toast.LENGTH_SHORT).show();
+            Log.e(TAG, e.toString());
+            return;
+        } catch (IOException e){
+            Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
+            Log.e(TAG, e.toString());
+            return;
+        }
+        if(statusCode == RestClient.NULL_ERROR){
             Intent launchIntent = new Intent(mCtx, SummaryActivity.class);
             startActivity(launchIntent);   
         } else {
