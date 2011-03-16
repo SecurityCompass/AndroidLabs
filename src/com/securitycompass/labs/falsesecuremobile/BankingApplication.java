@@ -23,37 +23,43 @@ public class BankingApplication extends Application {
     private String sessionKey;
     private String sessionCreateDate;
     private boolean locked;
-    
-    private String restServer="10.0.2.2";
+
+    private String restServer = "10.0.2.2";
 
     DatabaseAdapter dbA;
 
-    /** Setup for when the application initialises */
+    /** Setup for when the application initialises. */
     @Override
     public void onCreate() {
         super.onCreate();
         dbA = new DatabaseAdapter(getApplicationContext());
     }
 
-    /** Teardown to be performed when the application terminates */
+    /** Teardown to be performed when the application terminates. */
     @Override
     public void onTerminate() {
         super.onTerminate();
     }
 
-    /** Returns a string representation of the server we will be making our requests on.
-     * @return A string representation of the server address */
+    /**
+     * Returns a string representation of the server we will be making our requests on.
+     * @return A string representation of the server address.
+     */
     public String getRestServer() {
         return restServer;
     }
-    
-    public void setrestServer(){
-        
+
+    /**
+     * Sets the address of the server we'll use for REST queries, as a String.
+     * @param newServer The server address to set.
+     */
+    public void setRestServer(String newServer) {
+        restServer = newServer;
     }
 
     /**
      * Returns a string representation of the port we will be making our HTTP requests on.
-     * @return A string representation of the port set for HTTP communication
+     * @return A string representation of the port set for HTTP communication.
      */
     public String getHttpPort() {
         // TODO: Remove this awful hack!
@@ -61,10 +67,10 @@ public class BankingApplication extends Application {
     }
 
     /**
-     * Logs into the REST service, generating a new session key
-     * @param username Username to log in with
-     * @param password Password to log in with
-     * @return A  status code representing any error that occurred
+     * Logs into the REST service, generating a new session key.
+     * @param username Username to log in with.
+     * @param password Password to log in with.
+     * @return A status code representing any error that occurred.
      */
     public int performLogin(String username, String password) throws JSONException, IOException {
         RestClient restClient = new RestClient(this);
@@ -72,45 +78,59 @@ public class BankingApplication extends Application {
                 password);
         return statusCode;
     }
-    
-    /** Performs all operations necessary to secure the application */
-    public void lockApplication(){
-        locked=true;
+
+    /** Performs all operations necessary to secure the application. */
+    public void lockApplication() {
+        locked = true;
     }
-    
-    /** Performs all operations necessary to make the application usable */
-    public void unlockApplication(){
-        locked=false;
+
+    /** Performs all operations necessary to make the application usable. */
+    public void unlockApplication() {
+        locked = false;
     }
-    
-    /** Returns a list of all Accounts and their details*/
+
+    /**
+     * Returns a list of all Accounts and their details.
+     * @return A list of the accounts returned by the server, represented as Account objects.
+     */
     public List<Account> getAccounts() throws JSONException, IOException, AuthenticatorException {
-        RestClient restClient=new RestClient(this);
-        try{
-            List<Account> result = restClient.httpGetAccounts(getRestServer(), getHttpPort());
-            return result;
-        } catch (AuthenticatorException e){
+        RestClient restClient = new RestClient(this);
+        List<Account> result = null;
+        try {
+            result = restClient.httpGetAccounts(getRestServer(), getHttpPort());
+        } catch (AuthenticatorException e) {
             lockApplication();
             throw e;
         }
+        
+        if (result != null) {
+            dbA.updateAccounts(result);
+        }
+        return result;
     }
-       
-    /** Sets the details for the current authenticated session
-     * @param key The session key
-     * @param date A string representation of the date this key was issued*/
+
+    /**
+     * Sets the details for the current authenticated session.
+     * @param key The session key.
+     * @param date A string representation of the date this key was issued.
+     */
     public void setSession(String key, String date) {
         sessionKey = key;
         sessionCreateDate = date;
     }
 
-    /** Returns the current session key
-     * @return The current session key*/
+    /**
+     * Returns the current session key.
+     * @return The current session key.
+     */
     public String getSessionKey() {
         return sessionKey;
     }
 
-    /** Returns the creation date of the current session key
-     * @return A String representation of the creation date of the current session key */
+    /**
+     * Returns the creation date of the current session key.
+     * @return A String representation of the creation date of the current session key.
+     */
     public String getSessionCreateDate() {
         return sessionCreateDate;
     }
