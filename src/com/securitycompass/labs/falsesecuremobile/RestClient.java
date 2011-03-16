@@ -51,7 +51,7 @@ public class RestClient {
      * @param urlName API Service endpoint.
      * @return HttpContent from the url.
      */
-    private String getHttpContent(String urlName) throws IOException {
+    public String getHttpContent(String urlName) throws IOException {
         String line;
         String result;
         StringBuilder httpContent = new StringBuilder();

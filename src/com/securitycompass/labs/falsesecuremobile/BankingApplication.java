@@ -4,14 +4,19 @@
 
 package com.securitycompass.labs.falsesecuremobile;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.json.JSONException;
 
 import android.accounts.AuthenticatorException;
+import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
+import android.net.Uri;
 
 /**
  * Stores session keys and handles moving the application between locked and unlocked states.
@@ -102,11 +107,41 @@ public class BankingApplication extends Application {
             lockApplication();
             throw e;
         }
-        
+
         if (result != null) {
+            // If the accounts were retrieved, update them in the DB
             dbA.updateAccounts(result);
         }
         return result;
+    }
+
+    public int downloadStatement(Activity caller) throws IOException {
+        //TODO: Clean up this method. A lot.
+        RestClient restClient = new RestClient(this);
+        String htmlData = restClient.getHttpContent("http://" + getRestServer() + ":" + getHttpPort() + "/statement" + "?session_key=" + URLEncoder.encode(sessionKey));
+
+        int statusCode = restClient.parseError(htmlData);
+
+        if (statusCode == RestClient.NULL_ERROR) {
+                       
+            File outputFile = new File("/sdcard/", "statement.html");
+
+            FileOutputStream out = new FileOutputStream(outputFile);
+            out.write(htmlData.getBytes());
+            out.flush();
+            out.close();
+            
+            Uri uri = Uri.parse("file://" + outputFile.getAbsolutePath());
+            Intent intent = new Intent();
+            intent.setData(uri);
+            intent.setClassName("com.android.browser", "com.android.browser.BrowserActivity");
+            intent.setAction(Intent.ACTION_VIEW);
+
+            caller.startActivity(intent);
+            
+        }
+
+        return statusCode;
     }
 
     /**
