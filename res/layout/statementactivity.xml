@@ -18,7 +18,7 @@
 
 		<Button android:id="@+id/statementscreen_download_button"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:text="@string/statementscreen_download_button" />
+			android:text="@string/statementscreen_download_button" android:paddingTop="40dp" android:paddingBottom="40dp" android:gravity="center"/>
 
 	</LinearLayout>
 

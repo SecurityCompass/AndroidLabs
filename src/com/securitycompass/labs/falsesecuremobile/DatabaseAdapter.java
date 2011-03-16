@@ -25,9 +25,7 @@ public class DatabaseAdapter {
 
     /**
      * Initialises the adapter
-     * 
-     * @param ctx
-     *            The application context
+     * @param ctx The application context
      */
     public DatabaseAdapter(Context ctx) {
         this.mCtx = ctx;
@@ -35,7 +33,6 @@ public class DatabaseAdapter {
 
     /**
      * Opens the database for use
-     * 
      * @return A working hook into the database
      * @throws SQLException
      */
@@ -72,32 +69,34 @@ public class DatabaseAdapter {
         c.close();
         return accountList;
     }
-    
+
     /** Syncs all provided accounts into the DB */
-    public void updateAccounts(List<Account> accounts){
-        //TODO: Implement
+    public void updateAccounts(List<Account> accounts) {
+        // TODO: Implement
     }
 
-    /** Returns a the username and password stored in the database. 
+    /**
+     * Returns a the username and password stored in the database.
      * @return 2 element array containing the username and password
-     * */
-    public String[] getUserPass(){
-        String[] parameters=new String[0];
+     */
+    public String[] getUserPass() {
+        String[] parameters = new String[0];
         Cursor c = db.rawQuery("SELECT * FROM users LIMIT 1", parameters);
         c.moveToFirst();
-        String[] results={null, null};
-        if(!c.isAfterLast()){
-            results[0]=c.getString(1);
-            results[1]=c.getString(2);
+        String[] results = { null, null };
+        if (!c.isAfterLast()) {
+            results[0] = c.getString(1);
+            results[1] = c.getString(2);
         }
         c.close();
         return results;
     }
-    
-    /** Sets the balance for the given account number to the specified amount. 
+
+    /**
+     * Sets the balance for the given account number to the specified amount.
      * @param accountNumber The account number to set the balance for.
      * @param newBalance The new value of the account's balance
-     * */
+     */
     public void setBalance(int accountNumber, double newBalance) {
         // TODO: Set the DB value
         throw new UnsupportedOperationException("Not implemented");
@@ -111,19 +110,22 @@ public class DatabaseAdapter {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
 
-        /** Create our tables in the DB
-         * @param db The database being created */
+        /**
+         * Create our tables in the DB
+         * @param db The database being created
+         */
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(CREATE_ACCOUNTS);
             db.execSQL(CREATE_USERS);
         }
 
-        /** Called when upgrading the DB 
+        /**
+         * Called when upgrading the DB
          * @param db The database being upgraded
          * @param oldVersion The old database version
          * @param newVersion The new database version
-         * */
+         */
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion
@@ -132,7 +134,8 @@ public class DatabaseAdapter {
             onCreate(db);
         }
 
-        /** Called when the DB is opened
+        /**
+         * Called when the DB is opened
          * @param dataB The database which is being opened
          */
         @Override

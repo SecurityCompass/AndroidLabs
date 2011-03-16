@@ -1,4 +1,6 @@
-/** Copyright 2011 Security Compass */
+/**
+ * Copyright 2011 Security Compass
+ */
 
 package com.securitycompass.labs.falsesecuremobile;
 
@@ -19,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.accounts.AuthenticatorException;
 import android.util.Log;
 
 public class RestClient {
@@ -44,7 +47,7 @@ public class RestClient {
     }
 
     /**
-     * Performs a simple HTTP GET and returns the result
+     * Performs a simple HTTP GET and returns the result.
      * @param urlName API Service endpoint.
      * @return HttpContent from the url.
      */
@@ -70,12 +73,13 @@ public class RestClient {
     }
 
     /**
-     * Performs an HTTP POST with the given data
-     * @param urlString The URL to POST to
-     * @param postData the data to POST
-     * @return The data passed back from the server, as a String
+     * Performs an HTTP POST with the given data.
+     * @param urlString The URL to POST to.
+     * @param postData the data to POST.
+     * @return The data passed back from the server, as a String.
      */
-    public String postHttpContent(String urlString, Map<String, String> variables) throws IOException {
+    public String postHttpContent(String urlString, Map<String, String> variables)
+            throws IOException {
         String response = "";
         URL url = new URL(urlString);
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
@@ -108,17 +112,18 @@ public class RestClient {
             }
         } else {
             response = null;
-            Log.e(TAG, "HTTP request failed on: " + urlString + " With error code: "
-                    + responseCode);
+            Log
+                    .e(TAG, "HTTP request failed on: " + urlString + " With error code: "
+                            + responseCode);
         }
         return response;
     }
 
     /**
-     * Logs into the REST service, generating a new session key
-     * @param username Username to log in with
-     * @param password Password to log in with
-     * @return Whether the login was successful
+     * Logs into the REST service, generating a new session key.
+     * @param username Username to log in with.
+     * @param password Password to log in with.
+     * @return Whether the login was successful.
      */
     public int performHTTPLogin(String server, String port, String username, String password)
             throws JSONException, IOException {
@@ -143,9 +148,12 @@ public class RestClient {
         return errorCode;
     }
 
-    /** Queries the server for a list of accounts, and returns a list of what */
+    /** Queries the server for a list of accounts, and returns a list of them.
+     * @param server The address of the server to query.
+     * @param port The port we will make our query on.
+     * @return A list of all accounts the server told us about, and their details. */
     public List<Account> httpGetAccounts(String server, String port) throws JSONException,
-            IOException {
+            IOException, AuthenticatorException {
         List<Account> accounts = new ArrayList<Account>();
         String url = "http://" + server + ":" + port + "/accounts" + "?session_key="
                 + URLEncoder.encode(appState.getSessionKey());
@@ -154,31 +162,25 @@ public class RestClient {
 
         if (errorCode == NULL_ERROR) {
 
-            try {
-                JSONArray resultArray = new JSONArray(result);
-                for (int count = 0; count < resultArray.length(); count++) {
-                    JSONObject accountJson = resultArray.getJSONObject(count);
-                    double balance = accountJson.getDouble("balance");
-                    String accountType = accountJson.getString("type");
-                    int accountNumber = accountJson.getInt("account_number");
-                    accounts.add(new Account(accountNumber, accountType, balance));
-                }
-            } catch (JSONException e) {
-                Log.e(TAG, "JSON parsing Failed: " + e);
+            JSONArray resultArray = new JSONArray(result);
+            for (int count = 0; count < resultArray.length(); count++) {
+                JSONObject accountJson = resultArray.getJSONObject(count);
+                double balance = accountJson.getDouble("balance");
+                String accountType = accountJson.getString("type");
+                int accountNumber = accountJson.getInt("account_number");
+                accounts.add(new Account(accountNumber, accountType, balance));
             }
+
         } else if (errorCode == ERROR_SESSION_KEY) {
-            appState.authenticate();
-            // TODO: Find a way back here
-        } else {
-            throw new JSONException("Couldn't interpret server response");
+            throw new AuthenticatorException("Session key invalid");
         }
 
         return accounts;
     }
 
     /**
-     * Takes a JSON string and returns an int representing the error code in it
-     * @return The error code the string represented, or a code for no error
+     * Takes a JSON string and returns an int representing the error code in it.
+     * @return The error code the string represented, or a code for no error.
      */
     public int parseError(String json) {
         int errorCode;

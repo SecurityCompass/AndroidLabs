@@ -1,3 +1,7 @@
+/**
+ * Copyright 2011 Security Compass
+ */
+
 package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.IOException;
@@ -5,6 +9,7 @@ import java.util.List;
 
 import org.json.JSONException;
 
+import android.accounts.AuthenticatorException;
 import android.app.Application;
 import android.content.Intent;
 
@@ -17,6 +22,9 @@ public class BankingApplication extends Application {
 
     private String sessionKey;
     private String sessionCreateDate;
+    private boolean locked;
+    
+    private String restServer="10.0.2.2";
 
     DatabaseAdapter dbA;
 
@@ -33,13 +41,14 @@ public class BankingApplication extends Application {
         super.onTerminate();
     }
 
-    /**
-     * Returns a string representation of the server we will be making our requests on.
-     * @return A string representation of the server address
-     */
+    /** Returns a string representation of the server we will be making our requests on.
+     * @return A string representation of the server address */
     public String getRestServer() {
-        // TODO: Remove this awful hack!
-        return "192.168.1.60";
+        return restServer;
+    }
+    
+    public void setrestServer(){
+        
     }
 
     /**
@@ -64,28 +73,44 @@ public class BankingApplication extends Application {
         return statusCode;
     }
     
+    /** Performs all operations necessary to secure the application */
+    public void lockApplication(){
+        locked=true;
+    }
+    
+    /** Performs all operations necessary to make the application usable */
+    public void unlockApplication(){
+        locked=false;
+    }
+    
     /** Returns a list of all Accounts and their details*/
-    public List<Account> getAccounts() throws JSONException, IOException {
+    public List<Account> getAccounts() throws JSONException, IOException, AuthenticatorException {
         RestClient restClient=new RestClient(this);
-        return restClient.httpGetAccounts(getRestServer(), getHttpPort());
+        try{
+            List<Account> result = restClient.httpGetAccounts(getRestServer(), getHttpPort());
+            return result;
+        } catch (AuthenticatorException e){
+            lockApplication();
+            throw e;
+        }
     }
-    
-    /** Prompts user to enter their authentication credentials */
-    public void authenticate(){
-        Intent i=new Intent(getApplicationContext(), LoginActivity.class);
-        startActivity(i);
-    }
-    
-
+       
+    /** Sets the details for the current authenticated session
+     * @param key The session key
+     * @param date A string representation of the date this key was issued*/
     public void setSession(String key, String date) {
         sessionKey = key;
         sessionCreateDate = date;
     }
 
+    /** Returns the current session key
+     * @return The current session key*/
     public String getSessionKey() {
         return sessionKey;
     }
 
+    /** Returns the creation date of the current session key
+     * @return A String representation of the creation date of the current session key */
     public String getSessionCreateDate() {
         return sessionCreateDate;
     }

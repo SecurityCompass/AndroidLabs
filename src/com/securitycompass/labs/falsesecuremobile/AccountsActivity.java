@@ -9,8 +9,10 @@ import java.util.List;
 
 import org.json.JSONException;
 
+import android.accounts.AuthenticatorException;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -43,24 +45,38 @@ public class AccountsActivity extends Activity {
         updateAccounts();
     }
 
+    /** Updates the account information stored locally and refreshes the display */ 
     private void updateAccounts() {
         try {
-            mAccounts = mThisApplication.getAccounts();
+            mAccounts=mThisApplication.getAccounts();
         } catch (JSONException e) {
             Toast.makeText(mCtx, R.string.error_toast_json_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
         } catch (IOException e){
             Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
+        } catch (AuthenticatorException e){
+            Log.e(TAG, e.toString());
+            authenticate();
         }
         refreshDisplayInformation();
     }
 
+    /** Called when the app needs authentication, normally due to a session timeout */
+    private void authenticate(){
+        Intent i=new Intent(mCtx, LoginActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
+    }
+    
+    /** Updates the display to reflect the currently held account information */
     private void refreshDisplayInformation() {
         String accountsDetails = "";
+        int count=1;
         for (Account a : mAccounts) {
-            accountsDetails += a.getAccountType() + " account:\n";
-            accountsDetails += "\t" + a.getAccountNumber() + "\n";
+            accountsDetails += "Account " + count++ + "\n" ;
+            accountsDetails += "\t" + a.getAccountType() + "\n";
+            //accountsDetails += "\t" + a.getAccountNumber() + "\n";
             accountsDetails += "\t" + a.getBalance() + "\n\n";
         }
         
