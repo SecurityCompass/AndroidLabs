@@ -18,11 +18,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 public class TransferActivity extends Activity {
 
@@ -36,9 +38,17 @@ public class TransferActivity extends Activity {
     private Spinner mFromAccountSpinner;
     /** The dropdown selector for the 'to' account. */
     private Spinner mToAccountSpinner;
-    /** The adapter we'll attach the spinners to. */
-    private AccountListAdapter mAccountListAdapter;
+    /** The adapter we'll attach the 'from' spinner to. */
+    private AccountListAdapter mFromAccountListAdapter;
+    /** The adapter we'll attach the 'to' spinner to. */
+    private AccountListAdapter mToAccountListAdapter;
+    /** Holds the currently selected account to transfer funds from */
+    private Account mFromAccount;
+    /** Holds the currently selected account to transfer funds to */
+    private Account mToAccount;
 
+    private final static int TRANSFER_FROM = 1;
+    private final static int TRANSFER_TO = 2;
     private static final String TAG = "TransferActivity";
 
     /** Called when the activity is first created. */
@@ -53,12 +63,19 @@ public class TransferActivity extends Activity {
         mFromAccountSpinner = (Spinner) findViewById(R.id.transferscreen_fromaccount_spinner);
         mToAccountSpinner = (Spinner) findViewById(R.id.transferscreen_toaccount_spinner);
 
-        mAccountListAdapter = new AccountListAdapter();
+        mFromAccountListAdapter = new AccountListAdapter();
+        mToAccountListAdapter = new AccountListAdapter();
 
         updateAccounts();
 
-        mFromAccountSpinner.setAdapter(mAccountListAdapter);
-        mToAccountSpinner.setAdapter(mAccountListAdapter);
+        mFromAccountSpinner.setAdapter(mFromAccountListAdapter);
+        mToAccountSpinner.setAdapter(mToAccountListAdapter);
+
+        mFromAccountSpinner.setOnItemSelectedListener(new AccountSelectionListener(TRANSFER_FROM));
+        mToAccountSpinner.setOnItemSelectedListener(new AccountSelectionListener(TRANSFER_TO));
+
+        refreshDisplayInformation();
+
     }
 
     /** Updates the account information stored locally and refreshes the display */
@@ -96,17 +113,51 @@ public class TransferActivity extends Activity {
 
     /** Updates the display to reflect the currently held account information. */
     private void refreshDisplayInformation() {
-        mAccountListAdapter.notifyDataSetChanged();
+        mFromAccountListAdapter.notifyDataSetChanged();
+        mToAccountListAdapter.notifyDataSetChanged();
     }
-    
-    /** Returns a version of the given string with the first letter in uppercase.
+
+    /**
+     * Returns a version of the given string with the first letter in uppercase.
      * @param input The String to capitalise.
-     * @return The capitalised String. */
+     * @return The capitalised String.
+     */
     private String capitalise(String input) {
         String result = input.substring(0, 1).toUpperCase() + input.substring(1);
         return result;
     }
 
+    private class AccountSelectionListener implements OnItemSelectedListener {
+
+        private int transferDirection;
+        
+        public AccountSelectionListener(int direction){
+            super();
+            transferDirection=direction;
+        }
+        
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View selectedView, int position, long id)
+                throws IndexOutOfBoundsException {
+            if (transferDirection == TRANSFER_FROM) {
+                mFromAccount = mAccounts.get(position);
+                System.err.println("Selected from account: " + mFromAccount);
+            } else if (transferDirection == TRANSFER_TO) {
+                mToAccount = mAccounts.get(position);
+                System.err.println("Selected to account: " + mToAccount);
+            } else
+                throw new IndexOutOfBoundsException(
+                        "From/To indicator int out of bounds in AccountSelectionListener");
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> arg0) {
+            // Nothing to do here
+        }
+
+    }
+
+    /** Helper class to present a List<Account> to a Spinner for selecting one */
     private class AccountListAdapter extends BaseAdapter implements SpinnerAdapter {
 
         @Override
@@ -149,7 +200,6 @@ public class TransferActivity extends Activity {
             }
             view.setText(capitalise(mAccounts.get(position).getAccountType()) + ": "
                     + mAccounts.get(position).getBalance());
-
             return view;
         }
 
