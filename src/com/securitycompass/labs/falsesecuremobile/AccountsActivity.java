@@ -5,6 +5,7 @@
 package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONException;
@@ -37,49 +38,58 @@ public class AccountsActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.accountsactivity);
-        
+
         mCtx = this;
         mThisApplication = (BankingApplication) getApplication();
         mInformationArea = (TextView) findViewById(R.id.accountsscreen_text_summary);
         
+        mInformationArea.setVisibility(TextView.GONE);
         updateAccounts();
+        mInformationArea.setVisibility(TextView.VISIBLE);
     }
 
-    /** Updates the account information stored locally and refreshes the display */ 
+    /** Updates the account information stored locally and refreshes the display */
     private void updateAccounts() {
         try {
-            mAccounts=mThisApplication.getAccounts();
+            mAccounts = mThisApplication.getAccounts();
         } catch (JSONException e) {
             Toast.makeText(mCtx, R.string.error_toast_json_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
-        } catch (IOException e){
+        } catch (IOException e) {
             Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
-        } catch (AuthenticatorException e){
+        } catch (AuthenticatorException e) {
             Log.e(TAG, e.toString());
             authenticate();
         }
-        refreshDisplayInformation();
+
+        //If the account list failed on retrieval, use an empty list
+        if (!mThisApplication.isLocked()) {
+            refreshDisplayInformation();
+        } else {
+            mAccounts=new ArrayList<Account>();
+        }
     }
 
-    /** Called when the app needs authentication, normally due to a session timeout */
-    private void authenticate(){
-        Intent i=new Intent(mCtx, LoginActivity.class);
+    /** Called when the app needs authentication, normally due to a session timeout.
+     * The current activity stack will be cleared, and the login Activity brought to the front. */
+    private void authenticate() {
+        Intent i = new Intent(mCtx, LoginActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
     }
-    
+
     /** Updates the display to reflect the currently held account information */
     private void refreshDisplayInformation() {
         String accountsDetails = "";
-        int count=1;
+        int count = 1;
         for (Account a : mAccounts) {
-            accountsDetails += "Account " + count++ + "\n" ;
+            accountsDetails += "Account " + count++ + "\n";
             accountsDetails += "\t" + a.getAccountType() + "\n";
-            //accountsDetails += "\t" + a.getAccountNumber() + "\n";
+            // accountsDetails += "\t" + a.getAccountNumber() + "\n";
             accountsDetails += "\t" + a.getBalance() + "\n\n";
         }
-        
+
         mInformationArea.setText(accountsDetails);
     }
 

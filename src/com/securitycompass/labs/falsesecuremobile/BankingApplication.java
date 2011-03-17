@@ -81,6 +81,7 @@ public class BankingApplication extends Application {
         RestClient restClient = new RestClient(this);
         int statusCode = restClient.performHTTPLogin(getRestServer(), getHttpPort(), username,
                 password);
+        locked = (statusCode == RestClient.NULL_ERROR) ? false : true; 
         return statusCode;
     }
 
@@ -92,6 +93,10 @@ public class BankingApplication extends Application {
     /** Performs all operations necessary to make the application usable. */
     public void unlockApplication() {
         locked = false;
+    }
+    
+    public boolean isLocked(){
+        return locked;
     }
 
     /**
@@ -116,7 +121,7 @@ public class BankingApplication extends Application {
     }
 
     public int downloadStatement(Activity caller) throws IOException {
-        //TODO: Clean up this method. A lot.
+        //TODO: Clean up this method.
         RestClient restClient = new RestClient(this);
         String htmlData = restClient.getHttpContent("http://" + getRestServer() + ":" + getHttpPort() + "/statement" + "?session_key=" + URLEncoder.encode(sessionKey));
 
@@ -124,7 +129,7 @@ public class BankingApplication extends Application {
 
         if (statusCode == RestClient.NULL_ERROR) {
                        
-            File outputFile = new File("/sdcard/", "statement.html");
+            File outputFile = new File("/sdcard/falsesecuremobile/", "statement.html");
 
             FileOutputStream out = new FileOutputStream(outputFile);
             out.write(htmlData.getBytes());
