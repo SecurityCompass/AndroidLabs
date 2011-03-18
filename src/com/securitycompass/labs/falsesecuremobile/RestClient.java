@@ -148,10 +148,12 @@ public class RestClient {
         return errorCode;
     }
 
-    /** Queries the server for a list of accounts, and returns a list of them.
+    /**
+     * Queries the server for a list of accounts, and returns a list of them.
      * @param server The address of the server to query.
      * @param port The port we will make our query on.
-     * @return A list of all accounts the server told us about, and their details. */
+     * @return A list of all accounts the server told us about, and their details.
+     */
     public List<Account> httpGetAccounts(String server, String port) throws JSONException,
             IOException, AuthenticatorException {
         List<Account> accounts = new ArrayList<Account>();
@@ -176,6 +178,29 @@ public class RestClient {
         }
 
         return accounts;
+    }
+
+    /**
+     * Transfers funds between the given accounts.
+     * @param server The server to use.
+     * @param port The port to use.
+     * @param fromAccount The number of the account we're transferring from.
+     * @param toAccount The number of the account we're transferring to.
+     * @param amount The amount to be transferred
+     * @param sessionKey The session key to use
+     * @return A code indicating if the transaction succeeded, or why it failed
+     * @throws IOException
+     */
+    public int httpTransfer(String server, String port, int fromAccount, int toAccount,
+            double amount, String sessionKey) throws IOException {
+        Map<String, String> variables = new HashMap<String, String>();
+        variables.put("from_account", Integer.toString(fromAccount));
+        variables.put("to_account", Integer.toString(toAccount));
+        variables.put("amount", Double.toString(amount));
+        String response = postHttpContent("http://" + server + ":" + port + "/transfer"
+                + "?session_key=" + URLEncoder.encode(sessionKey), variables);
+        int statusCode = parseError(response);
+        return statusCode;
     }
 
     /**

@@ -16,7 +16,7 @@
 		android:layout_width="fill_parent" android:layout_height="fill_parent"
 		android:gravity="center_horizontal">
 
-	<TextView android:id="@+id/accountsscreen_text_summary" android:text="@string/accountsscreen_text_summary" android:layout_height="wrap_content" android:layout_width="fill_parent" />
+	<TextView android:id="@+id/accountsscreen_text_summary" android:layout_height="wrap_content" android:layout_width="fill_parent" />
 
 	</LinearLayout>
 

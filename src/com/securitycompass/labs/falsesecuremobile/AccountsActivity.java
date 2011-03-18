@@ -40,6 +40,8 @@ public class AccountsActivity extends Activity {
         setContentView(R.layout.accountsactivity);
 
         mCtx = this;
+        mAccounts=new ArrayList<Account>(); //To avoid null reference on network error
+        
         mThisApplication = (BankingApplication) getApplication();
         mInformationArea = (TextView) findViewById(R.id.accountsscreen_text_summary);
         

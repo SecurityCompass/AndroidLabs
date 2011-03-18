@@ -121,7 +121,7 @@ public class BankingApplication extends Application {
     }
 
     public int downloadStatement(Activity caller) throws IOException {
-        //TODO: Clean up this method.
+        //TODO: Put most of this method in RestClient.
         RestClient restClient = new RestClient(this);
         String htmlData = restClient.getHttpContent("http://" + getRestServer() + ":" + getHttpPort() + "/statement" + "?session_key=" + URLEncoder.encode(sessionKey));
 
@@ -146,6 +146,12 @@ public class BankingApplication extends Application {
             
         }
 
+        return statusCode;
+    }
+    
+    public int transferFunds(int fromAccount, int toAccount, double amount) throws IOException{
+        RestClient restClient=new RestClient(this);
+        int statusCode=restClient.httpTransfer(getRestServer(), getHttpPort(), fromAccount, toAccount, amount, sessionKey);
         return statusCode;
     }
 

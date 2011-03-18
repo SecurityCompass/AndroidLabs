@@ -24,10 +24,15 @@
 			android:layout_height="wrap_content" android:text="@string/transferscreen_totext" />
 		<Spinner android:id="@+id/transferscreen_toaccount_spinner"
 			android:layout_width="fill_parent" android:layout_height="wrap_content" />
-
+		<TextView android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:text="@string/transferscreen_amount_text" />
+		<EditText android:id="@+id/transferscreen_enteramount_field" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:textColorHint="#666666"
+			android:hint="@string/transferscreen_enteramount_hint" android:layout_margin="5dp"/>
 		<Button android:id="@+id/transferscreen_transfer_button"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:text="@string/transferscreen_transfer_button" android:layout_margin="20dp"/>
+			android:text="@string/transferscreen_transfer_button"
+			android:layout_margin="20dp" />
 
 	</LinearLayout>
 

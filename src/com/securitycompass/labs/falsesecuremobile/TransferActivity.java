@@ -18,8 +18,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -34,17 +37,23 @@ public class TransferActivity extends Activity {
     private BankingApplication mThisApplication;
     /** A list of the accounts for this user. */
     private List<Account> mAccounts;
+
     /** The dropdown selector for the 'from' account. */
     private Spinner mFromAccountSpinner;
     /** The dropdown selector for the 'to' account. */
     private Spinner mToAccountSpinner;
+    /** The button to trigger the transfer. */
+    private Button mTransferButton;
+    /** The field in which the amount to transfer will be entered */
+    private EditText mAmountField;
+
     /** The adapter we'll attach the 'from' spinner to. */
     private AccountListAdapter mFromAccountListAdapter;
     /** The adapter we'll attach the 'to' spinner to. */
     private AccountListAdapter mToAccountListAdapter;
-    /** Holds the currently selected account to transfer funds from */
+    /** Holds the currently selected account to transfer funds from. */
     private Account mFromAccount;
-    /** Holds the currently selected account to transfer funds to */
+    /** Holds the currently selected account to transfer funds to. */
     private Account mToAccount;
 
     private final static int TRANSFER_FROM = 1;
@@ -60,6 +69,9 @@ public class TransferActivity extends Activity {
         mCtx = this;
         mThisApplication = (BankingApplication) getApplication();
 
+        mAccounts = new ArrayList<Account>();
+
+        // Set up the dropdown account selectors
         mFromAccountSpinner = (Spinner) findViewById(R.id.transferscreen_fromaccount_spinner);
         mToAccountSpinner = (Spinner) findViewById(R.id.transferscreen_toaccount_spinner);
 
@@ -74,6 +86,20 @@ public class TransferActivity extends Activity {
         mFromAccountSpinner.setOnItemSelectedListener(new AccountSelectionListener(TRANSFER_FROM));
         mToAccountSpinner.setOnItemSelectedListener(new AccountSelectionListener(TRANSFER_TO));
 
+        // Set up the button to make it all go, and the amount field
+        mTransferButton = (Button) findViewById(R.id.transferscreen_transfer_button);
+
+        mTransferButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                performTransfer();
+
+            }
+        });
+
+        mAmountField = (EditText) findViewById(R.id.transferscreen_enteramount_field);
+
         refreshDisplayInformation();
 
     }
@@ -81,7 +107,12 @@ public class TransferActivity extends Activity {
     /** Updates the account information stored locally and refreshes the display */
     private void updateAccounts() {
         try {
-            mAccounts = mThisApplication.getAccounts();
+            // We can't just replace this with a new list, as there may be references held to it.
+            List<Account> tempAccounts = mThisApplication.getAccounts();
+            mAccounts.clear();
+            for (Account a : tempAccounts) {
+                mAccounts.add(a);
+            }
         } catch (JSONException e) {
             Toast.makeText(mCtx, R.string.error_toast_json_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
@@ -97,7 +128,41 @@ public class TransferActivity extends Activity {
         if (!mThisApplication.isLocked()) {
             refreshDisplayInformation();
         } else {
-            mAccounts = new ArrayList<Account>();
+            mAccounts.clear();
+        }
+    }
+
+    /**
+     * Pulls the currently entered information from the UI and performs a transfer using the set
+     * values
+     */
+    private void performTransfer() {
+        Log.i(TAG, "Member Accounts [" + mFromAccount.toString() + "] [" + mToAccount.toString()
+                + "]");
+        if (mFromAccount == mToAccount) {
+            Toast.makeText(mCtx, R.string.error_transfer_same_account, Toast.LENGTH_SHORT).show();
+        } else {
+            String amountText = mAmountField.getText().toString();
+            double amount = 0;
+            try {
+                amount = Double.parseDouble(amountText);
+            } catch (NumberFormatException e) {
+                Toast.makeText(mCtx, R.string.error_transfer_invalid_amount, Toast.LENGTH_SHORT)
+                        .show();
+                return;
+            }
+
+            try {
+                int responseCode = mThisApplication.transferFunds(mFromAccount.getAccountNumber(),
+                        mToAccount.getAccountNumber(), amount);
+                Log.i(TAG, "Transferred. Response code: " + responseCode);
+            } catch (IOException e) {
+                Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, e.toString());
+            }
+
+            updateAccounts();
+
         }
     }
 
@@ -113,8 +178,25 @@ public class TransferActivity extends Activity {
 
     /** Updates the display to reflect the currently held account information. */
     private void refreshDisplayInformation() {
-        mFromAccountListAdapter.notifyDataSetChanged();
-        mToAccountListAdapter.notifyDataSetChanged();
+        /*
+         * Simply calling notifyDataSetChanged() on the adapters here doesn't work, as the
+         * mFromAccount reference remains set to the same as it was before the transaction, E.G. the
+         * same type and account number, but with the earlier balance. Clearly the Spinner's
+         * OnItemSelected() method isn't triggered when calling notifyDataSetChanged().
+         */
+
+        int fromPos = mFromAccountSpinner.getSelectedItemPosition();
+        int toPos = mToAccountSpinner.getSelectedItemPosition();
+
+        mFromAccountListAdapter = new AccountListAdapter();
+        mToAccountListAdapter = new AccountListAdapter();
+
+        mFromAccountSpinner.setAdapter(mFromAccountListAdapter);
+        mToAccountSpinner.setAdapter(mToAccountListAdapter);
+
+        mFromAccountSpinner.setSelection(fromPos);
+        mToAccountSpinner.setSelection(toPos);
+
     }
 
     /**
@@ -130,12 +212,12 @@ public class TransferActivity extends Activity {
     private class AccountSelectionListener implements OnItemSelectedListener {
 
         private int transferDirection;
-        
-        public AccountSelectionListener(int direction){
+
+        public AccountSelectionListener(int direction) {
             super();
-            transferDirection=direction;
+            transferDirection = direction;
         }
-        
+
         @Override
         public void onItemSelected(AdapterView<?> parent, View selectedView, int position, long id)
                 throws IndexOutOfBoundsException {

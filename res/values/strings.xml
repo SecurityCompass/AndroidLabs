@@ -1,20 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">FalseSecureMobile</string>
+	
 	<string name="loginscreen_username">Username</string>
 	<string name="loginscreen_password">Password</string>
 	<string name="loginscreen_login_button">Login</string>
+	
 	<string name="summaryscreen_accounts_button">Accounts</string>
 	<string name="summaryscreen_transfer_button">Transfer</string>
 	<string name="summaryscreen_statement_button">Statement</string>
+	
 	<string name="statementscreen_download_button">Download Statement</string>
+	
 	<string name="transferscreen_fromtext">From</string>
 	<string name="transferscreen_totext">To</string>
+	<string name="transferscreen_amount_text">Amount</string>
 	<string name="transferscreen_transfer_button">Transfer</string>
+	<string name="transferscreen_enteramount_hint">Enter amount</string>
+	
 	<string name="accountsscreen_text_summary">Account 1\n\n\tChecking Account\n\tBalance: $53.00\n\nAccount 2\n\n\tSavings Account\n\tBalance: $2876.28\n</string>
+	
+	<!-- Error messages -->
 	<string name="toast_loginfailed">Login failed</string>
 	<string name="error_toast_rest_problem">Couldn\'t communicate with server</string>
 	<string name="error_toast_json_problem">Couldn\'t interpret server response</string>
+	<string name="error_transfer_same_account">Can\'t transfer to same account</string>
+	<string name="error_transfer_invalid_amount">Invalid amount</string>
 
 	<!-- 
     <string name=""></string>
