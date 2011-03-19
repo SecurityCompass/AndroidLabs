@@ -65,7 +65,7 @@ public class LoginActivity extends Activity {
     }
     
     private void populateCredentialFields(){
-        //TODO: Populate username and password from the DB
+        //TODO: Remove this convenience method
         mUsernameField.setText("jdoe");
         mPasswordField.setText("password");
     }

@@ -137,6 +137,7 @@ public class TransferActivity extends Activity {
      * values
      */
     private void performTransfer() {
+        //TODO: Check status code and act accordingly if an error is present.
         Log.i(TAG, "Member Accounts [" + mFromAccount.toString() + "] [" + mToAccount.toString()
                 + "]");
         if (mFromAccount == mToAccount) {
