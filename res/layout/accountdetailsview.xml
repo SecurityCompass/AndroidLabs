@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content" android:layout_height="wrap_content"
+	android:orientation="vertical" android:paddingBottom="5dp"
+	android:background="#000000">
+
+	<TextView android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:id="@+id/accounts_screen_accountnumber"
+		android:background="#212421" android:textColor="#7b7d7b"
+		android:textSize="16sp" android:layout_marginBottom="5dp"
+		android:paddingLeft="2dp" />
+	<TextView android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:id="@+id/accounts_screen_accounttype"
+		android:paddingLeft="20dp" android:background="#000000" />
+	<TextView android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:id="@+id/accounts_screen_accountbalance"
+		android:paddingLeft="20dp" android:background="#000000" />
+
+</LinearLayout>

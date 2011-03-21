@@ -2,24 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_height="fill_parent"
 	android:layout_width="fill_parent">
-	
-	<LinearLayout android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:gravity="center_horizontal">
-	
-		<ImageView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:src="@drawable/banner"
-			android:padding="20dp" />
-	
-	</LinearLayout>
 
-	<LinearLayout android:orientation="vertical"
-		android:layout_width="fill_parent" android:layout_height="fill_parent"
-		android:gravity="center">
-
-		<Button android:id="@+id/statementscreen_download_button"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:text="@string/statementscreen_download_button" android:paddingTop="40dp" android:paddingBottom="40dp" android:gravity="center"/>
-
-	</LinearLayout>
+<ListView android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@id/android:list" />	
 
 </LinearLayout>

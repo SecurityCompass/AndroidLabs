@@ -11,25 +11,27 @@ import java.util.List;
 import org.json.JSONException;
 
 import android.accounts.AuthenticatorException;
-import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AccountsActivity extends Activity {
+public class AccountsActivity extends ListActivity {
 
     /** Useful for avoiding casts when a Context needs to be passed */
     private Context mCtx;
-    /** The place where we'll show the account info */
-    private TextView mInformationArea;
     /** Central data store, state, and operations */
     private BankingApplication mThisApplication;
     /** A list of the accounts for this user */
     private List<Account> mAccounts;
-
+    
     private static final String TAG = "AccountsActivity";
 
     /** Called when the activity is first created. */
@@ -43,11 +45,11 @@ public class AccountsActivity extends Activity {
         mAccounts=new ArrayList<Account>(); //To avoid null reference on network error
         
         mThisApplication = (BankingApplication) getApplication();
-        mInformationArea = (TextView) findViewById(R.id.accountsscreen_text_summary);
         
-        mInformationArea.setVisibility(TextView.GONE);
         updateAccounts();
-        mInformationArea.setVisibility(TextView.VISIBLE);
+        
+        setListAdapter(new AccountDetailAdapter(mCtx, R.layout.accountdetailsview, mAccounts));
+        
     }
 
     /** Updates the account information stored locally and refreshes the display */
@@ -67,7 +69,7 @@ public class AccountsActivity extends Activity {
 
         //If the account list failed on retrieval, use an empty list
         if (!mThisApplication.isLocked()) {
-            refreshDisplayInformation();
+            //refreshDisplayInformation();
         } else {
             mAccounts=new ArrayList<Account>();
         }
@@ -83,16 +85,50 @@ public class AccountsActivity extends Activity {
 
     /** Updates the display to reflect the currently held account information */
     private void refreshDisplayInformation() {
-        String accountsDetails = "";
-        int count = 1;
-        for (Account a : mAccounts) {
-            accountsDetails += "Account " + count++ + "\n";
-            accountsDetails += "\t" + a.getAccountType() + "\n";
-            // accountsDetails += "\t" + a.getAccountNumber() + "\n";
-            accountsDetails += "\t" + a.getBalance() + "\n\n";
-        }
-
-        mInformationArea.setText(accountsDetails);
+        
+    }
+    
+    /**
+     * Returns a version of the given string with the first letter in uppercase.
+     * @param input The String to capitalise.
+     * @return The capitalised String.
+     */
+    private String capitalise(String input) {
+        String result = input.substring(0, 1).toUpperCase() + input.substring(1);
+        return result;
     }
 
+    private class AccountDetailAdapter extends ArrayAdapter<Account>{
+
+        int mViewResourceId;
+        
+        public AccountDetailAdapter(Context context, int viewResourceId, List<Account> accounts) {
+            super(context, viewResourceId, accounts);
+            mViewResourceId=viewResourceId;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent){
+            View item=convertView;
+            
+            if (item == null) {
+                LayoutInflater inflater = getLayoutInflater();
+                item = inflater.inflate(R.layout.accountdetailsview, null);
+            }
+            
+            TextView accountNumber = (TextView) item.findViewById(R.id.accounts_screen_accountnumber);
+            TextView accountType = (TextView) item.findViewById(R.id.accounts_screen_accounttype);
+            TextView accountBalance = (TextView) item.findViewById(R.id.accounts_screen_accountbalance);
+            
+            Account displayAccount=mAccounts.get(position);
+            accountNumber.setText("Account " + displayAccount.getAccountNumber());
+            accountType.setText(capitalise(displayAccount.getAccountType()) + " Account");
+            accountBalance.setText("Balance: $" + displayAccount.getBalance());
+            
+            return item;
+        }
+        
+        
+    }
+    
 }

@@ -6,23 +6,27 @@ package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.IOException;
 
-import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
-public class StatementActivity extends Activity {
+public class StatementActivity extends ListActivity {
 
     /** Useful for avoiding casts when a Context needs to be passed */
     private Context mCtx;
     private BankingApplication mThisApplication;
-    private Button mDownloadButton;
+    
+    private static final String[] optionNames={"Download Statement","Download Combined Statement"};
+    
+    private static final int DL_STATEMENT=0;
+    private static final int DL_COMBINED_STATEMENT=1;
 
     private static final String TAG = "StatementActivity";
 
@@ -34,18 +38,30 @@ public class StatementActivity extends Activity {
 
         mCtx = this;
         mThisApplication = (BankingApplication) getApplication();
+        
+        ListAdapter la = new ArrayAdapter<String>(mCtx, android.R.layout.simple_list_item_1,
+                optionNames);
+        setListAdapter(la);
 
-        mDownloadButton = (Button) findViewById(R.id.statementscreen_download_button);
+        getListView().setOnItemClickListener(new OnItemClickListener(
 
-        mDownloadButton.setOnClickListener(new OnClickListener() {
+        ) {
 
             @Override
-            public void onClick(View v) {
-                downloadStatement();
-
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+                launchSelectedScreen(position);
             }
         });
 
+    }
+    
+    private void launchSelectedScreen(int screenId) {
+        if (screenId == DL_STATEMENT) {
+            downloadStatement();
+        }
+        else if (screenId == DL_COMBINED_STATEMENT){
+            downloadCombinedStatement();
+        }
     }
 
     private void downloadStatement() {
@@ -56,6 +72,10 @@ public class StatementActivity extends Activity {
             Log.e(TAG, e.toString());
         }
 
+    }
+    
+    private void downloadCombinedStatement(){
+        Toast.makeText(mCtx, "Not implemented", Toast.LENGTH_SHORT).show();
     }
 
 }
