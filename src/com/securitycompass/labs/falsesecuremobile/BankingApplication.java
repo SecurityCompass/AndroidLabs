@@ -130,6 +130,8 @@ public class BankingApplication extends Application {
         if (statusCode == RestClient.NULL_ERROR) {
                        
             File outputFile = new File("/sdcard/falsesecuremobile/", "statement.html");
+            File outputDir= new File("/sdcard/falsesecuremobile/");
+            outputDir.mkdirs();
 
             FileOutputStream out = new FileOutputStream(outputFile);
             out.write(htmlData.getBytes());
