@@ -28,6 +28,7 @@ public class RestClient {
 
     private static final String TAG = "RestClient";
 
+    public static final int NO_OP = -2;
     public static final int NULL_ERROR = -1;
     public static final int ERROR_CREDENTIALS = 1;
     public static final int ERROR_SESSION_KEY = 2;

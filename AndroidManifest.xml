@@ -16,6 +16,8 @@
         <activity android:name=".TransferActivity" android:label="@string/app_name"/>
         <activity android:name=".AccountsActivity" android:label="@string/app_name"/>
         <activity android:name=".StatementActivity" android:label="@string/app_name"/>
+        <activity android:name=".SetLocalPasswordActivity" android:label="@string/app_name"/>
+        <activity android:name=".SetServerCredentialsActivity" android:label="@string/app_name"/>
 
     </application>
     

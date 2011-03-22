@@ -5,12 +5,15 @@
 package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 
 import org.json.JSONException;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,12 +32,12 @@ public class LoginActivity extends Activity {
     private Context mCtx;
     /** The button that initiates the login */
     private Button mLoginButton;
-    /** The text field to collect/hold the username. */
-    private EditText mUsernameField;
     /** The text field to collect/hold the password. */
     private EditText mPasswordField;
     /** Central data store, state, and operations */
     private BankingApplication mThisApplication;
+    /** This application's preferences */
+    private SharedPreferences mSharedPrefs;
     
     private static final String TAG="LoginActivity";
 
@@ -46,10 +49,13 @@ public class LoginActivity extends Activity {
         mThisApplication=(BankingApplication) getApplication();
         
         super.onCreate(savedInstanceState);
+        
+        mSharedPrefs=mThisApplication.getSharedPrefs();
+        checkFirstRun();
+        
         setContentView(R.layout.loginactivity);
         
         mLoginButton = (Button) findViewById(R.id.loginscreen_login_button);
-        mUsernameField= (EditText) findViewById(R.id.loginscreen_username);
         mPasswordField= (EditText) findViewById(R.id.loginscreen_password);
         
         mLoginButton.setOnClickListener(new OnClickListener() {
@@ -60,36 +66,49 @@ public class LoginActivity extends Activity {
             }
         });
         
-        populateCredentialFields();
+        populatePasswordField();
+        
 
     }
     
-    private void populateCredentialFields(){
-        //TODO: Remove this convenience method
-        mUsernameField.setText("jdoe");
-        mPasswordField.setText("password");
+    /** Checks if the application is running for the first time, and sends the user to the appropriate setup if it is. */
+    private void checkFirstRun(){
+        if (mSharedPrefs.getBoolean(BankingApplication.PREF_FIRST_RUN, true)){
+            Intent i=new Intent(mCtx, SetLocalPasswordActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+        }
+    }
+    
+    //TODO: Remove this convenience method
+    private void populatePasswordField(){
+        mPasswordField.setText("c");
     }
 
     /** Grabs the username and password and attempts to log in with them */
     private void performLogin() {
-        String username=mUsernameField.getText().toString();
+        
         String password=mPasswordField.getText().toString();
         
-        System.err.println("Logging in with user/pass: " + username + " / " + password);
-        int statusCode=RestClient.NULL_ERROR;
+        int unlockStatus=RestClient.NO_OP;
+        
         try{
-            statusCode=mThisApplication.performLogin(username, password);
-            Log.i(TAG, "Login completed");
+            unlockStatus=mThisApplication.unlockApplication(password);
+        } catch (UnsupportedEncodingException e){
+            Toast.makeText(mCtx, R.string.error_toast_hasherror, Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.toString());
+        } catch (NoSuchAlgorithmException e){
+            Toast.makeText(mCtx, R.string.error_toast_hasherror, Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.toString());
         } catch (JSONException e){
             Toast.makeText(mCtx, R.string.error_toast_json_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
-            return;
-        } catch (IOException e){
+        } catch (IOException e) {
             Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
-            return;
         }
-        if(statusCode == RestClient.NULL_ERROR){
+        
+        if(unlockStatus == RestClient.NULL_ERROR){
             Intent launchIntent = new Intent(mCtx, SummaryActivity.class);
             startActivity(launchIntent);   
         } else {
