@@ -55,6 +55,13 @@ public class StatementActivity extends ListActivity {
 
     }
     
+    /** Locks the application if this activity is backgrounded */
+    @Override
+    public void onStop(){
+        super.onStop();
+        //mThisApplication.lockApplication();
+    }
+    
     private void launchSelectedScreen(int screenId) {
         if (screenId == DL_STATEMENT) {
             downloadStatement();

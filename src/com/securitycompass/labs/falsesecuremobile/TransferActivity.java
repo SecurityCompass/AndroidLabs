@@ -100,8 +100,18 @@ public class TransferActivity extends Activity {
 
         mAmountField = (EditText) findViewById(R.id.transferscreen_enteramount_field);
 
+        if(mAccounts.size()>=2){
+            mToAccountSpinner.setSelection(1);
+        }
         refreshDisplayInformation();
 
+    }
+
+    /** Locks the application if this activity is backgrounded */
+    @Override
+    public void onStop(){
+        super.onStop();
+        //mThisApplication.lockApplication();
     }
 
     /** Updates the account information stored locally and refreshes the display */

@@ -74,8 +74,7 @@ public class LoginActivity extends Activity {
     /** Checks if the application is running for the first time, and sends the user to the appropriate setup if it is. */
     private void checkFirstRun(){
         if (mSharedPrefs.getBoolean(BankingApplication.PREF_FIRST_RUN, true)){
-            Intent i=new Intent(mCtx, SetLocalPasswordActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Intent i=new Intent(mCtx, SetServerCredentialsActivity.class);
             startActivity(i);
         }
     }

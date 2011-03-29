@@ -60,7 +60,9 @@ public class SetLocalPasswordActivity extends Activity {
             } catch (UnsupportedEncodingException e){
                 Toast.makeText(mCtx, R.string.error_toast_hasherror, Toast.LENGTH_LONG).show();
             }
-            Intent i = new Intent(mCtx, SetServerCredentialsActivity.class);
+            Toast.makeText(mCtx, R.string.initialsetup_success, Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(mCtx, LoginActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
         }
     }

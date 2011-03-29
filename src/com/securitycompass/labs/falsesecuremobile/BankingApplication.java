@@ -100,7 +100,7 @@ public class BankingApplication extends Application {
 
         // First we generate a random salt
         SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-        byte[] saltByteArray = new byte[8];
+        byte[] saltByteArray = new byte[32];
         random.nextBytes(saltByteArray);
 
         // Perform the hash, getting a Base64 encoded String
@@ -144,7 +144,7 @@ public class BankingApplication extends Application {
             UnsupportedEncodingException {
         byte[] passwordBytes = (password).getBytes("UTF-8");
 
-        MessageDigest md = MessageDigest.getInstance("SHA-1");
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.reset();
         md.update(salt);
         byte[] hashed = md.digest(passwordBytes);

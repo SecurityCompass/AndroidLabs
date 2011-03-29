@@ -51,6 +51,13 @@ public class AccountsActivity extends ListActivity {
         setListAdapter(new AccountDetailAdapter(mCtx, R.layout.accountdetailsview, mAccounts));
         
     }
+    
+    /** Locks the application if this activity is backgrounded */
+    @Override
+    public void onStop(){
+        super.onStop();
+        //mThisApplication.lockApplication();
+    }
 
     /** Updates the account information stored locally and refreshes the display */
     private void updateAccounts() {

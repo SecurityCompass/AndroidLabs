@@ -71,9 +71,7 @@ public class SetServerCredentialsActivity extends Activity {
             Editor e=mThisApplication.getSharedPrefs().edit();
             e.putBoolean(BankingApplication.PREF_FIRST_RUN, false);
             e.commit();
-            Toast.makeText(mCtx, R.string.initialsetup_success, Toast.LENGTH_SHORT).show();
-            Intent i=new Intent(mCtx, SummaryActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Intent i=new Intent(mCtx, SetLocalPasswordActivity.class);
             startActivity(i);
         } else {
             Toast.makeText(mCtx, R.string.toast_loginfailed, Toast.LENGTH_SHORT).show();
