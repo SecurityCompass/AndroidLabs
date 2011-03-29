@@ -277,7 +277,11 @@ public class TransferActivity extends Activity {
             } else {
                 view = (TextView) convertView;
             }
-            view.setText(capitalise(mAccounts.get(position).getAccountType()) + ": "
+            String accountNumString=Integer.toString(mAccounts.get(position).getAccountNumber());
+            view.setText(capitalise(mAccounts.get(position).getAccountType()) 
+                    + " ("
+                    + accountNumString.substring(accountNumString.length()-4)
+                    + "): $"
                     + mAccounts.get(position).getBalance());
             return view;
         }
@@ -291,7 +295,11 @@ public class TransferActivity extends Activity {
             } else {
                 view = (TextView) convertView;
             }
-            view.setText(capitalise(mAccounts.get(position).getAccountType()) + ": "
+            String accountNumString=Integer.toString(mAccounts.get(position).getAccountNumber());
+            view.setText(capitalise(mAccounts.get(position).getAccountType()) 
+                    + " ("
+                    + accountNumString.substring(accountNumString.length()-4)
+                    + "): $"
                     + mAccounts.get(position).getBalance());
             return view;
         }
