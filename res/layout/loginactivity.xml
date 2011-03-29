@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:gravity="center_horizontal">
-
-	<ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/banner" android:padding="20dp"/>
 		
-	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/loginscreen_password" android:paddingTop="20dp" android:paddingBottom="10dp"/>
+	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/loginscreen_password" android:paddingBottom="10dp"/>
 	<EditText android:id="@+id/loginscreen_password" android:layout_width="fill_parent" android:layout_height="wrap_content" android:password="true"/>
 	<Button android:id="@+id/loginscreen_login_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/loginscreen_login_button" android:paddingLeft="20dp" android:paddingRight="20dp" android:layout_marginTop="20dp"/>
 	

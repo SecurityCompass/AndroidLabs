@@ -22,7 +22,7 @@
 		$53.00\n\nAccount 2\n\n\tSavings Account\n\tBalance: $2876.28\n
 	</string>
 
-	<string name="setupunlockactivity_configureprompt">Please configure a master password</string>
+	<string name="setupunlockactivity_configureprompt">Please configure a local password</string>
 	<string name="setupunlockactivity_password">Password</string>
 	<string name="setupunlockactivity_repeat_password">Confirm</string>
 	<string name="setupunlockactivity_donebutton">Done</string>
