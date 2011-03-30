@@ -4,16 +4,24 @@
 
 package com.securitycompass.labs.falsesecuremobile;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -22,11 +30,8 @@ public class StatementActivity extends ListActivity {
     /** Useful for avoiding casts when a Context needs to be passed */
     private Context mCtx;
     private BankingApplication mThisApplication;
-    
-    private static final String[] optionNames={"Download Statement","Download Combined Statement"};
-    
-    private static final int DL_STATEMENT=0;
-    private static final int DL_COMBINED_STATEMENT=1;
+    private File mStatementsDir;
+    private File[] mStatements;
 
     private static final String TAG = "StatementActivity";
 
@@ -38,10 +43,14 @@ public class StatementActivity extends ListActivity {
 
         mCtx = this;
         mThisApplication = (BankingApplication) getApplication();
-        
-        ListAdapter la = new ArrayAdapter<String>(mCtx, android.R.layout.simple_list_item_1,
-                optionNames);
-        setListAdapter(la);
+
+        mStatementsDir = new File(mThisApplication.getStatementDir());
+        downloadStatement();
+        readStatementFiles();
+
+        StatementAdapter adapter = new StatementAdapter(mCtx, android.R.layout.simple_list_item_1,
+                mStatements);
+        setListAdapter(adapter);
 
         getListView().setOnItemClickListener(new OnItemClickListener(
 
@@ -49,40 +58,76 @@ public class StatementActivity extends ListActivity {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
-                launchSelectedScreen(position);
+                Uri uri = Uri.parse("file://" + mStatements[position].getAbsolutePath());
+                Intent intent = new Intent();
+                intent.setData(uri);
+                intent.setClassName("com.android.browser", "com.android.browser.BrowserActivity");
+                intent.setAction(Intent.ACTION_VIEW);
+
+                startActivity(intent);
             }
         });
 
     }
-    
+
     /** Locks the application if this activity is backgrounded */
     @Override
-    public void onStop(){
+    public void onStop() {
         super.onStop();
-        //mThisApplication.lockApplication();
-    }
-    
-    private void launchSelectedScreen(int screenId) {
-        if (screenId == DL_STATEMENT) {
-            downloadStatement();
-        }
-        else if (screenId == DL_COMBINED_STATEMENT){
-            downloadCombinedStatement();
-        }
+        // mThisApplication.lockApplication();
     }
 
+    /** Downloads the most recent statement */
     private void downloadStatement() {
         try {
-            mThisApplication.downloadStatement(this);
+            mThisApplication.downloadStatement();
         } catch (IOException e) {
             Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
         }
-
     }
-    
-    private void downloadCombinedStatement(){
-        Toast.makeText(mCtx, "Not implemented", Toast.LENGTH_SHORT).show();
+
+    /** Looks in the statements directory and loads what look like statement filenames into the list */
+    private void readStatementFiles() {
+        File[] allFiles = mStatementsDir.listFiles();
+        List<File> filteredStatements = new ArrayList<File>();
+        for (File f : allFiles) {
+            if (f.getName().matches("^[0-9]*\\.html")) {
+                filteredStatements.add(f);
+            }
+        }
+        mStatements = filteredStatements.toArray(new File[0]);
+    }
+
+    private class StatementAdapter extends ArrayAdapter<File> {
+
+        public StatementAdapter(Context context, int textViewResourceId, File[] objects) {
+            super(context, textViewResourceId, objects);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView view;
+            if (convertView != null) {
+                view = (TextView) convertView;
+            } else {
+                view = (TextView) getLayoutInflater().inflate(android.R.layout.simple_list_item_1,
+                        null);
+            }
+
+            // Extract the creation time of the file from its filename
+            String timeStampString = mStatements[position].getName().replaceAll("\\.html", "");
+            long timeStamp = Long.parseLong(timeStampString);
+            Date fileDate = new Date(timeStamp);
+
+            //String format = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+            int formatFlags = DateUtils.LENGTH_MEDIUM | DateUtils.FORMAT_24HOUR | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME;
+            String formattedDateString = DateUtils.formatDateTime(mCtx, timeStamp, formatFlags);
+
+            view.setText(formattedDateString);
+            return view;
+        }
+
     }
 
 }

@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.util.Base64;
 
 /**
@@ -43,6 +44,9 @@ public class BankingApplication extends Application {
     // How many hashing iterations to perform
     private static final int HASH_ITERATIONS = 1000;
 
+    //Where we'll store statements
+    public static final String STATEMENT_DIR = "/sdcard/falsesecuremobile/";
+    
     /* These variables are used for anchoring preference keys */
     public static final String SHARED_PREFS = "preferences";
     public static final String PREF_FIRST_RUN = "firstrun";
@@ -89,6 +93,14 @@ public class BankingApplication extends Application {
         return "8080";
     }
 
+    /**
+     * Returns the directory where statements are kept, as a String.
+     * @return The directory where statements are kept, as a String.
+     */
+    public String getStatementDir(){
+        return STATEMENT_DIR;
+    }
+    
     /**
      * Sets the local password, accomplished by storing a hashcode.
      * @param password The plain String version of the password to set.
@@ -274,7 +286,7 @@ public class BankingApplication extends Application {
      * @return A status code representing the REST server's response.
      * @throws IOException
      */
-    public int downloadStatement(Activity caller) throws IOException {
+    public int downloadStatement() throws IOException {
         // TODO: Put most of this method in RestClient.
         RestClient restClient = new RestClient(this);
         String htmlData = restClient.getHttpContent("http://" + getRestServer() + ":"
@@ -284,15 +296,15 @@ public class BankingApplication extends Application {
 
         if (statusCode == RestClient.NULL_ERROR) {
 
-            File outputFile = new File("/sdcard/falsesecuremobile/", "statement.html");
-            File outputDir = new File("/sdcard/falsesecuremobile/");
+            File outputFile = new File(STATEMENT_DIR, Long.toString(System.currentTimeMillis()) + ".html");
+            File outputDir = new File(STATEMENT_DIR);
             outputDir.mkdirs();
 
             FileOutputStream out = new FileOutputStream(outputFile);
             out.write(htmlData.getBytes());
             out.flush();
             out.close();
-
+            /*
             Uri uri = Uri.parse("file://" + outputFile.getAbsolutePath());
             Intent intent = new Intent();
             intent.setData(uri);
@@ -300,7 +312,7 @@ public class BankingApplication extends Application {
             intent.setAction(Intent.ACTION_VIEW);
 
             caller.startActivity(intent);
-
+*/
         }
 
         return statusCode;
