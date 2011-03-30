@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<EditTextPreference android:key="bankserviceaddress"
+		android:title="Bank Service Address" android:persistent="true"
+		android:defaultValue="10.0.2.2" />
+
+	<EditTextPreference android:key="httpport"
+		android:title="HTTP Port" android:defaultValue="8080"
+		android:persistent="true" />
+
+	<EditTextPreference android:key="httpsport"
+		android:title="HTTPS Port" android:defaultValue="8443" android:persistent="true" />
+
+</PreferenceScreen>

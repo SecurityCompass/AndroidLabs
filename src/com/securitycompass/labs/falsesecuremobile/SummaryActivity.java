@@ -14,7 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class SummaryActivity extends ListActivity {
+public class SummaryActivity extends BankingListActivity {
 
     private Context mCtx;
     private final String[] optionNames = { "Accounts", "Statement", "Transfer" };
@@ -45,13 +45,6 @@ public class SummaryActivity extends ListActivity {
             }
         });
 
-    }
-    
-    /** Locks the application if this activity is backgrounded */
-    @Override
-    public void onStop(){
-        super.onStop();
-        //mThisApplication.lockApplication();
     }
 
     private void launchSelectedScreen(int screenId) {

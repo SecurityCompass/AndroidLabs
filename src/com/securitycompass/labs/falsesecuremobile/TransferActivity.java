@@ -29,7 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class TransferActivity extends Activity {
+public class TransferActivity extends BankingActivity {
 
     /** Useful for avoiding casts when a Context needs to be passed. */
     private Context mCtx;
@@ -105,13 +105,6 @@ public class TransferActivity extends Activity {
         }
         refreshDisplayInformation();
 
-    }
-
-    /** Locks the application if this activity is backgrounded */
-    @Override
-    public void onStop(){
-        super.onStop();
-        //mThisApplication.lockApplication();
     }
 
     /** Updates the account information stored locally and refreshes the display */

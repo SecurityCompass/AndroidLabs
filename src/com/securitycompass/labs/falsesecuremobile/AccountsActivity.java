@@ -11,7 +11,6 @@ import java.util.List;
 import org.json.JSONException;
 
 import android.accounts.AuthenticatorException;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,7 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AccountsActivity extends ListActivity {
+public class AccountsActivity extends BankingListActivity {
 
     /** Useful for avoiding casts when a Context needs to be passed */
     private Context mCtx;
@@ -50,13 +49,6 @@ public class AccountsActivity extends ListActivity {
         
         setListAdapter(new AccountDetailAdapter(mCtx, R.layout.accountdetailsview, mAccounts));
         
-    }
-    
-    /** Locks the application if this activity is backgrounded */
-    @Override
-    public void onStop(){
-        super.onStop();
-        //mThisApplication.lockApplication();
     }
 
     /** Updates the account information stored locally and refreshes the display */

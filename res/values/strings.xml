@@ -42,6 +42,7 @@
 	<string name="error_toast_hasherror">The password checking and setting mechanism has
 		failed. Please see your application vendor, as this is unrecoverable.
 	</string>
+	<string name="error_invalid_statment">Can\'t display selected statement</string>
 	<string name="initialsetup_success">Application is now successfully set up</string>
 
 	<!-- 

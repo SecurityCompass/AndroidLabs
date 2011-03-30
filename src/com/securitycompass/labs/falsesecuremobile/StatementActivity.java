@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -26,7 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class StatementActivity extends ListActivity {
+public class StatementActivity extends BankingListActivity {
 
     /** Useful for avoiding casts when a Context needs to be passed */
     private Context mCtx;
@@ -70,26 +69,15 @@ public class StatementActivity extends ListActivity {
         ) {
 
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
-                Uri uri = Uri.parse("file://" + mStatements[position].getAbsolutePath());
-                Intent intent = new Intent();
-                intent.setData(uri);
-                intent.setClassName("com.android.browser", "com.android.browser.BrowserActivity");
-                intent.setAction(Intent.ACTION_VIEW);
-
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {              
+                Intent intent = new Intent(mCtx, ViewStatementActivity.class);
+                intent.putExtra("statement_filename", mStatements[position].getAbsolutePath());
                 startActivity(intent);
             }
         });
 
     }
-
-    /** Locks the application if this activity is backgrounded */
-    @Override
-    public void onStop() {
-        super.onStop();
-        // mThisApplication.lockApplication();
-    }
-
+    
     /**
      * Clears out all downloaded files, downloads the latest one, and refreshes the list.
      */

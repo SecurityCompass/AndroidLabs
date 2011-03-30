@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  
+	<item 
+	android:visible="true" 
+	android:menuCategory="system" 
+	android:enabled="true" 
+	android:titleCondensed="Reset"
+	android:id="@+id/optionsmenu_reset" 
+	android:title="Reset This application's settings">
+	</item>
+	
+	<item 
+	android:visible="true" 
+	android:menuCategory="system" 
+	android:enabled="true" 
+	android:titleCondensed="Preferences"
+	android:id="@+id/optionsmenu_preferences" 
+	android:title="Edit this application's preferences">
+	</item>	
+  
+</menu>
