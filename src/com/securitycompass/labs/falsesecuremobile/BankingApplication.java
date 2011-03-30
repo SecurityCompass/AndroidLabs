@@ -304,18 +304,20 @@ public class BankingApplication extends Application {
             out.write(htmlData.getBytes());
             out.flush();
             out.close();
-            /*
-            Uri uri = Uri.parse("file://" + outputFile.getAbsolutePath());
-            Intent intent = new Intent();
-            intent.setData(uri);
-            intent.setClassName("com.android.browser", "com.android.browser.BrowserActivity");
-            intent.setAction(Intent.ACTION_VIEW);
-
-            caller.startActivity(intent);
-*/
         }
 
         return statusCode;
+    }
+    
+    /**
+     * Clears all statements from the download directory
+     */
+    public void clearStatements(){
+        File downloadDir=new File(STATEMENT_DIR);
+        File[] directoryContents=downloadDir.listFiles();
+        for(File f : directoryContents){
+            f.delete();
+        }
     }
 
     /**
