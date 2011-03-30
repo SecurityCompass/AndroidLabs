@@ -10,10 +10,12 @@ import android.view.MenuItem;
 
 public class BankingActivity extends Activity {
 
+    protected BankingApplication mThisApplication;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mThisApplication=(BankingApplication)getApplication();
     }
 
     @Override
@@ -36,6 +38,22 @@ public class BankingActivity extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mThisApplication.isLocked()){
+            Intent i=new Intent(this, LoginActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //mThisApplication.lockApplication();
     }
 
     private void resetApplication() {

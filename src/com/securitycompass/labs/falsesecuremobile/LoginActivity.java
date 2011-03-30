@@ -44,11 +44,10 @@ public class LoginActivity extends Activity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mCtx=this;
         
         mThisApplication=(BankingApplication) getApplication();
-        
-        super.onCreate(savedInstanceState);
         
         mSharedPrefs=mThisApplication.getSharedPrefs();
         checkFirstRun();
@@ -71,6 +70,12 @@ public class LoginActivity extends Activity {
 
     }
     
+    @Override
+    protected void onResume() {
+        mThisApplication.lockApplication();
+        super.onResume();
+    }
+
     /** Checks if the application is running for the first time, and sends the user to the appropriate setup if it is. */
     private void checkFirstRun(){
         if (mSharedPrefs.getBoolean(BankingApplication.PREF_FIRST_RUN, true)){

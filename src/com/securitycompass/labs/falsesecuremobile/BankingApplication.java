@@ -20,6 +20,7 @@ import android.accounts.AuthenticatorException;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
 import android.util.Base64;
 
 /**
@@ -58,36 +59,29 @@ public class BankingApplication extends Application {
         dbA = new DatabaseAdapter(getApplicationContext());
     }
 
-    /** Teardown to be performed when the application terminates. */
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-    }
-
     /**
      * Returns a string representation of the server we will be making our requests on.
      * @return A string representation of the server address.
      */
     public String getRestServer() {
-        return restServer;
+        return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("bankserviceaddress", "10.0.2.2");
     }
 
     /**
      * Sets the address of the server we'll use for REST queries, as a String.
      * @param newServer The server address to set.
      */
-    public void setRestServer(String newServer) {
+/*    public void setRestServer(String newServer) {
         restServer = newServer;
-    }
+    }*/
 
     /**
      * Returns a string representation of the port we will be making our HTTP requests on.
      * @return A string representation of the port set for HTTP communication.
      */
     public String getHttpPort() {
-        // TODO: Remove this awful hack!
-        return "8080";
-    }
+        return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("httpport", "8080");
+        }
 
     /**
      * Returns the directory where statements are kept, as a String.
