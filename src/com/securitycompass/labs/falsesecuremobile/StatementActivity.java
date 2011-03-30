@@ -7,7 +7,6 @@ package com.securitycompass.labs.falsesecuremobile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import android.app.ListActivity;
@@ -142,9 +141,7 @@ public class StatementActivity extends ListActivity {
             // Extract the creation time of the file from its filename
             String timeStampString = mStatements[position].getName().replaceAll("\\.html", "");
             long timeStamp = Long.parseLong(timeStampString);
-            Date fileDate = new Date(timeStamp);
 
-            // String format = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
             int formatFlags = DateUtils.LENGTH_MEDIUM | DateUtils.FORMAT_24HOUR
                     | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_SHOW_DATE
                     | DateUtils.FORMAT_SHOW_TIME;

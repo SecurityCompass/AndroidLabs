@@ -17,7 +17,6 @@ import android.widget.AdapterView.OnItemClickListener;
 public class SummaryActivity extends ListActivity {
 
     private Context mCtx;
-    private BankingApplication mThisApplication;
     private final String[] optionNames = { "Accounts", "Statement", "Transfer" };
 
     private static final int LAUNCH_ACCOUNTS = 0;
@@ -31,7 +30,6 @@ public class SummaryActivity extends ListActivity {
         setContentView(R.layout.summaryactivity);
 
         mCtx = this;
-        mThisApplication=(BankingApplication) getApplication();
 
         ListAdapter la = new ArrayAdapter<String>(mCtx, android.R.layout.simple_list_item_1,
                 optionNames);

@@ -89,12 +89,7 @@ public class AccountsActivity extends ListActivity {
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
     }
-
-    /** Updates the display to reflect the currently held account information */
-    private void refreshDisplayInformation() {
-        
-    }
-    
+   
     /**
      * Returns a version of the given string with the first letter in uppercase.
      * @param input The String to capitalise.
@@ -106,12 +101,9 @@ public class AccountsActivity extends ListActivity {
     }
 
     private class AccountDetailAdapter extends ArrayAdapter<Account>{
-
-        int mViewResourceId;
         
         public AccountDetailAdapter(Context context, int viewResourceId, List<Account> accounts) {
             super(context, viewResourceId, accounts);
-            mViewResourceId=viewResourceId;
         }
 
         @Override

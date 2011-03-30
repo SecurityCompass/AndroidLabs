@@ -17,13 +17,9 @@ import java.util.List;
 import org.json.JSONException;
 
 import android.accounts.AuthenticatorException;
-import android.app.Activity;
 import android.app.Application;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.net.Uri;
-import android.os.SystemClock;
 import android.util.Base64;
 
 /**
