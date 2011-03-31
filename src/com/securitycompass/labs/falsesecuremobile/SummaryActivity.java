@@ -30,7 +30,7 @@ public class SummaryActivity extends BankingListActivity {
         setContentView(R.layout.summaryactivity);
 
         mCtx = this;
-
+        
         ListAdapter la = new ArrayAdapter<String>(mCtx, android.R.layout.simple_list_item_1,
                 optionNames);
         setListAdapter(la);
@@ -58,24 +58,21 @@ public class SummaryActivity extends BankingListActivity {
             launchTransferScreen();
         }
     }
-
+        
     /** Launches the accounts screen, doing any necessary processing first */
     private void launchAccountsScreen() {
-        // Stub for UI navigation
         Intent launchAccounts = new Intent(mCtx, AccountsActivity.class);
         startActivity(launchAccounts);
     }
 
     /** Launches the transfer screen, doing any necessary processing first */
     private void launchTransferScreen() {
-        // Stub for UI navigation
         Intent launchTransfer = new Intent(mCtx, TransferActivity.class);
         startActivity(launchTransfer);
     }
 
     /** Launches the statement screen, doing any necessary processing first */
     private void launchStatementScreen() {
-        // Stub for UI navigation
         Intent launchTransfer = new Intent(mCtx, StatementActivity.class);
         startActivity(launchTransfer);
     }

@@ -16,6 +16,9 @@ public class BankingActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mThisApplication=(BankingApplication)getApplication();
+        if(mThisApplication.isLocked() && (this.getClass()!=LoginActivity.class)){
+            launchLoginScreen();
+        }
     }
 
     @Override
@@ -43,7 +46,7 @@ public class BankingActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(mThisApplication.isLocked()){
+        if(mThisApplication.isLocked() && (this.getClass()!=LoginActivity.class)){
             Intent i=new Intent(this, LoginActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
@@ -61,14 +64,20 @@ public class BankingActivity extends Activity {
         Editor e = ba.getSharedPrefs().edit();
         e.clear();
         e.commit();
-        Intent i = new Intent(this, LoginActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
+        ba.lockApplication();
+        launchLoginScreen();
     }
     
     private void launchPreferenceScreen(){
         Intent i=new Intent(this, EditPreferencesActivity.class);
         startActivity(i);
+    }
+    
+    /** Launches the accounts screen, doing any necessary processing first */
+    private void launchLoginScreen() {
+        Intent launchLogin = new Intent(this, LoginActivity.class);
+        launchLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(launchLogin);
     }
     
 }

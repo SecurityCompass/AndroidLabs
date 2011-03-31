@@ -57,6 +57,7 @@ public class BankingApplication extends Application {
     public void onCreate() {
         super.onCreate();
         dbA = new DatabaseAdapter(getApplicationContext());
+        locked=true;
     }
 
     /**
@@ -180,7 +181,6 @@ public class BankingApplication extends Application {
         RestClient restClient = new RestClient(this);
         int statusCode = restClient.performHTTPLogin(getRestServer(), getHttpPort(), username,
                 password);
-        locked = (statusCode == RestClient.NULL_ERROR) ? false : true;
         return statusCode;
     }
 

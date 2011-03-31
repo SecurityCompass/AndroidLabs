@@ -9,13 +9,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 public class BankingListActivity extends ListActivity {
-    
     protected BankingApplication mThisApplication;
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mThisApplication=(BankingApplication)getApplication();
+        if(mThisApplication.isLocked()){
+            launchLoginScreen();
+        }
     }
 
     @Override
@@ -61,14 +63,19 @@ public class BankingListActivity extends ListActivity {
         Editor e = ba.getSharedPrefs().edit();
         e.clear();
         e.commit();
-        Intent i = new Intent(this, LoginActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
+        ba.lockApplication();
+        launchLoginScreen();
     }
     
     private void launchPreferenceScreen(){
         Intent i=new Intent(this, EditPreferencesActivity.class);
         startActivity(i);
     }
-
+    
+    /** Launches the accounts screen, doing any necessary processing first */
+    private void launchLoginScreen() {
+        Intent launchLogin = new Intent(this, LoginActivity.class);
+        launchLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(launchLogin);
+    }
 }

@@ -26,7 +26,7 @@ import android.widget.Toast;
  * Graphical class which allows the user to enter a username and password, 
  * then perform a login with them.
  */
-public class LoginActivity extends Activity {
+public class LoginActivity extends BankingActivity {
 
     /** Useful for avoiding casts when a Context needs to be passed */
     private Context mCtx;
@@ -69,12 +69,6 @@ public class LoginActivity extends Activity {
         
 
     }
-    
-    @Override
-    protected void onResume() {
-        mThisApplication.lockApplication();
-        super.onResume();
-    }
 
     /** Checks if the application is running for the first time, and sends the user to the appropriate setup if it is. */
     private void checkFirstRun(){
@@ -114,6 +108,7 @@ public class LoginActivity extends Activity {
         
         if(unlockStatus == RestClient.NULL_ERROR){
             Intent launchIntent = new Intent(mCtx, SummaryActivity.class);
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(launchIntent);   
         } else {
             Toast.makeText(mCtx, R.string.toast_loginfailed, Toast.LENGTH_SHORT).show();

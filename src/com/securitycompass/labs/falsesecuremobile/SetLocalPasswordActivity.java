@@ -1,12 +1,16 @@
 package com.securitycompass.labs.falsesecuremobile;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+
+import org.json.JSONException;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -21,6 +25,8 @@ public class SetLocalPasswordActivity extends Activity {
     private Button mDoneButton;
     private Context mCtx;
     private BankingApplication mThisApplication;
+    
+    private final static String TAG="SetLocalPasswordActivity";
     
     /** Called when the Activity is first created */
     @Override
@@ -54,13 +60,22 @@ public class SetLocalPasswordActivity extends Activity {
         } else {
             try {
                 mThisApplication.setLocalPassword(pass1);
+                mThisApplication.unlockApplication(pass2);
             } catch (NoSuchAlgorithmException e){
                 Toast.makeText(mCtx, R.string.error_toast_hasherror, Toast.LENGTH_LONG).show();
+                Log.e(TAG, e.toString());
             } catch (UnsupportedEncodingException e){
                 Toast.makeText(mCtx, R.string.error_toast_hasherror, Toast.LENGTH_LONG).show();
+                Log.e(TAG, e.toString());
+            } catch (JSONException e){
+                Toast.makeText(mCtx, R.string.error_toast_json_problem, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, e.toString());
+            } catch (IOException e) {
+                Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, e.toString());
             }
             Toast.makeText(mCtx, R.string.initialsetup_success, Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(mCtx, LoginActivity.class);
+            Intent i = new Intent(mCtx, SummaryActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
         }

@@ -71,6 +71,7 @@ public class SetServerCredentialsActivity extends Activity {
             Editor e=mThisApplication.getSharedPrefs().edit();
             e.putBoolean(BankingApplication.PREF_FIRST_RUN, false);
             e.commit();
+            mThisApplication.lockApplication();
             Intent i=new Intent(mCtx, SetLocalPasswordActivity.class);
             startActivity(i);
         } else {
