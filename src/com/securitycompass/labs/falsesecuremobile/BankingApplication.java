@@ -20,6 +20,7 @@ import android.accounts.AuthenticatorException;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 
@@ -33,8 +34,9 @@ public class BankingApplication extends Application {
     private String sessionKey;
     private String sessionCreateDate;
     private boolean locked;
-
-    private String restServer = "10.0.2.2";
+    
+    private int foregroundedActivities;
+    private Handler timingHandler;
 
     DatabaseAdapter dbA;
 
@@ -56,6 +58,8 @@ public class BankingApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        timingHandler=new Handler();
+        foregroundedActivities=0;
         dbA = new DatabaseAdapter(getApplicationContext());
         locked=true;
     }
@@ -67,14 +71,6 @@ public class BankingApplication extends Application {
     public String getRestServer() {
         return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("bankserviceaddress", "10.0.2.2");
     }
-
-    /**
-     * Sets the address of the server we'll use for REST queries, as a String.
-     * @param newServer The server address to set.
-     */
-/*    public void setRestServer(String newServer) {
-        restServer = newServer;
-    }*/
 
     /**
      * Returns a string representation of the port we will be making our HTTP requests on.
@@ -351,4 +347,29 @@ public class BankingApplication extends Application {
         return sessionCreateDate;
     }
 
+    public void registerActivityForegrounded(){
+        foregroundedActivities++;
+    }
+
+    public void registerActivityBackgrounded(){
+        foregroundedActivities--;
+        timingHandler.removeCallbacks(checkBackgroundTask);
+        timingHandler.postDelayed(checkBackgroundTask, 2000);
+    }
+
+    public void checkIfBackgrounded(){
+        if(foregroundedActivities==0){
+            lockApplication();
+        }
+    }
+    
+    public Runnable checkBackgroundTask=new Runnable(){
+
+        @Override
+        public void run() {
+            checkIfBackgrounded();
+        }
+        
+    };
+    
 }

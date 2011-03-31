@@ -4,7 +4,6 @@
 
 package com.securitycompass.labs.falsesecuremobile;
 
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;

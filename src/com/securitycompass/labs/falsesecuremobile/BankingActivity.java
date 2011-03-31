@@ -46,6 +46,7 @@ public class BankingActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        mThisApplication.registerActivityForegrounded();
         if(mThisApplication.isLocked() && (this.getClass()!=LoginActivity.class)){
             Intent i=new Intent(this, LoginActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -54,9 +55,9 @@ public class BankingActivity extends Activity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        //mThisApplication.lockApplication();
+    protected void onPause() {
+        super.onPause();
+        mThisApplication.registerActivityBackgrounded();
     }
 
     private void resetApplication() {
