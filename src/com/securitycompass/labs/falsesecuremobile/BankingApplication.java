@@ -38,8 +38,6 @@ public class BankingApplication extends Application {
     private int foregroundedActivities;
     private Handler timingHandler;
 
-    DatabaseAdapter dbA;
-
     // How many hashing iterations to perform
     private static final int HASH_ITERATIONS = 1000;
 
@@ -60,7 +58,6 @@ public class BankingApplication extends Application {
         super.onCreate();
         timingHandler=new Handler();
         foregroundedActivities=0;
-        dbA = new DatabaseAdapter(getApplicationContext());
         locked=true;
     }
 
@@ -256,11 +253,6 @@ public class BankingApplication extends Application {
         } catch (AuthenticatorException e) {
             lockApplication();
             throw e;
-        }
-
-        if (result != null) {
-            // If the accounts were retrieved, update them in the DB
-            dbA.updateAccounts(result);
         }
         return result;
     }
