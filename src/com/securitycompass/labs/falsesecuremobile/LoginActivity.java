@@ -6,11 +6,13 @@ package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.SSLException;
 
 import org.json.JSONException;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,25 +40,25 @@ public class LoginActivity extends BankingActivity {
     private BankingApplication mThisApplication;
     /** This application's preferences */
     private SharedPreferences mSharedPrefs;
-    
-    private static final String TAG="LoginActivity";
+
+    private static final String TAG = "LoginActivity";
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCtx=this;
-        
-        mThisApplication=(BankingApplication) getApplication();
-        
-        mSharedPrefs=mThisApplication.getSharedPrefs();
+        mCtx = this;
+
+        mThisApplication = (BankingApplication) getApplication();
+
+        mSharedPrefs = mThisApplication.getSharedPrefs();
         checkFirstRun();
-        
+
         setContentView(R.layout.loginactivity);
-        
+
         mLoginButton = (Button) findViewById(R.id.loginscreen_login_button);
-        mPasswordField= (EditText) findViewById(R.id.loginscreen_password);
-        
+        mPasswordField = (EditText) findViewById(R.id.loginscreen_password);
+
         mLoginButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -64,52 +66,64 @@ public class LoginActivity extends BankingActivity {
                 performLogin();
             }
         });
-        
+
         populatePasswordField();
-        
 
     }
 
-    /** Checks if the application is running for the first time, and sends the user to the appropriate setup if it is. */
-    private void checkFirstRun(){
-        if (mSharedPrefs.getBoolean(BankingApplication.PREF_FIRST_RUN, true)){
-            Intent i=new Intent(mCtx, SetServerCredentialsActivity.class);
+    /**
+     * Checks if the application is running for the first time, and sends the user to the
+     * appropriate setup if it is.
+     */
+    private void checkFirstRun() {
+        if (mSharedPrefs.getBoolean(BankingApplication.PREF_FIRST_RUN, true)) {
+            Intent i = new Intent(mCtx, SetServerCredentialsActivity.class);
             startActivity(i);
         }
     }
-    
-    //TODO: Remove this convenience method
-    private void populatePasswordField(){
+
+    // TODO: Remove this convenience method
+    private void populatePasswordField() {
         mPasswordField.setText("c");
     }
 
     /** Grabs the username and password and attempts to log in with them */
     private void performLogin() {
-        
-        String password=mPasswordField.getText().toString();
-        
-        int unlockStatus=RestClient.NO_OP;
-        
-        try{
-            unlockStatus=mThisApplication.unlockApplication(password);
-        } catch (UnsupportedEncodingException e){
+
+        String password = mPasswordField.getText().toString();
+
+        int unlockStatus = RestClient.NO_OP;
+
+        try {
+            unlockStatus = mThisApplication.unlockApplication(password);
+        } catch (UnsupportedEncodingException e) {
             Toast.makeText(mCtx, R.string.error_toast_hasherror, Toast.LENGTH_LONG).show();
             Log.e(TAG, e.toString());
-        } catch (NoSuchAlgorithmException e){
-            Toast.makeText(mCtx, R.string.error_toast_hasherror, Toast.LENGTH_LONG).show();
+        } catch (NoSuchAlgorithmException e) {
+            if (e.toString().matches(".*SSL.*")) {
+                Toast.makeText(mCtx, R.string.error_ssl_algorithm, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(mCtx, R.string.error_toast_hasherror, Toast.LENGTH_LONG).show();
+            }
             Log.e(TAG, e.toString());
-        } catch (JSONException e){
+        } catch (JSONException e) {
             Toast.makeText(mCtx, R.string.error_toast_json_problem, Toast.LENGTH_SHORT).show();
+            Log.e(TAG, e.toString());
+        } catch (KeyManagementException e) {
+            Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.toString());
+        } catch (SSLException e) {
+            Toast.makeText(mCtx, R.string.error_ssl_general, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
         } catch (IOException e) {
             Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
         }
-        
-        if(unlockStatus == RestClient.NULL_ERROR){
+
+        if (unlockStatus == RestClient.NULL_ERROR) {
             Intent launchIntent = new Intent(mCtx, SummaryActivity.class);
             launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(launchIntent);   
+            startActivity(launchIntent);
         } else {
             Toast.makeText(mCtx, R.string.toast_loginfailed, Toast.LENGTH_SHORT).show();
         }

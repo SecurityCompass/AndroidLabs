@@ -5,6 +5,8 @@
 package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +14,6 @@ import org.json.JSONException;
 
 import android.accounts.AuthenticatorException;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -64,6 +65,12 @@ public class AccountsActivity extends BankingListActivity {
         } catch (AuthenticatorException e) {
             Log.e(TAG, e.toString());
             authenticate();
+        } catch (KeyManagementException e){
+            Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.toString());
+        } catch (NoSuchAlgorithmException e){
+            Toast.makeText(mCtx, R.string.error_ssl_algorithm, Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.toString());
         }
 
         //If the account list failed on retrieval, use an empty list
@@ -72,14 +79,6 @@ public class AccountsActivity extends BankingListActivity {
         } else {
             mAccounts=new ArrayList<Account>();
         }
-    }
-
-    /** Called when the app needs authentication, normally due to a session timeout.
-     * The current activity stack will be cleared, and the login Activity brought to the front. */
-    private void authenticate() {
-        Intent i = new Intent(mCtx, LoginActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
     }
    
     /**

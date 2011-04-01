@@ -12,11 +12,22 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,14 +48,18 @@ public class RestClient {
     public static final int ERROR_FORBIDDEN = 5;
     public static final int ERROR_PERMISSION_DENIED = 6;
 
-    private BankingApplication appState;
+    private BankingApplication mAppState;
+    private boolean mHttpsMode;
+    private HostnameVerifier mHostnameVerifier;
 
     /**
      * Creates the RestClient and connects it to the state of the application. This allows for it to
      * modify the state based on what happens during requests.
      */
-    public RestClient(BankingApplication appState) {
-        this.appState = appState;
+    public RestClient(BankingApplication appState, boolean enableHttps) throws NoSuchAlgorithmException, KeyManagementException {
+        this.mAppState = appState;
+        mHttpsMode = enableHttps;
+        setupSsl();
     }
 
     /**
@@ -121,19 +136,99 @@ public class RestClient {
     }
 
     /**
+     * Performs a simple HTTPS GET and returns the result.
+     * @param urlName API Service endpoint.
+     * @return HttpContent from the url.
+     */
+    public String getHttpsContent(String urlName) throws IOException {
+        String line;
+        String result;
+        StringBuilder httpsContent = new StringBuilder();
+
+        URL url = new URL(urlName);
+        HttpsURLConnection httpsConnection = (HttpsURLConnection) url.openConnection();
+        httpsConnection.setHostnameVerifier(mHostnameVerifier);
+        int responseCode = httpsConnection.getResponseCode();
+        if (responseCode == HttpsURLConnection.HTTP_OK) {
+            InputStream inputStream = httpsConnection.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+            while ((line = br.readLine()) != null) {
+                httpsContent.append(line);
+            }
+
+            httpsConnection.disconnect();
+        }
+        result = httpsContent.toString();
+        return result;
+    }
+
+    /**
+     * Performs an HTTPS POST with the given data.
+     * @param urlString The URL to POST to.
+     * @param postData the data to POST.
+     * @return The data passed back from the server, as a String.
+     */
+    public String postHttpsContent(String urlString, Map<String, String> variables)
+            throws IOException {
+        String response = "";
+        URL url = new URL(urlString);
+        HttpsURLConnection httpsConnection = (HttpsURLConnection) url.openConnection();
+        httpsConnection.setHostnameVerifier(mHostnameVerifier);
+        httpsConnection.setDoInput(true);
+        httpsConnection.setDoOutput(true);
+        httpsConnection.setUseCaches(false);
+        httpsConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+        // Assemble a String out of the parameters we're posting
+        String postData = "";
+        for (String key : variables.keySet()) {
+            postData += "&" + key + "=" + variables.get(key);
+        }
+        postData = postData.substring(1);
+
+        // Send the POST data
+        DataOutputStream postOut = new DataOutputStream(httpsConnection.getOutputStream());
+        postOut.writeBytes(postData);
+        postOut.flush();
+        postOut.close();
+
+        // Now get the response the server gives us
+        int responseCode = httpsConnection.getResponseCode();
+        if (responseCode == HttpsURLConnection.HTTP_OK) {
+            String line;
+            BufferedReader br = new BufferedReader(new InputStreamReader(httpsConnection
+                    .getInputStream()));
+            while ((line = br.readLine()) != null) {
+                response += line;
+            }
+        } else {
+            response = null;
+            Log.e(TAG, "HTTPs request failed on: " + urlString + " With error code: "
+                    + responseCode);
+        }
+        return response;
+    }
+
+    /**
      * Logs into the REST service, generating a new session key.
      * @param username Username to log in with.
      * @param password Password to log in with.
      * @return Whether the login was successful.
      */
-    public int performHTTPLogin(String server, String port, String username, String password)
+    public int performLogin(String server, String port, String username, String password)
             throws JSONException, IOException {
         // First perform the RESTful operation
-        String url = "http://" + server + ":" + port + "/login";
+        String protocol = mHttpsMode ? "https://" : "http://";
+        String url = protocol + server + ":" + port + "/login";
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("username", username);
         parameters.put("password", password);
-        String JsonResponse = postHttpContent(url, parameters);
+        String JsonResponse;
+        if(mHttpsMode){
+            JsonResponse= postHttpsContent(url, parameters);
+        } else {
+            JsonResponse= postHttpContent(url, parameters);
+        }
         System.err.println("Login response: " + JsonResponse);
 
         // Now parse out the JSON response and act accordingly
@@ -143,7 +238,7 @@ public class RestClient {
             JSONObject jsonObject = new JSONObject(JsonResponse);
             String key = jsonObject.getString("key");
             String created = jsonObject.getString("created");
-            appState.setSession(key, created);
+            mAppState.setSession(key, created);
             return errorCode;
         }
         return errorCode;
@@ -155,12 +250,18 @@ public class RestClient {
      * @param port The port we will make our query on.
      * @return A list of all accounts the server told us about, and their details.
      */
-    public List<Account> httpGetAccounts(String server, String port) throws JSONException,
-            IOException, AuthenticatorException {
+    public List<Account> getAccounts(String server, String port) throws JSONException, IOException,
+            AuthenticatorException {
         List<Account> accounts = new ArrayList<Account>();
-        String url = "http://" + server + ":" + port + "/accounts" + "?session_key="
-                + URLEncoder.encode(appState.getSessionKey());
-        String result = getHttpContent(url);
+        String protocol = mHttpsMode ? "https://" : "http://";
+        String url = protocol + server + ":" + port + "/accounts" + "?session_key="
+                + URLEncoder.encode(mAppState.getSessionKey());
+        String result;
+        if (mHttpsMode) {
+            result = getHttpsContent(url);
+        } else {
+            result = getHttpContent(url);
+        }
         int errorCode = parseError(result);
 
         if (errorCode == NULL_ERROR) {
@@ -181,6 +282,27 @@ public class RestClient {
         return accounts;
     }
 
+    public String getStatement(String server, String port) throws IOException, AuthenticatorException{
+        String protocol = mHttpsMode ? "https://" : "http://";
+        String url=(protocol + server + ":" + port + "/statement" + "?session_key=" + URLEncoder.encode(mAppState.getSessionKey()));
+        String result;
+        if (mHttpsMode) {
+            result = getHttpsContent(url);
+        } else {
+            result = getHttpContent(url);
+        }
+        
+        int errorCode = parseError(result);
+
+        if (errorCode == NULL_ERROR) {
+            //No need to do anything to the data
+        } else if (errorCode == ERROR_SESSION_KEY) {
+            throw new AuthenticatorException("Session key invalid");
+        }
+
+        return result;
+    }
+    
     /**
      * Transfers funds between the given accounts.
      * @param server The server to use.
@@ -192,14 +314,20 @@ public class RestClient {
      * @return A code indicating if the transaction succeeded, or why it failed
      * @throws IOException
      */
-    public int httpTransfer(String server, String port, int fromAccount, int toAccount,
-            double amount, String sessionKey) throws IOException {
+    public int transfer(String server, String port, int fromAccount, int toAccount, double amount,
+            String sessionKey) throws IOException {
         Map<String, String> variables = new HashMap<String, String>();
         variables.put("from_account", Integer.toString(fromAccount));
         variables.put("to_account", Integer.toString(toAccount));
         variables.put("amount", Double.toString(amount));
-        String response = postHttpContent("http://" + server + ":" + port + "/transfer"
-                + "?session_key=" + URLEncoder.encode(sessionKey), variables);
+        String response;
+        if (mHttpsMode) {
+            response = postHttpsContent("https://" + server + ":" + port + "/transfer"
+                    + "?session_key=" + URLEncoder.encode(sessionKey), variables);
+        } else {
+            response = postHttpContent("http://" + server + ":" + port + "/transfer"
+                    + "?session_key=" + URLEncoder.encode(sessionKey), variables);
+        }
         int statusCode = parseError(response);
         return statusCode;
     }
@@ -227,6 +355,37 @@ public class RestClient {
         // Since it is, encode it as an int and return it
         // String is of format "E[0-9]+", e.g. "E3"
         return Integer.parseInt(errorString.trim().substring(1));
+    }
+    
+    private void setupSsl() throws NoSuchAlgorithmException, KeyManagementException {
+        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] chain, String authType)
+                    throws CertificateException {
+
+            }
+
+            @Override
+            public void checkClientTrusted(X509Certificate[] chain, String authType)
+                    throws CertificateException {
+
+            }
+        } };
+
+        
+        SSLContext sslContext=SSLContext.getInstance("TLS");
+        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+        
+        HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+        
+        mHostnameVerifier=new AllowAllHostnameVerifier();
+        
     }
 
 }

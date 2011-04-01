@@ -10,6 +10,11 @@
 		android:persistent="true" />
 
 	<EditTextPreference android:key="httpsport"
-		android:title="HTTPS Port" android:defaultValue="8443" android:persistent="true" />
+		android:title="HTTPS Port" android:defaultValue="8443"
+		android:persistent="true" />
+
+	<CheckBoxPreference android:key="httpsenabled"
+		android:title="HTTPS Enabled" android:persistent="true"
+		android:defaultValue="false" />
 
 </PreferenceScreen>

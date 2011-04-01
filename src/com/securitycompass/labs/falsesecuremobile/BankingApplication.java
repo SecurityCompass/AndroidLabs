@@ -5,10 +5,10 @@
 package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.security.KeyManagementException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -34,16 +34,16 @@ public class BankingApplication extends Application {
     private String sessionKey;
     private String sessionCreateDate;
     private boolean locked;
-    
+
     private int foregroundedActivities;
     private Handler timingHandler;
 
     // How many hashing iterations to perform
     private static final int HASH_ITERATIONS = 1000;
 
-    //Where we'll store statements
+    // Where we'll store statements
     public static final String STATEMENT_DIR = "/sdcard/falsesecuremobile/";
-    
+
     /* These variables are used for anchoring preference keys */
     public static final String SHARED_PREFS = "preferences";
     public static final String PREF_FIRST_RUN = "firstrun";
@@ -56,9 +56,9 @@ public class BankingApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        timingHandler=new Handler();
-        foregroundedActivities=0;
-        locked=true;
+        timingHandler = new Handler();
+        foregroundedActivities = 0;
+        locked = true;
     }
 
     /**
@@ -66,25 +66,40 @@ public class BankingApplication extends Application {
      * @return A string representation of the server address.
      */
     public String getRestServer() {
-        return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("bankserviceaddress", "10.0.2.2");
+        return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(
+                "bankserviceaddress", "10.0.2.2");
     }
 
     /**
      * Returns a string representation of the port we will be making our HTTP requests on.
      * @return A string representation of the port set for HTTP communication.
      */
-    public String getHttpPort() {
-        return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("httpport", "8080");
+    public String getPort() {
+        if (isHttpsEnabled()) {
+            return PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                    .getString("httpsport", "8443");
+        } else {
+            return PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                    .getString("httpport", "8080");
         }
+    }
 
     /**
      * Returns the directory where statements are kept, as a String.
      * @return The directory where statements are kept, as a String.
      */
-    public String getStatementDir(){
+    public String getStatementDir() {
         return STATEMENT_DIR;
     }
-    
+
+    /**
+     * Returns whether the HTTPS setting is enabled, as a boolean.
+     * @return whether the HTTPS setting is enabled, as a boolean.
+     */
+    public boolean isHttpsEnabled() {
+        return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("httpsenabled", false);
+    }
+
     /**
      * Sets the local password, accomplished by storing a hashcode.
      * @param password The plain String version of the password to set.
@@ -106,7 +121,7 @@ public class BankingApplication extends Application {
         byte[] b64Salt = Base64.encode(saltByteArray, Base64.DEFAULT);
         String saltString = new String(b64Salt);
 
-        Editor e=getSharedPrefs().edit();
+        Editor e = getSharedPrefs().edit();
         e.putString(PREF_LOCALPASS_HASH, hashString);
         e.putString(PREF_LOCALPASS_SALT, saltString);
         e.commit();
@@ -170,10 +185,10 @@ public class BankingApplication extends Application {
      * @param password Password to log in with.
      * @return A status code representing any error that occurred.
      */
-    public int performLogin(String username, String password) throws JSONException, IOException {
-        RestClient restClient = new RestClient(this);
-        int statusCode = restClient.performHTTPLogin(getRestServer(), getHttpPort(), username,
-                password);
+    public int performLogin(String username, String password) throws JSONException, IOException,
+            KeyManagementException, NoSuchAlgorithmException {
+        RestClient restClient = new RestClient(this, isHttpsEnabled());
+        int statusCode = restClient.performLogin(getRestServer(), getPort(), username, password);
         return statusCode;
     }
 
@@ -182,7 +197,7 @@ public class BankingApplication extends Application {
         locked = true;
     }
 
-    /** 
+    /**
      * Performs all operations necessary to make the application usable.
      * @param password The password to try unlocking with
      * @return Whether the operation suceeded
@@ -192,12 +207,12 @@ public class BankingApplication extends Application {
      * @throws JSONException
      */
     public int unlockApplication(String password) throws UnsupportedEncodingException,
-            NoSuchAlgorithmException, IOException, JSONException {
+            NoSuchAlgorithmException, IOException, JSONException, KeyManagementException {
         if (checkPassword(password)) {
-            String user=getRestUsername();
-            String pass=getRestPassword();
-            int statusCode=performLogin(user, pass);
-            if(statusCode==RestClient.NULL_ERROR){
+            String user = getRestUsername();
+            String pass = getRestPassword();
+            int statusCode = performLogin(user, pass);
+            if (statusCode == RestClient.NULL_ERROR) {
                 locked = false;
                 return statusCode;
             }
@@ -213,29 +228,29 @@ public class BankingApplication extends Application {
         return locked;
     }
 
-    /** 
+    /**
      * Returns the stored username for the REST service.
      * @return The stored username for the REST service.
      */
-    public String getRestUsername(){
+    public String getRestUsername() {
         return getSharedPrefs().getString(PREF_REST_USER, "");
     }
 
-    /** 
+    /**
      * Returns the stored password for the REST service.
      * @return The stored password for the REST service.
      */
-    public String getRestPassword(){
+    public String getRestPassword() {
         return getSharedPrefs().getString(PREF_REST_PASSWORD, "");
     }
-    
+
     /**
      * Sets the user's credentials for the banking service.
      * @param username The username to set.
      * @param password The password to set.
      */
     public void setServerCredentials(String username, String password) {
-        Editor e=getSharedPrefs().edit();
+        Editor e = getSharedPrefs().edit();
         e.putString(PREF_REST_USER, username);
         e.putString(PREF_REST_PASSWORD, password);
         e.commit();
@@ -245,11 +260,12 @@ public class BankingApplication extends Application {
      * Returns a list of all Accounts and their details.
      * @return A list of the accounts returned by the server, represented as Account objects.
      */
-    public List<Account> getAccounts() throws JSONException, IOException, AuthenticatorException {
-        RestClient restClient = new RestClient(this);
+    public List<Account> getAccounts() throws JSONException, IOException, AuthenticatorException,
+            NoSuchAlgorithmException, KeyManagementException {
+        RestClient restClient = new RestClient(this, isHttpsEnabled());
         List<Account> result = null;
         try {
-            result = restClient.httpGetAccounts(getRestServer(), getHttpPort());
+            result = restClient.getAccounts(getRestServer(), getPort());
         } catch (AuthenticatorException e) {
             lockApplication();
             throw e;
@@ -261,39 +277,31 @@ public class BankingApplication extends Application {
      * Downloads a statement and displays it.
      * @param caller The activity calling this method. This is needed to start a new Activity from
      * within this class.
-     * @return A status code representing the REST server's response.
-     * @throws IOException
      */
-    public int downloadStatement() throws IOException {
-        // TODO: Put most of this method in RestClient.
-        RestClient restClient = new RestClient(this);
-        String htmlData = restClient.getHttpContent("http://" + getRestServer() + ":"
-                + getHttpPort() + "/statement" + "?session_key=" + URLEncoder.encode(sessionKey));
+    public void downloadStatement() throws IOException, NoSuchAlgorithmException,
+            KeyManagementException, AuthenticatorException {
+        RestClient restClient = new RestClient(this, isHttpsEnabled());
 
-        int statusCode = restClient.parseError(htmlData);
+        String statementHtml = restClient.getStatement(getRestServer(), getPort());
 
-        if (statusCode == RestClient.NULL_ERROR) {
+        File outputFile = new File(STATEMENT_DIR, Long.toString(System.currentTimeMillis())
+                + ".html");
+        File outputDir = new File(STATEMENT_DIR);
+        outputDir.mkdirs();
 
-            File outputFile = new File(STATEMENT_DIR, Long.toString(System.currentTimeMillis()) + ".html");
-            File outputDir = new File(STATEMENT_DIR);
-            outputDir.mkdirs();
-
-            FileOutputStream out = new FileOutputStream(outputFile);
-            out.write(htmlData.getBytes());
-            out.flush();
-            out.close();
-        }
-
-        return statusCode;
+        FileWriter fw = new FileWriter(outputFile);
+        fw.write(statementHtml);
+        fw.flush();
+        fw.close();
     }
-    
+
     /**
      * Clears all statements from the download directory
      */
-    public void clearStatements(){
-        File downloadDir=new File(STATEMENT_DIR);
-        File[] directoryContents=downloadDir.listFiles();
-        for(File f : directoryContents){
+    public void clearStatements() {
+        File downloadDir = new File(STATEMENT_DIR);
+        File[] directoryContents = downloadDir.listFiles();
+        for (File f : directoryContents) {
             f.delete();
         }
     }
@@ -303,13 +311,14 @@ public class BankingApplication extends Application {
      * @param fromAccount The account to take funds from.
      * @param toAccount The account in which to deposit the funds.
      * @param amount The amount to transfer.
-     * @return A status code representing the server's repsonse
+     * @return A status code representing the server's response
      * @throws IOException
      */
-    public int transferFunds(int fromAccount, int toAccount, double amount) throws IOException {
-        RestClient restClient = new RestClient(this);
-        int statusCode = restClient.httpTransfer(getRestServer(), getHttpPort(), fromAccount,
-                toAccount, amount, sessionKey);
+    public int transferFunds(int fromAccount, int toAccount, double amount) throws IOException,
+            NoSuchAlgorithmException, KeyManagementException {
+        RestClient restClient = new RestClient(this, isHttpsEnabled());
+        int statusCode = restClient.transfer(getRestServer(), getPort(), fromAccount, toAccount,
+                amount, sessionKey);
         return statusCode;
     }
 
@@ -339,29 +348,29 @@ public class BankingApplication extends Application {
         return sessionCreateDate;
     }
 
-    public void registerActivityForegrounded(){
+    public void registerActivityForegrounded() {
         foregroundedActivities++;
     }
 
-    public void registerActivityBackgrounded(){
+    public void registerActivityBackgrounded() {
         foregroundedActivities--;
         timingHandler.removeCallbacks(checkBackgroundTask);
         timingHandler.postDelayed(checkBackgroundTask, 2000);
     }
 
-    public void checkIfBackgrounded(){
-        if(foregroundedActivities==0){
+    public void checkIfBackgrounded() {
+        if (foregroundedActivities == 0) {
             lockApplication();
         }
     }
-    
-    public Runnable checkBackgroundTask=new Runnable(){
+
+    public Runnable checkBackgroundTask = new Runnable() {
 
         @Override
         public void run() {
             checkIfBackgrounded();
         }
-        
+
     };
-    
+
 }

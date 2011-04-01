@@ -6,12 +6,14 @@ package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.accounts.AuthenticatorException;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -69,7 +71,7 @@ public class StatementActivity extends BankingListActivity {
         ) {
 
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {              
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
                 Intent intent = new Intent(mCtx, ViewStatementActivity.class);
                 intent.putExtra("statement_filename", mStatements[position].getAbsolutePath());
                 startActivity(intent);
@@ -77,7 +79,7 @@ public class StatementActivity extends BankingListActivity {
         });
 
     }
-    
+
     /**
      * Clears out all downloaded files, downloads the latest one, and refreshes the list.
      */
@@ -92,6 +94,15 @@ public class StatementActivity extends BankingListActivity {
     private void downloadStatement() {
         try {
             mThisApplication.downloadStatement();
+        }  catch (KeyManagementException e) {
+            Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.toString());
+        } catch (NoSuchAlgorithmException e) {
+            Toast.makeText(mCtx, R.string.error_ssl_algorithm, Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.toString());
+        } catch (AuthenticatorException e){
+            Log.e(TAG, e.toString());
+            authenticate();  
         } catch (IOException e) {
             Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());

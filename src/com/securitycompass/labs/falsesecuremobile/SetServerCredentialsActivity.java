@@ -1,6 +1,8 @@
 package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 import org.json.JSONException;
 
@@ -53,7 +55,7 @@ public class SetServerCredentialsActivity extends Activity {
         String username=mUserField.getText().toString();
         String password=mPasswordField.getText().toString();
         
-        int statuscode;
+        int statuscode=RestClient.NO_OP;
         try{
             statuscode=mThisApplication.performLogin(username, password);
         } catch (JSONException e){
@@ -64,6 +66,12 @@ public class SetServerCredentialsActivity extends Activity {
             Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
             return;
+        } catch (KeyManagementException e){
+            Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.toString());
+        } catch (NoSuchAlgorithmException e){
+            Toast.makeText(mCtx, R.string.error_ssl_algorithm, Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.toString());
         }
         
         if(statuscode==RestClient.NULL_ERROR){

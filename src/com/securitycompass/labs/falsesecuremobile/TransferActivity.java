@@ -5,13 +5,14 @@
 package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONException;
 
 import android.accounts.AuthenticatorException;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -100,7 +101,7 @@ public class TransferActivity extends BankingActivity {
 
         mAmountField = (EditText) findViewById(R.id.transferscreen_enteramount_field);
 
-        if(mAccounts.size()>=2){
+        if (mAccounts.size() >= 2) {
             mToAccountSpinner.setSelection(1);
         }
         refreshDisplayInformation();
@@ -125,6 +126,12 @@ public class TransferActivity extends BankingActivity {
         } catch (AuthenticatorException e) {
             Log.e(TAG, e.toString());
             authenticate();
+        } catch (KeyManagementException e) {
+            Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.toString());
+        } catch (NoSuchAlgorithmException e) {
+            Toast.makeText(mCtx, R.string.error_ssl_algorithm, Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.toString());
         }
 
         // If the account list failed on retrieval, use an empty list
@@ -140,7 +147,7 @@ public class TransferActivity extends BankingActivity {
      * values
      */
     private void performTransfer() {
-        //TODO: Check status code and act accordingly if an error is present.
+        // TODO: Check status code and act accordingly if an error is present.
         Log.i(TAG, "Member Accounts [" + mFromAccount.toString() + "] [" + mToAccount.toString()
                 + "]");
         if (mFromAccount == mToAccount) {
@@ -162,6 +169,12 @@ public class TransferActivity extends BankingActivity {
                 Log.i(TAG, "Transferred. Response code: " + responseCode);
             } catch (IOException e) {
                 Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, e.toString());
+            } catch (KeyManagementException e){
+                Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG).show();
+                Log.e(TAG, e.toString());
+            } catch (NoSuchAlgorithmException e){
+                Toast.makeText(mCtx, R.string.error_ssl_algorithm, Toast.LENGTH_LONG).show();
                 Log.e(TAG, e.toString());
             }
 
@@ -270,11 +283,9 @@ public class TransferActivity extends BankingActivity {
             } else {
                 view = (TextView) convertView;
             }
-            String accountNumString=Integer.toString(mAccounts.get(position).getAccountNumber());
-            view.setText(capitalise(mAccounts.get(position).getAccountType()) 
-                    + " ("
-                    + accountNumString.substring(accountNumString.length()-4)
-                    + "): $"
+            String accountNumString = Integer.toString(mAccounts.get(position).getAccountNumber());
+            view.setText(capitalise(mAccounts.get(position).getAccountType()) + " ("
+                    + accountNumString.substring(accountNumString.length() - 4) + "): $"
                     + mAccounts.get(position).getBalance());
             return view;
         }
@@ -288,11 +299,9 @@ public class TransferActivity extends BankingActivity {
             } else {
                 view = (TextView) convertView;
             }
-            String accountNumString=Integer.toString(mAccounts.get(position).getAccountNumber());
-            view.setText(capitalise(mAccounts.get(position).getAccountType()) 
-                    + " ("
-                    + accountNumString.substring(accountNumString.length()-4)
-                    + "): $"
+            String accountNumString = Integer.toString(mAccounts.get(position).getAccountNumber());
+            view.setText(capitalise(mAccounts.get(position).getAccountType()) + " ("
+                    + accountNumString.substring(accountNumString.length() - 4) + "): $"
                     + mAccounts.get(position).getBalance());
             return view;
         }

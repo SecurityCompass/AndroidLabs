@@ -2,6 +2,7 @@ package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 import org.json.JSONException;
@@ -72,6 +73,9 @@ public class SetLocalPasswordActivity extends Activity {
                 Log.e(TAG, e.toString());
             } catch (IOException e) {
                 Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, e.toString());
+            } catch (KeyManagementException e){
+                Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG).show();
                 Log.e(TAG, e.toString());
             }
             Toast.makeText(mCtx, R.string.initialsetup_success, Toast.LENGTH_SHORT).show();
