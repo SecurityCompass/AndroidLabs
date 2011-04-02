@@ -29,35 +29,37 @@ public class SummaryActivity extends BankingListActivity {
         setContentView(R.layout.summaryactivity);
 
         mCtx = this;
-        
-        ListAdapter la = new ArrayAdapter<String>(mCtx, android.R.layout.simple_list_item_1,
-                optionNames);
-        setListAdapter(la);
 
-        getListView().setOnItemClickListener(new OnItemClickListener(
+        //Don't display if the application is locked
+        if (!mThisApplication.isLocked()) {
 
-        ) {
+            ListAdapter la = new ArrayAdapter<String>(mCtx, android.R.layout.simple_list_item_1,
+                    optionNames);
+            setListAdapter(la);
 
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
-                launchSelectedScreen(position);
-            }
-        });
+            getListView().setOnItemClickListener(new OnItemClickListener(
 
+            ) {
+
+                @Override
+                public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+                    launchSelectedScreen(position);
+                }
+            });
+
+        }
     }
 
     private void launchSelectedScreen(int screenId) {
         if (screenId == LAUNCH_ACCOUNTS) {
             launchAccountsScreen();
-        }
-        else if (screenId == LAUNCH_STATEMENT){
+        } else if (screenId == LAUNCH_STATEMENT) {
             launchStatementScreen();
-        }
-        else if (screenId == LAUNCH_TRANSFER){
+        } else if (screenId == LAUNCH_TRANSFER) {
             launchTransferScreen();
         }
     }
-        
+
     /** Launches the accounts screen, doing any necessary processing first */
     private void launchAccountsScreen() {
         Intent launchAccounts = new Intent(mCtx, AccountsActivity.class);

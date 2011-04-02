@@ -51,15 +51,12 @@ public class BankingActivity extends Activity {
             Intent i=new Intent(this, LoginActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
-        } else {
-            setVisible(true);
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        setVisible(false);
         mThisApplication.registerActivityBackgrounded();
     }
 
