@@ -167,14 +167,17 @@ public class TransferActivity extends BankingActivity {
                 int responseCode = mThisApplication.transferFunds(mFromAccount.getAccountNumber(),
                         mToAccount.getAccountNumber(), amount);
                 Log.i(TAG, "Transferred. Response code: " + responseCode);
-            } catch (IOException e) {
-                Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
-                Log.e(TAG, e.toString());
             } catch (KeyManagementException e){
                 Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG).show();
                 Log.e(TAG, e.toString());
             } catch (NoSuchAlgorithmException e){
                 Toast.makeText(mCtx, R.string.error_ssl_algorithm, Toast.LENGTH_LONG).show();
+                Log.e(TAG, e.toString());
+            } catch (HttpException e) {
+                Toast.makeText(mCtx, R.string.error_toast_http_error + e.getStatusCode(), Toast.LENGTH_SHORT).show();
+                Log.e(TAG, e.toString());
+            } catch (IOException e) {
+                Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.toString());
             }
 

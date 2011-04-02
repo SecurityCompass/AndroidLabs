@@ -35,6 +35,7 @@
 	<!-- Error messages -->
 	<string name="toast_loginfailed">Login failed</string>
 	<string name="error_toast_rest_problem">Couldn\'t communicate with server</string>
+	<string name="error_toast_http_error">HTTP error: </string>
 	<string name="error_toast_json_problem">Couldn\'t interpret server response</string>
 	<string name="error_transfer_same_account">Can\'t transfer to same account</string>
 	<string name="error_transfer_invalid_amount">Invalid amount</string>

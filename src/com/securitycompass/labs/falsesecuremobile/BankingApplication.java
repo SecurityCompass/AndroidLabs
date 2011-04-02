@@ -186,7 +186,7 @@ public class BankingApplication extends Application {
      * @return A status code representing any error that occurred.
      */
     public int performLogin(String username, String password) throws JSONException, IOException,
-            KeyManagementException, NoSuchAlgorithmException {
+            KeyManagementException, NoSuchAlgorithmException, HttpException {
         RestClient restClient = new RestClient(this, isHttpsEnabled());
         int statusCode = restClient.performLogin(getRestServer(), getPort(), username, password);
         return statusCode;
@@ -207,7 +207,7 @@ public class BankingApplication extends Application {
      * @throws JSONException
      */
     public int unlockApplication(String password) throws UnsupportedEncodingException,
-            NoSuchAlgorithmException, IOException, JSONException, KeyManagementException {
+            NoSuchAlgorithmException, IOException, JSONException, KeyManagementException, HttpException {
         if (checkPassword(password)) {
             String user = getRestUsername();
             String pass = getRestPassword();
@@ -315,7 +315,7 @@ public class BankingApplication extends Application {
      * @throws IOException
      */
     public int transferFunds(int fromAccount, int toAccount, double amount) throws IOException,
-            NoSuchAlgorithmException, KeyManagementException {
+            NoSuchAlgorithmException, KeyManagementException, HttpException {
         RestClient restClient = new RestClient(this, isHttpsEnabled());
         int statusCode = restClient.transfer(getRestServer(), getPort(), fromAccount, toAccount,
                 amount, sessionKey);

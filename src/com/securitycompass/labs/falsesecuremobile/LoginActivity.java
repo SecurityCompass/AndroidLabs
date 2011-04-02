@@ -115,6 +115,9 @@ public class LoginActivity extends BankingActivity {
         } catch (SSLException e) {
             Toast.makeText(mCtx, R.string.error_ssl_general, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
+        } catch (HttpException e) {
+            Toast.makeText(mCtx, R.string.error_toast_http_error + e.getStatusCode(), Toast.LENGTH_SHORT).show();
+            Log.e(TAG, e.toString());
         } catch (IOException e) {
             Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());

@@ -169,7 +169,7 @@ public class RestClient {
      * @return The data passed back from the server, as a String.
      */
     public String postHttpsContent(String urlString, Map<String, String> variables)
-            throws IOException {
+            throws IOException, HttpException {
         String response = "";
         URL url = new URL(urlString);
         HttpsURLConnection httpsConnection = (HttpsURLConnection) url.openConnection();
@@ -205,6 +205,7 @@ public class RestClient {
             response = null;
             Log.e(TAG, "HTTPs request failed on: " + urlString + " With error code: "
                     + responseCode);
+            throw new HttpException(responseCode);
         }
         return response;
     }
@@ -216,7 +217,7 @@ public class RestClient {
      * @return Whether the login was successful.
      */
     public int performLogin(String server, String port, String username, String password)
-            throws JSONException, IOException {
+            throws JSONException, IOException, HttpException {
         // First perform the RESTful operation
         String protocol = mHttpsMode ? "https://" : "http://";
         String url = protocol + server + ":" + port + "/login";
@@ -315,7 +316,7 @@ public class RestClient {
      * @throws IOException
      */
     public int transfer(String server, String port, int fromAccount, int toAccount, double amount,
-            String sessionKey) throws IOException {
+            String sessionKey) throws IOException, HttpException {
         Map<String, String> variables = new HashMap<String, String>();
         variables.put("from_account", Integer.toString(fromAccount));
         variables.put("to_account", Integer.toString(toAccount));

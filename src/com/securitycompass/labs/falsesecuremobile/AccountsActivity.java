@@ -59,10 +59,7 @@ public class AccountsActivity extends BankingListActivity {
         } catch (JSONException e) {
             Toast.makeText(mCtx, R.string.error_toast_json_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
-        } catch (IOException e) {
-            Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
-            Log.e(TAG, e.toString());
-        } catch (AuthenticatorException e) {
+        }  catch (AuthenticatorException e) {
             Log.e(TAG, e.toString());
             authenticate();
         } catch (KeyManagementException e){
@@ -70,6 +67,9 @@ public class AccountsActivity extends BankingListActivity {
             Log.e(TAG, e.toString());
         } catch (NoSuchAlgorithmException e){
             Toast.makeText(mCtx, R.string.error_ssl_algorithm, Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.toString());
+        } catch (IOException e) {
+            Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
         }
 
