@@ -19,7 +19,7 @@
 			android:layout_height="wrap_content" android:text="@string/transferscreen_amount_text" />
 		<EditText android:id="@+id/transferscreen_enteramount_field" android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:textColorHint="#666666"
-			android:hint="@string/transferscreen_enteramount_hint" android:layout_margin="5dp" android:imeOptions="actionDone" />
+			android:hint="@string/transferscreen_enteramount_hint" android:layout_margin="5dp" android:imeOptions="actionDone" android:inputType="text" />
 		<Button android:id="@+id/transferscreen_transfer_button"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="@string/transferscreen_transfer_button"
