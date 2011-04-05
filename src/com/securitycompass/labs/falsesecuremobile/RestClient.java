@@ -56,10 +56,11 @@ public class RestClient {
      * Creates the RestClient and connects it to the state of the application. This allows for it to
      * modify the state based on what happens during requests.
      */
-    public RestClient(BankingApplication appState, boolean enableHttps) throws NoSuchAlgorithmException, KeyManagementException {
+    public RestClient(BankingApplication appState, boolean enableHttps)
+            throws NoSuchAlgorithmException, KeyManagementException {
         this.mAppState = appState;
         mHttpsMode = enableHttps;
-        setupSsl();
+        setLaxSSL();
     }
 
     /**
@@ -147,7 +148,9 @@ public class RestClient {
 
         URL url = new URL(urlName);
         HttpsURLConnection httpsConnection = (HttpsURLConnection) url.openConnection();
-        httpsConnection.setHostnameVerifier(mHostnameVerifier);
+        if (mHostnameVerifier != null) {
+            httpsConnection.setHostnameVerifier(mHostnameVerifier);
+        }
         int responseCode = httpsConnection.getResponseCode();
         if (responseCode == HttpsURLConnection.HTTP_OK) {
             InputStream inputStream = httpsConnection.getInputStream();
@@ -173,7 +176,9 @@ public class RestClient {
         String response = "";
         URL url = new URL(urlString);
         HttpsURLConnection httpsConnection = (HttpsURLConnection) url.openConnection();
-        httpsConnection.setHostnameVerifier(mHostnameVerifier);
+        if (mHostnameVerifier != null) {
+            httpsConnection.setHostnameVerifier(mHostnameVerifier);
+        }
         httpsConnection.setDoInput(true);
         httpsConnection.setDoOutput(true);
         httpsConnection.setUseCaches(false);
@@ -225,10 +230,10 @@ public class RestClient {
         parameters.put("username", username);
         parameters.put("password", password);
         String JsonResponse;
-        if(mHttpsMode){
-            JsonResponse= postHttpsContent(url, parameters);
+        if (mHttpsMode) {
+            JsonResponse = postHttpsContent(url, parameters);
         } else {
-            JsonResponse= postHttpContent(url, parameters);
+            JsonResponse = postHttpContent(url, parameters);
         }
 
         // Now parse out the JSON response and act accordingly
@@ -282,27 +287,29 @@ public class RestClient {
         return accounts;
     }
 
-    public String getStatement(String server, String port) throws IOException, AuthenticatorException{
+    public String getStatement(String server, String port) throws IOException,
+            AuthenticatorException {
         String protocol = mHttpsMode ? "https://" : "http://";
-        String url=(protocol + server + ":" + port + "/statement" + "?session_key=" + URLEncoder.encode(mAppState.getSessionKey()));
+        String url = (protocol + server + ":" + port + "/statement" + "?session_key=" + URLEncoder
+                .encode(mAppState.getSessionKey()));
         String result;
         if (mHttpsMode) {
             result = getHttpsContent(url);
         } else {
             result = getHttpContent(url);
         }
-        
+
         int errorCode = parseError(result);
 
         if (errorCode == NULL_ERROR) {
-            //No need to do anything to the data
+            // No need to do anything to the data
         } else if (errorCode == ERROR_SESSION_KEY) {
             throw new AuthenticatorException("Session key invalid");
         }
 
         return result;
     }
-    
+
     /**
      * Transfers funds between the given accounts.
      * @param server The server to use.
@@ -356,8 +363,8 @@ public class RestClient {
         // String is of format "E[0-9]+", e.g. "E3"
         return Integer.parseInt(errorString.trim().substring(1));
     }
-    
-    private void setupSsl() throws NoSuchAlgorithmException, KeyManagementException {
+
+    private void setLaxSSL() throws NoSuchAlgorithmException, KeyManagementException {
         TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 
             @Override
@@ -378,14 +385,13 @@ public class RestClient {
             }
         } };
 
-        
-        SSLContext sslContext=SSLContext.getInstance("TLS");
+        SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-        
+
         HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
-        
-        mHostnameVerifier=new AllowAllHostnameVerifier();
-        
+
+        mHostnameVerifier = new AllowAllHostnameVerifier();
+
     }
 
 }
