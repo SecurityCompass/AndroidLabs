@@ -6,14 +6,14 @@
 
 	<TextView android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:id="@+id/accounts_screen_accountnumber"
-		android:background="#212421" android:textColor="#7b7d7b"
+		android:background="#212421" android:textColor="#FFFFFF"
 		android:textSize="20sp" android:layout_marginBottom="5dp"
 		android:paddingLeft="2dp" />
 	<TextView android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:id="@+id/accounts_screen_accounttype"
-		android:paddingLeft="20dp" android:background="#000000" android:textSize="20sp" />
+		android:paddingLeft="20dp" android:background="#000000" android:textSize="20sp" android:textColor="#DDDDDD" />
 	<TextView android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:id="@+id/accounts_screen_accountbalance"
-		android:paddingLeft="20dp" android:background="#000000" android:textSize="20sp" />
+		android:paddingLeft="20dp" android:background="#000000" android:textSize="20sp" android:textColor="#DDDDDD" />
 
 </LinearLayout>
