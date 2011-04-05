@@ -74,6 +74,7 @@ public class LoginActivity extends BankingActivity {
     private void checkFirstRun() {
         if (mSharedPrefs.getBoolean(BankingApplication.PREF_FIRST_RUN, true)) {
             Intent i = new Intent(mCtx, SetServerCredentialsActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(i);
         }
     }
