@@ -7,15 +7,16 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 public class BankingListActivity extends ListActivity {
     protected BankingApplication mThisApplication;
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mThisApplication=(BankingApplication)getApplication();
-        if(mThisApplication.isLocked()){
+        mThisApplication = (BankingApplication) getApplication();
+        if (mThisApplication.isLocked()) {
             launchLoginScreen();
         }
     }
@@ -34,6 +35,25 @@ public class BankingListActivity extends ListActivity {
         }
     }
 
+    public void setAppropriateVisibility() {
+        View v = findViewById(R.id.root_view);
+        if (v != null) {
+            if (mThisApplication.isLocked()) {
+                v.setVisibility(View.GONE);
+            } else {
+                v.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    public void setInvisible() {
+        View v = findViewById(R.id.root_view);
+        if (v != null) {
+                v.setVisibility(View.GONE);
+            } 
+
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -45,9 +65,10 @@ public class BankingListActivity extends ListActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        setAppropriateVisibility();
         mThisApplication.registerActivityForegrounded();
-        if(mThisApplication.isLocked()){
-            Intent i=new Intent(this, LoginActivity.class);
+        if (mThisApplication.isLocked()) {
+            Intent i = new Intent(this, LoginActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
         }
@@ -56,7 +77,8 @@ public class BankingListActivity extends ListActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mThisApplication.registerActivityBackgrounded();        
+        setInvisible();
+        mThisApplication.registerActivityBackgrounded();
     }
 
     private void resetApplication() {
@@ -68,24 +90,24 @@ public class BankingListActivity extends ListActivity {
         ba.lockApplication();
         launchLoginScreen();
     }
-    
-    private void launchPreferenceScreen(){
-        Intent i=new Intent(this, EditPreferencesActivity.class);
+
+    private void launchPreferenceScreen() {
+        Intent i = new Intent(this, EditPreferencesActivity.class);
         startActivity(i);
     }
-    
+
     /** Launches the accounts screen, doing any necessary processing first */
     protected void launchLoginScreen() {
         Intent launchLogin = new Intent(this, LoginActivity.class);
         launchLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(launchLogin);
     }
-    
+
     /** Launches the accounts screen, doing any necessary processing first */
     protected void authenticate() {
         Intent launchLogin = new Intent(this, LoginActivity.class);
         launchLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(launchLogin);
     }
-    
+
 }

@@ -13,6 +13,7 @@ public class ViewStatementActivity extends BankingActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.viewstatementactivity);
+        setAppropriateVisibility();
 
         mStatementDisplay = (WebView) findViewById(R.id.viewstatementscreen_webview);
 

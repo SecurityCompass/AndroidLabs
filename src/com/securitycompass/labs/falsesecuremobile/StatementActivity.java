@@ -44,6 +44,7 @@ public class StatementActivity extends BankingListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.statementactivity);
+        setAppropriateVisibility();
 
         mCtx = this;
         mThisApplication = (BankingApplication) getApplication();

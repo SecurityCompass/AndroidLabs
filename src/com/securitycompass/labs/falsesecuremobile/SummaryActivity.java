@@ -27,27 +27,24 @@ public class SummaryActivity extends BankingListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.summaryactivity);
+        setAppropriateVisibility();
 
         mCtx = this;
 
-        //Don't display if the application is locked
-        if (!mThisApplication.isLocked()) {
+        ListAdapter la = new ArrayAdapter<String>(mCtx, android.R.layout.simple_list_item_1,
+                optionNames);
+        setListAdapter(la);
 
-            ListAdapter la = new ArrayAdapter<String>(mCtx, android.R.layout.simple_list_item_1,
-                    optionNames);
-            setListAdapter(la);
+        getListView().setOnItemClickListener(new OnItemClickListener(
 
-            getListView().setOnItemClickListener(new OnItemClickListener(
+        ) {
 
-            ) {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+                launchSelectedScreen(position);
+            }
+        });
 
-                @Override
-                public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
-                    launchSelectedScreen(position);
-                }
-            });
-
-        }
     }
 
     private void launchSelectedScreen(int screenId) {

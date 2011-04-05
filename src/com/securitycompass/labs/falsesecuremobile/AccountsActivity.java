@@ -40,6 +40,7 @@ public class AccountsActivity extends BankingListActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.accountsactivity);
+        setAppropriateVisibility();
 
         mCtx = this;
         mAccounts=new ArrayList<Account>(); //To avoid null reference on network error

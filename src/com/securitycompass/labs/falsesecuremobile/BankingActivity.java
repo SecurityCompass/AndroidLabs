@@ -7,17 +7,23 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 public class BankingActivity extends Activity {
 
     protected BankingApplication mThisApplication;
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mThisApplication=(BankingApplication)getApplication();
-        if(mThisApplication.isLocked() && (this.getClass()!=LoginActivity.class)){
+        mThisApplication = (BankingApplication) getApplication();
+        if (mThisApplication.isLocked() && (this.getClass() != LoginActivity.class)) {
             launchLoginScreen();
+        } else {
+            View v = findViewById(R.id.root_view);
+            if (v != null) {
+                v.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -46,9 +52,10 @@ public class BankingActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        setAppropriateVisibility();
         mThisApplication.registerActivityForegrounded();
-        if(mThisApplication.isLocked() && (this.getClass()!=LoginActivity.class)){
-            Intent i=new Intent(this, LoginActivity.class);
+        if (mThisApplication.isLocked() && (this.getClass() != LoginActivity.class)) {
+            Intent i = new Intent(this, LoginActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
         }
@@ -57,7 +64,27 @@ public class BankingActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        setInvisible();
         mThisApplication.registerActivityBackgrounded();
+    }
+
+    public void setAppropriateVisibility() {
+        View v = findViewById(R.id.root_view);
+        if (v != null) {
+            if (mThisApplication.isLocked()) {
+                v.setVisibility(View.GONE);
+            } else {
+                v.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    public void setInvisible() {
+        View v = findViewById(R.id.root_view);
+        if (v != null) {
+            v.setVisibility(View.GONE);
+        }
+
     }
 
     private void resetApplication() {
@@ -69,17 +96,17 @@ public class BankingActivity extends Activity {
         ba.lockApplication();
         launchLoginScreen();
     }
-    
-    private void launchPreferenceScreen(){
-        Intent i=new Intent(this, EditPreferencesActivity.class);
+
+    private void launchPreferenceScreen() {
+        Intent i = new Intent(this, EditPreferencesActivity.class);
         startActivity(i);
     }
-    
+
     /** Launches the accounts screen, doing any necessary processing first */
     private void launchLoginScreen() {
         Intent launchLogin = new Intent(this, LoginActivity.class);
         launchLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(launchLogin);
     }
-    
+
 }

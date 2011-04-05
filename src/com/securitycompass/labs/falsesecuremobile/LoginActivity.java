@@ -36,8 +36,6 @@ public class LoginActivity extends BankingActivity {
     private Button mLoginButton;
     /** The text field to collect/hold the password. */
     private EditText mPasswordField;
-    /** Central data store, state, and operations */
-    private BankingApplication mThisApplication;
     /** This application's preferences */
     private SharedPreferences mSharedPrefs;
 
@@ -48,8 +46,6 @@ public class LoginActivity extends BankingActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCtx = this;
-
-        mThisApplication = (BankingApplication) getApplication();
 
         mSharedPrefs = mThisApplication.getSharedPrefs();
         checkFirstRun();

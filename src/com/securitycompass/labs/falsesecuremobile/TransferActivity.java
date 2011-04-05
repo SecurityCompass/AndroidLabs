@@ -66,6 +66,7 @@ public class TransferActivity extends BankingActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.transferactivity);
+        setAppropriateVisibility();
 
         mCtx = this;
         mThisApplication = (BankingApplication) getApplication();

@@ -230,7 +230,6 @@ public class RestClient {
         } else {
             JsonResponse= postHttpContent(url, parameters);
         }
-        System.err.println("Login response: " + JsonResponse);
 
         // Now parse out the JSON response and act accordingly
         // String key = null, created = null;
