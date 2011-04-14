@@ -102,6 +102,16 @@ public class BankingActivity extends Activity {
         startActivity(i);
     }
 
+    /**
+     * Called when the app needs authentication, normally due to a session timeout. The current
+     * activity stack will be cleared, and the login Activity brought to the front.
+     */
+    protected void authenticate() {
+        Intent i = new Intent(this, LoginActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
+    }
+    
     /** Launches the accounts screen, doing any necessary processing first */
     private void launchLoginScreen() {
         Intent launchLogin = new Intent(this, LoginActivity.class);

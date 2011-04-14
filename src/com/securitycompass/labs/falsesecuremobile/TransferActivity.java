@@ -164,37 +164,34 @@ public class TransferActivity extends BankingActivity {
                 return;
             }
 
-            try {
-                int responseCode = mThisApplication.transferFunds(mFromAccount.getAccountNumber(),
-                        mToAccount.getAccountNumber(), amount);
-                Log.i(TAG, "Transferred. Response code: " + responseCode);
-            } catch (KeyManagementException e){
-                Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG).show();
-                Log.e(TAG, e.toString());
-            } catch (NoSuchAlgorithmException e){
-                Toast.makeText(mCtx, R.string.error_ssl_algorithm, Toast.LENGTH_LONG).show();
-                Log.e(TAG, e.toString());
-            } catch (HttpException e) {
-                Toast.makeText(mCtx, R.string.error_toast_http_error + e.getStatusCode(), Toast.LENGTH_SHORT).show();
-                Log.e(TAG, e.toString());
-            } catch (IOException e) {
-                Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
-                Log.e(TAG, e.toString());
+            if (amount > 0) {
+                try {
+                    int responseCode = mThisApplication.transferFunds(mFromAccount
+                            .getAccountNumber(), mToAccount.getAccountNumber(), amount);
+                    Log.i(TAG, "Transferred. Response code: " + responseCode);
+                } catch (KeyManagementException e) {
+                    Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG)
+                            .show();
+                    Log.e(TAG, e.toString());
+                } catch (NoSuchAlgorithmException e) {
+                    Toast.makeText(mCtx, R.string.error_ssl_algorithm, Toast.LENGTH_LONG).show();
+                    Log.e(TAG, e.toString());
+                } catch (HttpException e) {
+                    Toast.makeText(mCtx, R.string.error_toast_http_error + e.getStatusCode(),
+                            Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, e.toString());
+                } catch (IOException e) {
+                    Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT)
+                            .show();
+                    Log.e(TAG, e.toString());
+                }
+
+                updateAccounts();
+            } else {
+                Toast.makeText(mCtx, R.string.error_transfer_invalid_amount, Toast.LENGTH_SHORT).show();
             }
 
-            updateAccounts();
-
         }
-    }
-
-    /**
-     * Called when the app needs authentication, normally due to a session timeout. The current
-     * activity stack will be cleared, and the login Activity brought to the front.
-     */
-    private void authenticate() {
-        Intent i = new Intent(mCtx, LoginActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
     }
 
     /** Updates the display to reflect the currently held account information. */

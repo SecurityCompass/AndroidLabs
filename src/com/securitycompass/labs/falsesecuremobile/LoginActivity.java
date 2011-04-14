@@ -63,8 +63,6 @@ public class LoginActivity extends BankingActivity {
             }
         });
 
-        populatePasswordField();
-
     }
 
     /**
@@ -77,11 +75,6 @@ public class LoginActivity extends BankingActivity {
             i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(i);
         }
-    }
-
-    // TODO: Remove this convenience method
-    private void populatePasswordField() {
-        mPasswordField.setText("c");
     }
 
     /** Grabs the username and password and attempts to log in with them */

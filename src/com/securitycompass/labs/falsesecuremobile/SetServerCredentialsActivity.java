@@ -84,6 +84,7 @@ public class SetServerCredentialsActivity extends Activity {
             e.commit();
             mThisApplication.lockApplication();
             Intent i=new Intent(mCtx, SetLocalPasswordActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(i);
         } else {
             Toast.makeText(mCtx, R.string.toast_loginfailed, Toast.LENGTH_SHORT).show();
