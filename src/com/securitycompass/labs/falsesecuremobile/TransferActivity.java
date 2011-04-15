@@ -168,7 +168,9 @@ public class TransferActivity extends BankingActivity {
                 try {
                     int responseCode = mThisApplication.transferFunds(mFromAccount
                             .getAccountNumber(), mToAccount.getAccountNumber(), amount);
-                    Log.i(TAG, "Transferred. Response code: " + responseCode);
+                    
+                    Log.i(TAG, "Transferred $" + amount + " from account " +mFromAccount.getAccountNumber()+" to account " +mToAccount.getAccountNumber());
+                    Log.i(TAG, "Response code for transfer: " + responseCode);
                 } catch (KeyManagementException e) {
                     Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG)
                             .show();
@@ -241,10 +243,8 @@ public class TransferActivity extends BankingActivity {
                 throws IndexOutOfBoundsException {
             if (transferDirection == TRANSFER_FROM) {
                 mFromAccount = mAccounts.get(position);
-                System.err.println("Selected from account: " + mFromAccount);
             } else if (transferDirection == TRANSFER_TO) {
                 mToAccount = mAccounts.get(position);
-                System.err.println("Selected to account: " + mToAccount);
             } else
                 throw new IndexOutOfBoundsException(
                         "From/To indicator int out of bounds in AccountSelectionListener");

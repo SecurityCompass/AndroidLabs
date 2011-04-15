@@ -23,6 +23,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Base64;
+import android.util.Log;
 
 /**
  * Stores session keys and handles moving the application between locked and unlocked states.
@@ -52,6 +53,8 @@ public class BankingApplication extends Application {
     public static final String PREF_REST_USER = "serveruser";
     public static final String PREF_REST_PASSWORD = "serverpass";
 
+    public static final String TAG="BankingApplication";
+    
     /** Setup for when the application initialises. */
     @Override
     public void onCreate() {
@@ -270,6 +273,13 @@ public class BankingApplication extends Application {
             lockApplication();
             throw e;
         }
+        
+        //Log the account details
+        String logString="Accounts:\n";
+        for(Account a : result){
+            logString += a.toString()+"\n";
+        }
+        Log.i(TAG, logString);
         return result;
     }
 
