@@ -13,6 +13,7 @@ import java.util.List;
 import org.json.JSONException;
 
 import android.accounts.AuthenticatorException;
+import android.app.LauncherActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -168,8 +169,6 @@ public class TransferActivity extends BankingActivity {
                 try {
                     int responseCode = mThisApplication.transferFunds(mFromAccount
                             .getAccountNumber(), mToAccount.getAccountNumber(), amount);
-                    
-                    Log.i(TAG, "Transferred $" + amount + " from account " +mFromAccount.getAccountNumber()+" to account " +mToAccount.getAccountNumber());
                     Log.i(TAG, "Response code for transfer: " + responseCode);
                 } catch (KeyManagementException e) {
                     Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG)
@@ -188,7 +187,10 @@ public class TransferActivity extends BankingActivity {
                     Log.e(TAG, e.toString());
                 }
 
+                Log.i(TAG, "Transferred $" + amount + " from account " +mFromAccount.getAccountNumber()+" to account " +mToAccount.getAccountNumber());
                 updateAccounts();
+                Toast.makeText(mCtx, R.string.transferscreen_success, Toast.LENGTH_SHORT).show();
+                launchSummaryScreen();
             } else {
                 Toast.makeText(mCtx, R.string.error_transfer_invalid_amount, Toast.LENGTH_SHORT).show();
             }
@@ -217,6 +219,12 @@ public class TransferActivity extends BankingActivity {
         mFromAccountSpinner.setSelection(fromPos);
         mToAccountSpinner.setSelection(toPos);
 
+    }
+    
+    private void launchSummaryScreen(){
+        Intent i=new Intent(this, SummaryActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
     }
 
     /**

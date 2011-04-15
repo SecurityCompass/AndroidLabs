@@ -17,6 +17,7 @@
 	<string name="transferscreen_amount_text">Amount</string>
 	<string name="transferscreen_transfer_button">Transfer</string>
 	<string name="transferscreen_enteramount_hint">Enter amount</string>
+	<string name="transferscreen_success">Transfer completed</string>
 
 	<string name="accountsscreen_text_summary">Account 1\n\n\tChecking Account\n\tBalance:
 		$53.00\n\nAccount 2\n\n\tSavings Account\n\tBalance: $2876.28\n
