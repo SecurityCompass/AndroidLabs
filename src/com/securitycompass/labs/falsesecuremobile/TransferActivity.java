@@ -13,7 +13,6 @@ import java.util.List;
 import org.json.JSONException;
 
 import android.accounts.AuthenticatorException;
-import android.app.LauncherActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,6 +30,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
+/**
+ * Screen which allows the user to make a transfer between two accounts.
+ * @author Ewan Sinclair
+ */
 public class TransferActivity extends BankingActivity {
 
     /** Useful for avoiding casts when a Context needs to be passed. */

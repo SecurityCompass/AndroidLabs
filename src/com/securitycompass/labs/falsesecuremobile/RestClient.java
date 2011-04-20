@@ -35,17 +35,34 @@ import org.json.JSONObject;
 import android.accounts.AuthenticatorException;
 import android.util.Log;
 
+/**
+ * Handles HTTP/S communication with the banking service, abstracting it as a set of methods that
+ * can be called by the rest of the application for any given banking function.
+ * @author Ewan Sinclair
+ */
 public class RestClient {
 
     private static final String TAG = "RestClient";
 
+    /*
+     * These codes are used to indicate the status of transactions that have finished, mainly
+     * representing error codes returned by the server
+     */
+    /** REST operation didn't happen. */
     public static final int NO_OP = -2;
+    /** No error ocurred, transaction completed. */
     public static final int NULL_ERROR = -1;
+    /** The banking service rejected the given username and password. */
     public static final int ERROR_CREDENTIALS = 1;
+    /** The banking service rejected the session key. */
     public static final int ERROR_SESSION_KEY = 2;
+    /** The account referenced in the request doesn't exist. */
     public static final int ERROR_ACCOUNT_NOT_EXIST = 3;
+    /** The balance is too low to perform the given transaction. */
     public static final int ERROR_BALANCE_TOO_LOW = 4;
+    /** Operation was forbidden. */
     public static final int ERROR_FORBIDDEN = 5;
+    /** Permission for the operation was denied. */
     public static final int ERROR_PERMISSION_DENIED = 6;
 
     private BankingApplication mAppState;
@@ -55,6 +72,10 @@ public class RestClient {
     /**
      * Creates the RestClient and connects it to the state of the application. This allows for it to
      * modify the state based on what happens during requests.
+     * @param appState The BankingApplication containing the app-wide state variables.
+     * @param enableHttps Whether to use HTTPS.
+     * @throws NoSuchAlgorithmException if the SSL encryption algorithm chosen is not available.
+     * @throws KeyManagementException if lax SSL initialisation fails.
      */
     public RestClient(BankingApplication appState, boolean enableHttps)
             throws NoSuchAlgorithmException, KeyManagementException {
@@ -67,6 +88,7 @@ public class RestClient {
      * Performs a simple HTTP GET and returns the result.
      * @param urlName API Service endpoint.
      * @return HttpContent from the url.
+     * @throws IOException if the network connection failed
      */
     public String getHttpContent(String urlName) throws IOException {
         String line;
@@ -92,8 +114,9 @@ public class RestClient {
     /**
      * Performs an HTTP POST with the given data.
      * @param urlString The URL to POST to.
-     * @param postData the data to POST.
+     * @param variables key/value pairs for all parameters to be POSTed.
      * @return The data passed back from the server, as a String.
+     * @throws IOException if the network connection failed.
      */
     public String postHttpContent(String urlString, Map<String, String> variables)
             throws IOException {
@@ -140,6 +163,7 @@ public class RestClient {
      * Performs a simple HTTPS GET and returns the result.
      * @param urlName API Service endpoint.
      * @return HttpContent from the url.
+     * @throws IOException if the network connection failed.
      */
     public String getHttpsContent(String urlName) throws IOException {
         String line;
@@ -168,8 +192,10 @@ public class RestClient {
     /**
      * Performs an HTTPS POST with the given data.
      * @param urlString The URL to POST to.
-     * @param postData the data to POST.
+     * @param variables key/value pairs for all parameters to be POSTed.
      * @return The data passed back from the server, as a String.
+     * @throws IOException if the network connection failed. 
+     * @throws HttpException if the HTTP transaction failed
      */
     public String postHttpsContent(String urlString, Map<String, String> variables)
             throws IOException, HttpException {
@@ -217,9 +243,14 @@ public class RestClient {
 
     /**
      * Logs into the REST service, generating a new session key.
+     * @param server The address of the server to log into.
+     * @param port The port number to use.
      * @param username Username to log in with.
      * @param password Password to log in with.
      * @return Whether the login was successful.
+     * @throws JSONException if the server returned invalid JSON.
+     * @throws IOException if the network connection failed.
+     * @throws HttpException if the HTTP transaction failed.
      */
     public int performLogin(String server, String port, String username, String password)
             throws JSONException, IOException, HttpException {
@@ -237,7 +268,6 @@ public class RestClient {
         }
 
         // Now parse out the JSON response and act accordingly
-        // String key = null, created = null;
         int errorCode = parseError(JsonResponse);
         if (errorCode == NULL_ERROR) {
             JSONObject jsonObject = new JSONObject(JsonResponse);
@@ -254,6 +284,9 @@ public class RestClient {
      * @param server The address of the server to query.
      * @param port The port we will make our query on.
      * @return A list of all accounts the server told us about, and their details.
+     * @throws JSONException if the server returned invalid JSON.
+     * @throws IOException if the network connection failed.
+     * @throws AuthenticatorException if the server rejected the proferred session key. 
      */
     public List<Account> getAccounts(String server, String port) throws JSONException, IOException,
             AuthenticatorException {
@@ -287,6 +320,14 @@ public class RestClient {
         return accounts;
     }
 
+    /**
+     * Queries the server for a list of accounts, and returns a list of them.
+     * @param server The address of the server to query.
+     * @param port The port we will make our query on.
+     * @return A list of all accounts the server told us about, and their details.
+     * @throws IOException if the network connection failed.
+     * @throws AuthenticatorException if the server rejected the proferred session key. 
+     */
     public String getStatement(String server, String port) throws IOException,
             AuthenticatorException {
         String protocol = mHttpsMode ? "https://" : "http://";
@@ -318,8 +359,9 @@ public class RestClient {
      * @param toAccount The number of the account we're transferring to.
      * @param amount The amount to be transferred
      * @param sessionKey The session key to use
-     * @return A code indicating if the transaction succeeded, or why it failed
-     * @throws IOException
+     * @return A code indicating if the transaction succeeded, or why it failed.
+     * @throws IOException if the network connection failed.
+     * @throws HttpException if the HTTP transaction failed.
      */
     public int transfer(String server, String port, int fromAccount, int toAccount, double amount,
             String sessionKey) throws IOException, HttpException {
@@ -341,6 +383,7 @@ public class RestClient {
 
     /**
      * Takes a JSON string and returns an int representing the error code in it.
+     * @param json The string to check for JSON encapsulated error codes.
      * @return The error code the string represented, or a code for no error.
      */
     public int parseError(String json) {
@@ -364,6 +407,11 @@ public class RestClient {
         return Integer.parseInt(errorString.trim().substring(1));
     }
 
+    /**
+     * Sets the application to accept all SSL certificates.
+     * @throws NoSuchAlgorithmException if the SSL encryption algorithm wasn't available.
+     * @throws KeyManagementException if initialising ther SSLContext fails. 
+     */
     private void setLaxSSL() throws NoSuchAlgorithmException, KeyManagementException {
         TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 

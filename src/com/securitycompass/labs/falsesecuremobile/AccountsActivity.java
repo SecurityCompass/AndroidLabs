@@ -23,6 +23,10 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * Displays a full summary of all the accounts
+ * @author Ewan Sinclair
+ */
 public class AccountsActivity extends BankingListActivity {
 
     /** Useful for avoiding casts when a Context needs to be passed */

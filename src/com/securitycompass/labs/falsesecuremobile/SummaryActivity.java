@@ -13,6 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.AdapterView.OnItemClickListener;
 
+/**
+ * Menu screen which allows the user to select whichever banking activity they'd like to perform.
+ * @author Ewan Sinclair
+ */
 public class SummaryActivity extends BankingListActivity {
 
     private Context mCtx;
@@ -47,6 +51,10 @@ public class SummaryActivity extends BankingListActivity {
 
     }
 
+    /**
+     * Launches the screen with the given ID. This is necessary because when a ListView item is
+     * clicked, it returns a position. We can't associate a listener directly to each list item.
+     */
     private void launchSelectedScreen(int screenId) {
         if (screenId == LAUNCH_ACCOUNTS) {
             launchAccountsScreen();

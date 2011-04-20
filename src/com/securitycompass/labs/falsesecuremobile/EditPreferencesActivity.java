@@ -1,10 +1,16 @@
+/**
+ * Copyright 2011 Security Compass
+ */
+
 package com.securitycompass.labs.falsesecuremobile;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.view.View;
 
+/**
+ * Simple interface to allow the user to edit some preferences.
+ * @author Ewan Sinclair
+ */
 public class EditPreferencesActivity extends PreferenceActivity {
 
     private BankingApplication mThisApplication;

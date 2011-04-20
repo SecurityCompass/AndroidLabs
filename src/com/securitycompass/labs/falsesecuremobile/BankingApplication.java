@@ -42,19 +42,26 @@ public class BankingApplication extends Application {
     // How many hashing iterations to perform
     private static final int HASH_ITERATIONS = 1000;
 
-    // Where we'll store statements
+    /** Where we'll store statements */
     public static final String STATEMENT_DIR = "/sdcard/falsesecuremobile/";
 
     /* These variables are used for anchoring preference keys */
+    /** The name of the shared preferences file for prefs not accessible via the preferences screen */
     public static final String SHARED_PREFS = "preferences";
+    /** Whether the application is running for the first time */
     public static final String PREF_FIRST_RUN = "firstrun";
+    /** A hash of the local password */
     public static final String PREF_LOCALPASS_HASH = "localpasshash";
+    /** The salt used when hashing the local password */
     public static final String PREF_LOCALPASS_SALT = "localpasssalt";
+    /** The username to present to the banking service */
     public static final String PREF_REST_USER = "serveruser";
+    /** The password to present to the banking service */
     public static final String PREF_REST_PASSWORD = "serverpass";
 
-    public static final String TAG="BankingApplication";
-    
+    /**  */
+    public static final String TAG = "BankingApplication";
+
     /** Setup for when the application initialises. */
     @Override
     public void onCreate() {
@@ -100,14 +107,15 @@ public class BankingApplication extends Application {
      * @return whether the HTTPS setting is enabled, as a boolean.
      */
     public boolean isHttpsEnabled() {
-        return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("httpsenabled", false);
+        return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(
+                "httpsenabled", false);
     }
 
     /**
      * Sets the local password, accomplished by storing a hashcode.
      * @param password The plain String version of the password to set.
-     * @throws NoSuchAlgorithmException
-     * @throws UnsupportedEncodingException
+     * @throws NoSuchAlgorithmException if the hashing algorithm is unavailable
+     * @throws UnsupportedEncodingException if Base64 encoding is not available
      */
     public void setLocalPassword(String password) throws NoSuchAlgorithmException,
             UnsupportedEncodingException {
@@ -134,8 +142,8 @@ public class BankingApplication extends Application {
      * Checks to see if the given password hashes to the same value as the stored one.
      * @param enteredPassword The password to check.
      * @return Whether the password matched.
-     * @throws NoSuchAlgorithmException
-     * @throws UnsupportedEncodingException
+     * @throws NoSuchAlgorithmException if the hashing algorithm is unavailable
+     * @throws UnsupportedEncodingException if Base64 encoding is not available
      */
     public boolean checkPassword(String enteredPassword) throws NoSuchAlgorithmException,
             UnsupportedEncodingException {
@@ -187,9 +195,14 @@ public class BankingApplication extends Application {
      * @param username Username to log in with.
      * @param password Password to log in with.
      * @return A status code representing any error that occurred.
+     * @throws JSONException if the server returned invalid JSON
+     * @throws IOException if there was a communication error with the server
+     * @throws KeyManagementException if the server key couldn't be trusted
+     * @throws HttpException if the HTTP/S request failed
+     * @throws NoSuchAlgorithmException if the set SSL encryption algorithm is unavilable 
      */
     public int performLogin(String username, String password) throws JSONException, IOException,
-            KeyManagementException, NoSuchAlgorithmException, HttpException {
+            KeyManagementException, HttpException, NoSuchAlgorithmException{
         RestClient restClient = new RestClient(this, isHttpsEnabled());
         int statusCode = restClient.performLogin(getRestServer(), getPort(), username, password);
         return statusCode;
@@ -203,14 +216,17 @@ public class BankingApplication extends Application {
     /**
      * Performs all operations necessary to make the application usable.
      * @param password The password to try unlocking with
-     * @return Whether the operation suceeded
-     * @throws UnsupportedEncodingException
-     * @throws NoSuchAlgorithmException
-     * @throws IOException
-     * @throws JSONException
+     * @return Whether the operation succeeded
+     * @throws UnsupportedEncodingException if Base64 encoding isn't available
+     * @throws NoSuchAlgorithmException if the hashing algorithm couldn't be found
+     * @throws JSONException if the server returned invalid JSON
+     * @throws IOException if there was a communication error with the server
+     * @throws KeyManagementException if the server key couldn't be trusted
+     * @throws HttpException if the HTTP/S request failed
      */
     public int unlockApplication(String password) throws UnsupportedEncodingException,
-            NoSuchAlgorithmException, IOException, JSONException, KeyManagementException, HttpException {
+            NoSuchAlgorithmException, IOException, JSONException, KeyManagementException,
+            HttpException {
         if (checkPassword(password)) {
             String user = getRestUsername();
             String pass = getRestPassword();
@@ -262,6 +278,11 @@ public class BankingApplication extends Application {
     /**
      * Returns a list of all Accounts and their details.
      * @return A list of the accounts returned by the server, represented as Account objects.
+     * @throws JSONException if the server returned invalid JSON
+     * @throws IOException if the network connection failed
+     * @throws AuthenticatorException if the server rejects the session key
+     * @throws NoSuchAlgorithmException if the algorithm used to hash the password is not available
+     * @throws KeyManagementException if the server's SSL certificate couldn't be trusted
      */
     public List<Account> getAccounts() throws JSONException, IOException, AuthenticatorException,
             NoSuchAlgorithmException, KeyManagementException {
@@ -273,11 +294,11 @@ public class BankingApplication extends Application {
             lockApplication();
             throw e;
         }
-        
-        //Log the account details
-        String logString="Accounts:\n";
-        for(Account a : result){
-            logString += a.toString()+"\n";
+
+        // Log the account details
+        String logString = "Accounts:\n";
+        for (Account a : result) {
+            logString += a.toString() + "\n";
         }
         Log.i(TAG, logString);
         return result;
@@ -285,8 +306,10 @@ public class BankingApplication extends Application {
 
     /**
      * Downloads a statement and displays it.
-     * @param caller The activity calling this method. This is needed to start a new Activity from
-     * within this class.
+     * @throws IOException if network communication failed
+     * @throws NoSuchAlgorithmException if the algorithm used to hash the password is unavilable
+     * @throws KeyManagementException if the server's SSL certificate couldn't be trusted
+     * @throws AuthenticatorException if the server rejected the session key
      */
     public void downloadStatement() throws IOException, NoSuchAlgorithmException,
             KeyManagementException, AuthenticatorException {
@@ -322,7 +345,10 @@ public class BankingApplication extends Application {
      * @param toAccount The account in which to deposit the funds.
      * @param amount The amount to transfer.
      * @return A status code representing the server's response
-     * @throws IOException
+     * @throws IOException if network communication failed
+     * @throws NoSuchAlgorithmException if the algorithm used to hash the password is unavilable
+     * @throws KeyManagementException if the server's SSL certificate couldn't be trusted
+     * @throws HttpException if the HTTP/S request failed
      */
     public int transferFunds(int fromAccount, int toAccount, double amount) throws IOException,
             NoSuchAlgorithmException, KeyManagementException, HttpException {
@@ -358,22 +384,34 @@ public class BankingApplication extends Application {
         return sessionCreateDate;
     }
 
+    /** Informs the application that an Activity is in the foreground */
     public void registerActivityForegrounded() {
         foregroundedActivities++;
     }
 
+    /**
+     * Informs the Application that an Activity has entered the background, and sets a check in 2
+     * seconds to see if the entire application is now in the background
+     */
     public void registerActivityBackgrounded() {
         foregroundedActivities--;
         timingHandler.removeCallbacks(checkBackgroundTask);
         timingHandler.postDelayed(checkBackgroundTask, 2000);
     }
 
+    /**
+     * Checks if all Activities are in the background (e.g. the entire app), and locks the app if
+     * they are.
+     */
     public void checkIfBackgrounded() {
         if (foregroundedActivities == 0) {
             lockApplication();
         }
     }
 
+    /**
+     * A simple helper class to perform a delayed check of whether the application is backgrounded
+     */
     public Runnable checkBackgroundTask = new Runnable() {
 
         @Override

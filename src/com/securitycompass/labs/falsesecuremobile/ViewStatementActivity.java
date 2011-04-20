@@ -1,3 +1,7 @@
+/**
+ * Copyright 2011 Security Compass
+ */
+
 package com.securitycompass.labs.falsesecuremobile;
 
 import android.content.Intent;
@@ -5,6 +9,10 @@ import android.os.Bundle;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+/**
+ * Screen which displays a statement file.
+ * @author Ewan Sinclair
+ */
 public class ViewStatementActivity extends BankingActivity {
 
     WebView mStatementDisplay;

@@ -1,3 +1,7 @@
+/**
+ * Copyright 2011 Security Compass
+ */
+
 package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.IOException;
@@ -18,6 +22,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+/**
+ * One-time setup screen for the user to enter their credentials for the banking service.
+ * @author Ewan Sinclair
+ */
 public class SetServerCredentialsActivity extends Activity {
     
     private EditText mUserField;

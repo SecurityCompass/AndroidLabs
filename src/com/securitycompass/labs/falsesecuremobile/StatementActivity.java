@@ -27,6 +27,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
+/**
+ * Displays a list of statements, each of which can be clicked to view it.
+ * @author Ewan Sinclair
+ */
 public class StatementActivity extends BankingListActivity {
 
     /** Useful for avoiding casts when a Context needs to be passed */

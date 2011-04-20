@@ -1,3 +1,7 @@
+/**
+ * Copyright 2011 Security Compass
+ */
+
 package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.IOException;
@@ -18,7 +22,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-/** This class prompts the user to set their local unlock password */
+/** This class prompts the user to set their local unlock password
+ * @author Ewan Sinclair
+ */
 public class SetLocalPasswordActivity extends Activity {
 
     private EditText mPasswordField;

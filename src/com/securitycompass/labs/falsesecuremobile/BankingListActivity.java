@@ -1,3 +1,7 @@
+/**
+ * Copyright 2011 Security Compass
+ */
+
 package com.securitycompass.labs.falsesecuremobile;
 
 import android.app.ListActivity;
@@ -9,7 +13,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+/**
+ * A superclass containing methods and variables that all Activities in this application will use
+ * @author Ewan Sinclair
+ */
 public class BankingListActivity extends ListActivity {
+    
+    /** Central data store, state, and operations */
     protected BankingApplication mThisApplication;
 
     @Override
@@ -35,6 +45,9 @@ public class BankingListActivity extends ListActivity {
         }
     }
 
+    /**
+     * Checks whether the application is locked and makes this Activity invisible if so.
+     */
     public void setAppropriateVisibility() {
         View v = findViewById(R.id.root_view);
         if (v != null) {
@@ -46,6 +59,9 @@ public class BankingListActivity extends ListActivity {
         }
     }
 
+    /**
+     * Makes this Activity invisible.
+     */
     public void setInvisible() {
         View v = findViewById(R.id.root_view);
         if (v != null) {

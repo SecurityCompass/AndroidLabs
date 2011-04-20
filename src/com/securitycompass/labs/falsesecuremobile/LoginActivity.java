@@ -24,9 +24,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-/*
+/**
  * Graphical class which allows the user to enter a username and password, 
  * then perform a login with them.
+ * @author Ewan Sinclair
  */
 public class LoginActivity extends BankingActivity {
 
