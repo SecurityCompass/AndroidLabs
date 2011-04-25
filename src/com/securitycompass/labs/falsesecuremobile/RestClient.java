@@ -119,7 +119,7 @@ public class RestClient {
      * @throws IOException if the network connection failed.
      */
     public String postHttpContent(String urlString, Map<String, String> variables)
-            throws IOException {
+            throws IOException, HttpException {
         String response = "";
         URL url = new URL(urlString);
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
@@ -151,10 +151,10 @@ public class RestClient {
                 response += line;
             }
         } else {
-            response = null;
-            Log
-                    .e(TAG, "HTTP request failed on: " + urlString + " With error code: "
+            response = "";
+            Log.e(TAG, "HTTP request failed on: " + urlString + " With error code: "
                             + responseCode);
+            throw new HttpException(responseCode);
         }
         return response;
     }
@@ -233,7 +233,7 @@ public class RestClient {
                 response += line;
             }
         } else {
-            response = null;
+            response = "";
             Log.e(TAG, "HTTPs request failed on: " + urlString + " With error code: "
                     + responseCode);
             throw new HttpException(responseCode);
