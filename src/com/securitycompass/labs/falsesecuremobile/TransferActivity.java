@@ -153,8 +153,6 @@ public class TransferActivity extends BankingActivity {
      */
     private void performTransfer() {
         // TODO: Check status code and act accordingly if an error is present.
-        Log.i(TAG, "Member Accounts [" + mFromAccount.toString() + "] [" + mToAccount.toString()
-                + "]");
         if (mFromAccount == mToAccount) {
             Toast.makeText(mCtx, R.string.error_transfer_same_account, Toast.LENGTH_SHORT).show();
         } else {
@@ -190,7 +188,6 @@ public class TransferActivity extends BankingActivity {
                     Log.e(TAG, e.toString());
                 }
 
-                Log.i(TAG, "Transferred $" + amount + " from account " +mFromAccount.getAccountNumber()+" to account " +mToAccount.getAccountNumber());
                 updateAccounts();
                 Toast.makeText(mCtx, R.string.transferscreen_success, Toast.LENGTH_SHORT).show();
                 launchSummaryScreen();

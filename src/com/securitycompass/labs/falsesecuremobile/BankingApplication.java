@@ -370,12 +370,6 @@ public class BankingApplication extends Application {
             throw e;
         }
 
-        // Log the account details
-        String logString = "Accounts:\n";
-        for (Account a : result) {
-            logString += a.toString() + "\n";
-        }
-        Log.i(TAG, logString);
         return result;
     }
 
