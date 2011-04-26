@@ -42,6 +42,7 @@ public class BankingApplication extends Application {
     private int foregroundedActivities;
     private Handler timingHandler;
     private CryptoTool mCipher;
+    private byte[] mCryptoKey;
 
     // How many hashing iterations to perform
     private static final int HASH_ITERATIONS = 1000;
@@ -63,6 +64,7 @@ public class BankingApplication extends Application {
     public static final String PREF_REST_PASSWORD_IV = "serverpassiv";
     /** The initialisation vector for the encrypted banking service username */
     public static final String PREF_REST_USER_IV = "serveruseriv";
+    public static String PREF_DERIVED_KEY_SALT="derivedkeysalt";
 
     /** A tag to identify the class if it logs anything */
     public static final String TAG = "BankingApplication";
@@ -115,33 +117,6 @@ public class BankingApplication extends Application {
     public boolean isHttpsEnabled() {
         return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(
                 "httpsenabled", false);
-    }
-
-    /**
-     * Sets the local password, accomplished by storing a hashcode.
-     * @param password The plain String version of the password to set.
-     * @throws NoSuchAlgorithmException if the hashing algorithm is unavailable
-     * @throws UnsupportedEncodingException if Base64 encoding is not available
-     */
-    public void setLocalPassword(String password) throws NoSuchAlgorithmException,
-            UnsupportedEncodingException {
-
-        // First we generate a random salt
-        SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-        byte[] saltByteArray = new byte[32];
-        random.nextBytes(saltByteArray);
-
-        // Perform the hash, getting a Base64 encoded String
-        String hashString = hash(password, saltByteArray);
-
-        // Base64 encode the salt, store our strings
-        byte[] b64Salt = Base64.encode(saltByteArray, Base64.DEFAULT);
-        String saltString = new String(b64Salt);
-
-        Editor e = getSharedPrefs().edit();
-        e.putString(PREF_LOCALPASS_HASH, hashString);
-        e.putString(PREF_LOCALPASS_SALT, saltString);
-        e.commit();
     }
 
     /**
@@ -235,12 +210,11 @@ public class BankingApplication extends Application {
      */
     public int unlockApplication(String password) throws UnsupportedEncodingException,
             NoSuchAlgorithmException, IOException, JSONException, KeyManagementException, GeneralSecurityException, HttpException {
-        mCipher=new CryptoTool();
         
         if (checkPassword(password)) {
-            byte[] key=Base64.decode(CryptoTool.DEFAULT_B64_KEY_STRING, Base64.DEFAULT);
-            cleartextServerUser = mCipher.decryptB64String(getRestUsername(), key, getRestUserNameIv());
-            cleartextServerPass = mCipher.decryptB64String(getRestPassword(), key, getRestPasswordIv());
+            mCryptoKey=mCipher.genKeyPwkdf2(password, getPbkSalt(), CryptoTool.NUM_ITERATIONS).getEncoded();
+            cleartextServerUser = mCipher.decryptB64String(getRestUsername(), mCryptoKey, getRestUserNameIv());
+            cleartextServerPass = mCipher.decryptB64String(getRestPassword(), mCryptoKey, getRestPasswordIv());
             int statusCode = performLogin(cleartextServerUser, cleartextServerPass);
             if (statusCode == RestClient.NULL_ERROR) {
                 locked = false;
@@ -258,6 +232,21 @@ public class BankingApplication extends Application {
         return locked;
     }
 
+    
+    /**Returns the AES key currently in use.
+     * @return The AES key currently in use.
+     */
+    public byte[] getCryptoKey(){
+        return mCryptoKey;
+    }
+    
+    /** Returns the salt to be used for the password-generated AES key.
+     * @return The salt to be used for the password-generated AES key.
+     */
+    public byte[] getPbkSalt(){
+        return Base64.decode(getSharedPrefs().getString(PREF_DERIVED_KEY_SALT, ""), Base64.DEFAULT);
+    }
+    
     /**
      * Returns the stored username for the REST service.
      * @return The stored username for the REST service.
@@ -298,12 +287,11 @@ public class BankingApplication extends Application {
      */
     public void setServerCredentials(String username, String password) throws GeneralSecurityException {
         
-        byte[] key=Base64.decode(mCipher.DEFAULT_B64_KEY_STRING, Base64.DEFAULT);
         byte[] userIv=mCipher.getIv();
         byte[] passwordIv=mCipher.getIv();
         
-        String cryptUsername=mCipher.encryptToB64String(username, key, userIv);
-        String cryptPassword=mCipher.encryptToB64String(password, key, passwordIv);
+        String cryptUsername=mCipher.encryptToB64String(username, mCryptoKey, userIv);
+        String cryptPassword=mCipher.encryptToB64String(password, mCryptoKey, passwordIv);
         
         Editor e = getSharedPrefs().edit();
         e.putString(PREF_REST_USER, cryptUsername);
@@ -311,6 +299,55 @@ public class BankingApplication extends Application {
         e.putString(PREF_REST_USER_IV, new String(Base64.encode(userIv, Base64.DEFAULT)));
         e.putString(PREF_REST_PASSWORD_IV, new String(Base64.encode(passwordIv, Base64.DEFAULT)));
         e.commit();
+    }
+    
+    /**
+     * Sets the local password, accomplished by storing a hashcode.
+     * @param password The plain String version of the password to set.
+     * @throws NoSuchAlgorithmException if the hashing algorithm is unavailable
+     * @throws UnsupportedEncodingException if Base64 encoding is not available
+     */
+    public void setLocalPassword(String password) throws NoSuchAlgorithmException,
+            UnsupportedEncodingException {
+    
+        // First we generate a random salt
+        SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+        byte[] saltByteArray = new byte[32];
+        random.nextBytes(saltByteArray);
+    
+        // Perform the hash, getting a Base64 encoded String
+        String hashString = hash(password, saltByteArray);
+    
+        // Base64 encode the salt, store our strings
+        byte[] b64Salt = Base64.encode(saltByteArray, Base64.DEFAULT);
+        String saltString = new String(b64Salt);
+    
+        Editor e = getSharedPrefs().edit();
+        e.putString(PREF_LOCALPASS_HASH, hashString);
+        e.putString(PREF_LOCALPASS_SALT, saltString);
+        e.commit();
+    }
+
+    /** Generates a key using PBKDF2 and uses it to encrypt and set the banking service credentials. Also sets the local password (which will be checked by hash before being used for generating a key).
+     * @param localPass The local password to set.
+     * @param restUser The username for the banking service.
+     * @param restPass The password for the banking service.
+     * @throws GeneralSecurityException if a cryptographic operation failed.
+     * @throws UnsupportedEncodingException if Base64 encoding  is unavailable.
+     */
+    public void setCredentials(String localPass, String restUser, String restPass) throws GeneralSecurityException, UnsupportedEncodingException{
+        
+        Editor e=getSharedPrefs().edit();
+        byte[] salt=mCipher.getSalt();
+        String b64Salt=new String(Base64.encode(salt, Base64.DEFAULT));
+        e.putString(PREF_DERIVED_KEY_SALT, b64Salt);
+        e.commit();
+        
+        mCryptoKey=mCipher.genKeyPwkdf2(localPass, salt, CryptoTool.NUM_ITERATIONS).getEncoded();
+        
+        setLocalPassword(localPass);
+        setServerCredentials(restUser, restPass);
+        
     }
 
     /**
@@ -358,9 +395,8 @@ public class BankingApplication extends Application {
         String statementHtml = restClient.getStatement(getRestServer(), getPort());
 
         CryptoTool cipher=new CryptoTool();
-        byte[] key=Base64.decode(CryptoTool.DEFAULT_B64_KEY_STRING, Base64.DEFAULT);
         byte[] iv=cipher.getIv();
-        byte[] ciphertext = cipher.encrypt(statementHtml.getBytes(), key, iv);
+        byte[] ciphertext = cipher.encrypt(statementHtml.getBytes(), mCryptoKey, iv);
         
         String timestamp=Long.toString(System.currentTimeMillis());
         

@@ -15,6 +15,7 @@ import org.json.JSONException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -34,6 +35,9 @@ public class SetLocalPasswordActivity extends Activity {
     private Context mCtx;
     private BankingApplication mThisApplication;
     
+    private String restUser;
+    private String restPass;
+    
     private final static String TAG="SetLocalPasswordActivity";
     
     /** Called when the Activity is first created */
@@ -45,6 +49,9 @@ public class SetLocalPasswordActivity extends Activity {
         mCtx=this;
         mThisApplication=(BankingApplication) getApplication();
         
+        restUser=getIntent().getStringExtra("restUser");
+        restPass=getIntent().getStringExtra("restPass");
+                
         mPasswordField=(EditText) findViewById(R.id.setupunlockactivity_password);
         mConfirmPasswordField=(EditText) findViewById(R.id.setupunlockactivity_repeat_password);
         mDoneButton=(Button) findViewById(R.id.setupunlockactivity_donebutton);
@@ -67,7 +74,7 @@ public class SetLocalPasswordActivity extends Activity {
             Toast.makeText(mCtx, R.string.error_passwords_not_matching, Toast.LENGTH_SHORT).show();
         } else {
             try {
-                mThisApplication.setLocalPassword(pass1);
+                mThisApplication.setCredentials(pass2, restUser, restPass);
                 mThisApplication.unlockApplication(pass2);
             } catch (NoSuchAlgorithmException e){
                 Toast.makeText(mCtx, R.string.error_toast_hasherror, Toast.LENGTH_LONG).show();

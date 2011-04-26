@@ -87,22 +87,18 @@ public class SetServerCredentialsActivity extends Activity {
             return;
         }
 
-        try {
-            if (statuscode == RestClient.NULL_ERROR) {
-                mThisApplication.setServerCredentials(username, password);
-                Editor e = mThisApplication.getSharedPrefs().edit();
-                e.putBoolean(BankingApplication.PREF_FIRST_RUN, false);
-                e.commit();
-                mThisApplication.lockApplication();
-                Intent i = new Intent(mCtx, SetLocalPasswordActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(i);
-            } else {
-                Toast.makeText(mCtx, R.string.toast_loginfailed, Toast.LENGTH_SHORT).show();
-            }
-        } catch (GeneralSecurityException e) {
-            Toast.makeText(mCtx, "Crypto failure", Toast.LENGTH_SHORT).show();
-            Log.e(TAG, e.toString());
+        if (statuscode == RestClient.NULL_ERROR) {
+            Editor e = mThisApplication.getSharedPrefs().edit();
+            e.putBoolean(BankingApplication.PREF_FIRST_RUN, false);
+            e.commit();
+            mThisApplication.lockApplication();
+            Intent i = new Intent(mCtx, SetLocalPasswordActivity.class);
+            i.putExtra("restUser", username);
+            i.putExtra("restPass", password);
+            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            startActivity(i);
+        } else {
+            Toast.makeText(mCtx, R.string.toast_loginfailed, Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -29,16 +29,16 @@ import android.util.Base64;
  */
 public class CryptoTool {
 
-    private static final String CRYPTO_SPEC = "AES/CBC/PKCS5Padding";
-    private final static int KEY_BITS = 256;
-    private final static int IV_BYTES = 16;
-    private final static int SALT_BYTES = 32;
-    private final static int NUM_ITERATIONS = 1000;
+    public static final String CRYPTO_SPEC = "AES/CBC/PKCS5Padding";
+    public final static int KEY_BITS = 256;
+    public final static int IV_BYTES = 16;
+    public final static int SALT_BYTES = 32;
+    public final static int NUM_ITERATIONS = 1000;
 
     /** Arbitrary key */
     public static final String DEFAULT_B64_KEY_STRING = "T0xXpDs1lT9q36aPehvDnaX3EgaFlM4JKIGYvqTqld0=";
 
-    /** No-argument constuctor. Doesn't do anything.  */
+    /** No-argument constuctor. Doesn't do anything. */
     public CryptoTool() {
 
     }
@@ -54,9 +54,11 @@ public class CryptoTool {
      * @throws NoSuchAlgorithmException if the encryption algorithm isn't available.
      * @throws BadPaddingException if the padding was bad
      * @throws IllegalBlockSizeException if the cipher block is of an illegal size
-     * @throws InvalidAlgorithmParameterException if the algorithm has had parameters set 
+     * @throws InvalidAlgorithmParameterException if the algorithm has had parameters set
      */
-    public String encryptToB64String(String cleartext, byte[] key, byte[] iv) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
+    public String encryptToB64String(String cleartext, byte[] key, byte[] iv)
+            throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException,
+            BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
         String ciphertext = "";
 
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
@@ -82,9 +84,11 @@ public class CryptoTool {
      * @throws NoSuchAlgorithmException if the encryption algorithm isn't available.
      * @throws BadPaddingException if the padding was bad
      * @throws IllegalBlockSizeException if the cipher block is of an illegal size
-     * @throws InvalidAlgorithmParameterException if the algorithm has had parameters set 
+     * @throws InvalidAlgorithmParameterException if the algorithm has had parameters set
      */
-    public byte[] encrypt(byte[] cleartext, byte[] key, byte[] iv) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
+    public byte[] encrypt(byte[] cleartext, byte[] key, byte[] iv) throws InvalidKeyException,
+            NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException,
+            IllegalBlockSizeException, InvalidAlgorithmParameterException {
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
 
         Cipher cipher = Cipher.getInstance(CRYPTO_SPEC);
@@ -95,7 +99,7 @@ public class CryptoTool {
 
         return ciphertextBytes;
     }
-    
+
     /**
      * Decrypts the provided base64 String and returns plaintext.
      * @param ciphertextB64 The text to be decrypted.
@@ -107,9 +111,12 @@ public class CryptoTool {
      * @throws NoSuchAlgorithmException if the encryption algorithm isn't available.
      * @throws BadPaddingException if the padding was bad
      * @throws IllegalBlockSizeException if the cipher block is of an illegal size
-     * @throws InvalidAlgorithmParameterException if the algorithm has had parameters set 
+     * @throws InvalidAlgorithmParameterException if the algorithm has had parameters set
      */
-    public String decryptB64String(String ciphertextB64, byte[] key, byte[] iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public String decryptB64String(String ciphertextB64, byte[] key, byte[] iv)
+            throws NoSuchPaddingException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException,
+            BadPaddingException {
         byte[] ciphertextBytes = Base64.decode(ciphertextB64, Base64.DEFAULT);
 
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
@@ -134,9 +141,12 @@ public class CryptoTool {
      * @throws NoSuchAlgorithmException if the encryption algorithm isn't available.
      * @throws BadPaddingException if the padding was bad
      * @throws IllegalBlockSizeException if the cipher block is of an illegal size
-     * @throws InvalidAlgorithmParameterException if the algorithm has had parameters set 
+     * @throws InvalidAlgorithmParameterException if the algorithm has had parameters set
      */
-    public String decryptBytes(byte[] ciphertextBytes, byte[] key, byte[] iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public String decryptBytes(byte[] ciphertextBytes, byte[] key, byte[] iv)
+            throws NoSuchPaddingException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException,
+            BadPaddingException {
 
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance(CRYPTO_SPEC);
@@ -148,9 +158,9 @@ public class CryptoTool {
 
         return cleartext;
     }
-    
+
     /**
-     * Generates a random AES key. 
+     * Generates a random AES key.
      * @return A randomly generated key.
      * @throws NoSuchAlgorithmException if the AES algorithm is unavailable.
      */
@@ -179,9 +189,11 @@ public class CryptoTool {
      * @param iterations How many iterations to use when generating the key.
      * @return A key produced from the given password and parameters.
      * @throws NoSuchAlgorithmException if the PBKDF2 algorithm was unavailable.
-     * @throws InvalidKeySpecException if the keyspec produced from the given parameters is rejected.
+     * @throws InvalidKeySpecException if the keyspec produced from the given parameters is
+     * rejected.
      */
-    public SecretKey genKeyPwkdf2(String password, byte[] salt, int iterations) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public SecretKey genKeyPwkdf2(String password, byte[] salt, int iterations)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
         SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, iterations, KEY_BITS);
         SecretKey generatedKey = f.generateSecret(keySpec);
@@ -192,14 +204,26 @@ public class CryptoTool {
      * Generates a random initialisation vector.
      * @return A random initialisation vector.
      */
-    public byte[] getIv(){
+    public byte[] getIv() {
         SecureRandom sr = new SecureRandom();
         byte[] iv = new byte[IV_BYTES];
         sr.nextBytes(iv);
         return iv;
     }
-    
-    /** Decodes Base64 encoded Strings.
+
+    /**
+     * Generates a random salt.
+     * @return A random salt.
+     */
+    public byte[] getSalt() {
+        SecureRandom sr = new SecureRandom();
+        byte[] salt = new byte[SALT_BYTES];
+        sr.nextBytes(salt);
+        return salt;
+    }
+
+    /**
+     * Decodes Base64 encoded Strings.
      * @param b64String The base64 String to be decoded.
      * @return The decoded String.
      */

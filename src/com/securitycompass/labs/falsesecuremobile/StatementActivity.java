@@ -151,7 +151,7 @@ public class StatementActivity extends BankingListActivity {
     private String decryptStatement(int position) {
 
         CryptoTool cipher = new CryptoTool();
-        byte[] key = Base64.decode(cipher.DEFAULT_B64_KEY_STRING, Base64.DEFAULT);
+        byte[] key = mThisApplication.getCryptoKey();
 
         // Get the IV and statement file contents
         byte[] ciphertext=null, iv=null;
