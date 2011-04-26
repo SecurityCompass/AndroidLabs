@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import android.accounts.AuthenticatorException;
@@ -55,7 +56,7 @@ public class StatementActivity extends BankingListActivity {
 
         mClearButton = (Button) findViewById(R.id.statementscreen_clear_button);
 
-        mStatementsDir = new File(mThisApplication.getStatementDir());
+        mStatementsDir = getFilesDir();
         downloadStatement();
         readStatementFiles();
 
@@ -123,6 +124,8 @@ public class StatementActivity extends BankingListActivity {
                 filteredStatements.add(f);
             }
         }
+      //The list will now display with the most recent at the top
+        Collections.reverse(filteredStatements);
         mStatements = filteredStatements.toArray(new File[0]);
     }
 

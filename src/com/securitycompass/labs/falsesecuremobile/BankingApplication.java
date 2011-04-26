@@ -5,6 +5,7 @@
 package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -70,8 +71,8 @@ public class BankingApplication extends Application {
         timingHandler = new Handler();
         foregroundedActivities = 0;
         locked = true;
-        mStatementDir=Environment.getExternalStorageDirectory().toString()+"/falsesecuremobile/";
-        Log.i(TAG, mStatementDir);
+        mStatementDir = Environment.getExternalStorageDirectory().toString()
+                + "/falsesecuremobile/";
     }
 
     /**
@@ -102,7 +103,7 @@ public class BankingApplication extends Application {
      * @return The directory where statements are kept, as a String.
      */
     public String getStatementDir() {
-        return mStatementDir;
+        return getFilesDir().toString();
     }
 
     /**
@@ -202,10 +203,10 @@ public class BankingApplication extends Application {
      * @throws IOException if there was a communication error with the server
      * @throws KeyManagementException if the server key couldn't be trusted
      * @throws HttpException if the HTTP/S request failed
-     * @throws NoSuchAlgorithmException if the set SSL encryption algorithm is unavilable 
+     * @throws NoSuchAlgorithmException if the set SSL encryption algorithm is unavilable
      */
     public int performLogin(String username, String password) throws JSONException, IOException,
-            KeyManagementException, HttpException, NoSuchAlgorithmException{
+            KeyManagementException, HttpException, NoSuchAlgorithmException {
         RestClient restClient = new RestClient(this, isHttpsEnabled());
         int statusCode = restClient.performLogin(getRestServer(), getPort(), username, password);
         return statusCode;
@@ -320,22 +321,20 @@ public class BankingApplication extends Application {
 
         String statementHtml = restClient.getStatement(getRestServer(), getPort());
 
-        File outputFile = new File(mStatementDir, Long.toString(System.currentTimeMillis())
-                + ".html");
-        File outputDir = new File(mStatementDir);
-        outputDir.mkdirs();
+        FileOutputStream outputFileStream = openFileOutput(Long
+                .toString(System.currentTimeMillis())
+                + ".html", MODE_PRIVATE);
 
-        FileWriter fw = new FileWriter(outputFile);
-        fw.write(statementHtml);
-        fw.flush();
-        fw.close();
+        outputFileStream.write(statementHtml.getBytes());
+        outputFileStream.flush();
+        outputFileStream.close();
     }
 
     /**
      * Clears all statements from the download directory
      */
     public void clearStatements() {
-        File downloadDir = new File(mStatementDir);
+        File downloadDir = getFilesDir();
         File[] directoryContents = downloadDir.listFiles();
         for (File f : directoryContents) {
             f.delete();
