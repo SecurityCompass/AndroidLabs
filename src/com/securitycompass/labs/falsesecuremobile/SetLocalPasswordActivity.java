@@ -24,7 +24,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-/** This class prompts the user to set their local unlock password
+/**
+ * This class prompts the user to set their local unlock password
  * @author Ewan Sinclair
  */
 public class SetLocalPasswordActivity extends Activity {
@@ -34,76 +35,90 @@ public class SetLocalPasswordActivity extends Activity {
     private Button mDoneButton;
     private Context mCtx;
     private BankingApplication mThisApplication;
-    
+
     private String restUser;
     private String restPass;
-    
-    private final static String TAG="SetLocalPasswordActivity";
-    
+
+    private final static String TAG = "SetLocalPasswordActivity";
+
     /** Called when the Activity is first created */
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.setlocalpasswordactivity);
-        
-        mCtx=this;
-        mThisApplication=(BankingApplication) getApplication();
-        
-        restUser=getIntent().getStringExtra("restUser");
-        restPass=getIntent().getStringExtra("restPass");
-                
-        mPasswordField=(EditText) findViewById(R.id.setupunlockactivity_password);
-        mConfirmPasswordField=(EditText) findViewById(R.id.setupunlockactivity_repeat_password);
-        mDoneButton=(Button) findViewById(R.id.setupunlockactivity_donebutton);
-        
+
+        mCtx = this;
+        mThisApplication = (BankingApplication) getApplication();
+
+        restUser = getIntent().getStringExtra("restUser");
+        restPass = getIntent().getStringExtra("restPass");
+
+        mPasswordField = (EditText) findViewById(R.id.setupunlockactivity_password);
+        mConfirmPasswordField = (EditText) findViewById(R.id.setupunlockactivity_repeat_password);
+        mDoneButton = (Button) findViewById(R.id.setupunlockactivity_donebutton);
+
         mDoneButton.setOnClickListener(new OnClickListener() {
-            
+
             @Override
             public void onClick(View v) {
                 grabAndSetPassword();
             }
         });
-        
+
     }
-    
+
     /** Grabs the two passwords entered, and sets them as the local unlock password if they match */
-    private void grabAndSetPassword(){
-        String pass1=mPasswordField.getText().toString();
-        String pass2=mConfirmPasswordField.getText().toString();
-        if(!pass1.equals(pass2)){
+    private void grabAndSetPassword() {
+        String pass1 = mPasswordField.getText().toString();
+        String pass2 = mConfirmPasswordField.getText().toString();
+        if (!pass1.equals(pass2)) {
             Toast.makeText(mCtx, R.string.error_passwords_not_matching, Toast.LENGTH_SHORT).show();
+        } else if (!isValidPassword(pass2)) {
+            Toast.makeText(mCtx, R.string.error_weak_password, Toast.LENGTH_LONG).show();
         } else {
             try {
                 mThisApplication.setCredentials(pass2, restUser, restPass);
                 mThisApplication.unlockApplication(pass2);
-            } catch (NoSuchAlgorithmException e){
+            } catch (NoSuchAlgorithmException e) {
                 Toast.makeText(mCtx, R.string.error_toast_hasherror, Toast.LENGTH_LONG).show();
                 Log.e(TAG, e.toString());
-            } catch (UnsupportedEncodingException e){
+            } catch (UnsupportedEncodingException e) {
                 Toast.makeText(mCtx, R.string.error_toast_hasherror, Toast.LENGTH_LONG).show();
                 Log.e(TAG, e.toString());
-            } catch (JSONException e){
+            } catch (JSONException e) {
                 Toast.makeText(mCtx, R.string.error_toast_json_problem, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.toString());
-            } catch (KeyManagementException e){
+            } catch (KeyManagementException e) {
                 Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG).show();
                 Log.e(TAG, e.toString());
-			} catch (IOException e) {
+            } catch (IOException e) {
                 Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.toString());
             } catch (GeneralSecurityException e) {
                 Toast.makeText(mCtx, "Crypto failure", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.toString());
             } catch (HttpException e) {
-                Toast.makeText(mCtx, R.string.error_toast_http_error + e.getStatusCode(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mCtx, R.string.error_toast_http_error + e.getStatusCode(),
+                        Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.toString());
             }
-            
+
             Toast.makeText(mCtx, R.string.initialsetup_success, Toast.LENGTH_SHORT).show();
             Intent i = new Intent(mCtx, SummaryActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
         }
     }
-    
+
+    /**
+     * Checks a String to see if it is a valid password.
+     * @param password The password to check.
+     * @return Whether the password was strong enough.
+     */
+    public boolean isValidPassword(String password) {
+        boolean valid = (password.matches(".*[A-Z].*") && password.matches(".*[a-z].*")
+                && password.matches(".*[0-9].*") && password.matches(".*[@#$%\\^&+=].*") && password
+                .length() >= 6);
+        return valid;
+    }
 }

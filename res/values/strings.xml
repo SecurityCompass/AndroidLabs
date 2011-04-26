@@ -41,6 +41,7 @@
 	<string name="error_transfer_same_account">Can\'t transfer to same account</string>
 	<string name="error_transfer_invalid_amount">Invalid amount</string>
 	<string name="error_passwords_not_matching">Passwords don\'t match</string>
+	<string name="error_weak_password">Weak password. Needs to contain an uppercase letter, a lowercase letter, a special character and be at least 6 characters long.</string>
 	<string name="error_toast_hasherror">The password checking and setting mechanism has failed. Please see your application vendor, as this is unrecoverable.</string>
 	<string name="error_ssl_algorithm">The SSL mechanism has failed due to an unsupported algorithm. Please see your application vendor, as this is unrecoverable.</string>
 	<string name="error_ssl_keymanagement">The SSL mechanism has failed due to a key management problem. Please see your application vendor, as this is	unrecoverable.</string>
