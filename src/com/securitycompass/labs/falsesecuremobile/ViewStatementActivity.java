@@ -29,6 +29,9 @@ public class ViewStatementActivity extends BankingActivity {
         if (i.hasExtra("statement_filename")) {
             String filename = i.getStringExtra("statement_filename");
             mStatementDisplay.loadUrl("file://" + filename);
+        } else if (i.hasExtra("statement_html")){
+            String html = i.getStringExtra("statement_html");
+            mStatementDisplay.loadData(html, "text/html", "utf-8");
         } else {
             Toast.makeText(this, R.string.error_invalid_statment, Toast.LENGTH_SHORT).show();
         }

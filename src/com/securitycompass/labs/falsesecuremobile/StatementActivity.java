@@ -5,7 +5,10 @@
 package com.securitycompass.labs.falsesecuremobile;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +43,7 @@ public class StatementActivity extends BankingListActivity {
     private BankingApplication mThisApplication;
     private File mStatementsDir;
     private File[] mStatements;
+    private File[] mIvFiles;
     private Button mClearButton;
     private StatementAdapter mAdapter;
 
@@ -79,7 +84,7 @@ public class StatementActivity extends BankingListActivity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
                 Intent intent = new Intent(mCtx, ViewStatementActivity.class);
-                intent.putExtra("statement_filename", mStatements[position].getAbsolutePath());
+                intent.putExtra("statement_html", decryptStatement(position));
                 startActivity(intent);
             }
         });
@@ -100,17 +105,20 @@ public class StatementActivity extends BankingListActivity {
     private void downloadStatement() {
         try {
             mThisApplication.downloadStatement();
-        }  catch (KeyManagementException e) {
+        } catch (KeyManagementException e) {
             Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG).show();
             Log.e(TAG, e.toString());
         } catch (NoSuchAlgorithmException e) {
             Toast.makeText(mCtx, R.string.error_ssl_algorithm, Toast.LENGTH_LONG).show();
             Log.e(TAG, e.toString());
-        } catch (AuthenticatorException e){
+        } catch (AuthenticatorException e) {
             Log.e(TAG, e.toString());
-            authenticate();  
+            authenticate();
         } catch (IOException e) {
             Toast.makeText(mCtx, R.string.error_toast_rest_problem, Toast.LENGTH_SHORT).show();
+            Log.e(TAG, e.toString());
+        } catch (Exception e) {
+            Toast.makeText(mCtx, "General Error", Toast.LENGTH_SHORT).show();
             Log.e(TAG, e.toString());
         }
     }
@@ -119,14 +127,74 @@ public class StatementActivity extends BankingListActivity {
     private void readStatementFiles() {
         File[] allFiles = mStatementsDir.listFiles();
         List<File> filteredStatements = new ArrayList<File>();
+        List<File> filteredIvFiles = new ArrayList<File>();
+
         for (File f : allFiles) {
-            if (f.getName().matches("^[0-9]*\\.html")) {
-                filteredStatements.add(f);
+            if (f.getName().matches("^[0-9]*\\.statement")) {
+                String ivPath = f.getPath().replaceAll("\\.statement", "\\.iv");
+                File fIv = new File(ivPath);
+                if (fIv.exists()) {
+                    filteredStatements.add(f);
+                    filteredIvFiles.add(fIv);
+                }
+
             }
+
         }
-      //The list will now display with the most recent at the top
+        // The list will now display with the most recent at the top
         Collections.reverse(filteredStatements);
+        Collections.reverse(filteredIvFiles);
         mStatements = filteredStatements.toArray(new File[0]);
+        mIvFiles = filteredIvFiles.toArray(new File[0]);
+    }
+
+    private String decryptStatement(int position) {
+
+        CryptoTool cipher = new CryptoTool();
+        byte[] key = Base64.decode(cipher.DEFAULT_B64_KEY_STRING, Base64.DEFAULT);
+
+        // Get the IV and statement file contents
+        byte[] ciphertext=null, iv=null;
+        try {
+            ciphertext = readFile(mStatements[position]);
+            iv = readFile(mIvFiles[position]);
+        } catch (Exception e) {
+            Toast.makeText(mCtx, "Error reading statement file", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, e.toString());
+        }
+
+        String cleartext="";
+        try {
+            cleartext=cipher.decryptBytes(ciphertext, key, iv);
+        } catch (Exception e) {
+            Toast.makeText(mCtx, "Error decrypting", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, e.toString());
+        }
+
+        return cleartext;
+    }
+
+    private byte[] readFile(File f) throws FileNotFoundException, IOException {
+
+        InputStream is = new FileInputStream(f);
+        byte[] bytes = new byte[(int) f.length()];
+
+        // Read in the bytes
+        int offset = 0;
+        int numRead = 0;
+        while (offset < bytes.length
+                && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+            offset += numRead;
+        }
+
+        // Ensure all the bytes have been read in
+        if (offset < bytes.length) {
+            throw new IOException("Could not completely read file " + f.getName());
+        }
+
+        // Close the input stream and return bytes
+        is.close();
+        return bytes;
     }
 
     private class StatementAdapter extends ArrayAdapter<File> {
@@ -146,7 +214,7 @@ public class StatementActivity extends BankingListActivity {
             }
 
             // Extract the creation time of the file from its filename
-            String timeStampString = mStatements[position].getName().replaceAll("\\.html", "");
+            String timeStampString = mStatements[position].getName().replaceAll("\\.statement", "");
             long timeStamp = Long.parseLong(timeStampString);
 
             int formatFlags = DateUtils.LENGTH_MEDIUM | DateUtils.FORMAT_24HOUR

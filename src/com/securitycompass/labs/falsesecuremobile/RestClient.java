@@ -117,6 +117,7 @@ public class RestClient {
      * @param variables key/value pairs for all parameters to be POSTed.
      * @return The data passed back from the server, as a String.
      * @throws IOException if the network connection failed.
+     * @throws HttpException if the HTTP/S request failed
      */
     public String postHttpContent(String urlString, Map<String, String> variables)
             throws IOException, HttpException {
