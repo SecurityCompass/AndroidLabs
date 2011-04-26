@@ -20,6 +20,7 @@ import android.accounts.AuthenticatorException;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Base64;
@@ -43,7 +44,7 @@ public class BankingApplication extends Application {
     private static final int HASH_ITERATIONS = 1000;
 
     /** Where we'll store statements */
-    public static final String STATEMENT_DIR = "/sdcard/falsesecuremobile/";
+    private String mStatementDir;
 
     /* These variables are used for anchoring preference keys */
     /** The name of the shared preferences file for prefs not accessible via the preferences screen */
@@ -59,7 +60,7 @@ public class BankingApplication extends Application {
     /** The password to present to the banking service */
     public static final String PREF_REST_PASSWORD = "serverpass";
 
-    /**  */
+    /** A tag to identify the class if it logs anything */
     public static final String TAG = "BankingApplication";
 
     /** Setup for when the application initialises. */
@@ -69,6 +70,8 @@ public class BankingApplication extends Application {
         timingHandler = new Handler();
         foregroundedActivities = 0;
         locked = true;
+        mStatementDir=Environment.getExternalStorageDirectory().toString()+"/falsesecuremobile/";
+        Log.i(TAG, mStatementDir);
     }
 
     /**
@@ -99,7 +102,7 @@ public class BankingApplication extends Application {
      * @return The directory where statements are kept, as a String.
      */
     public String getStatementDir() {
-        return STATEMENT_DIR;
+        return mStatementDir;
     }
 
     /**
@@ -317,9 +320,9 @@ public class BankingApplication extends Application {
 
         String statementHtml = restClient.getStatement(getRestServer(), getPort());
 
-        File outputFile = new File(STATEMENT_DIR, Long.toString(System.currentTimeMillis())
+        File outputFile = new File(mStatementDir, Long.toString(System.currentTimeMillis())
                 + ".html");
-        File outputDir = new File(STATEMENT_DIR);
+        File outputDir = new File(mStatementDir);
         outputDir.mkdirs();
 
         FileWriter fw = new FileWriter(outputFile);
@@ -332,7 +335,7 @@ public class BankingApplication extends Application {
      * Clears all statements from the download directory
      */
     public void clearStatements() {
-        File downloadDir = new File(STATEMENT_DIR);
+        File downloadDir = new File(mStatementDir);
         File[] directoryContents = downloadDir.listFiles();
         for (File f : directoryContents) {
             f.delete();
