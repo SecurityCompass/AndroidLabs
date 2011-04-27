@@ -98,7 +98,7 @@ public class SetLocalPasswordActivity extends Activity {
                 Toast.makeText(mCtx, "Crypto failure", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.toString());
             } catch (HttpException e) {
-                Toast.makeText(mCtx, R.string.error_toast_http_error + e.getStatusCode(),
+                Toast.makeText(mCtx, getString(R.string.error_toast_http_error) + e.getStatusCode(),
                         Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.toString());
             }
