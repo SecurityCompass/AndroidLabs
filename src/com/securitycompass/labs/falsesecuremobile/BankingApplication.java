@@ -38,7 +38,7 @@ public class BankingApplication extends Application {
     private boolean locked;
     private String cleartextServerUser;
     private String cleartextServerPass;
-    
+
     private int foregroundedActivities;
     private Handler timingHandler;
     private CryptoTool mCipher;
@@ -64,7 +64,7 @@ public class BankingApplication extends Application {
     public static final String PREF_REST_PASSWORD_IV = "serverpassiv";
     /** The initialisation vector for the encrypted banking service username */
     public static final String PREF_REST_USER_IV = "serveruseriv";
-    public static String PREF_DERIVED_KEY_SALT="derivedkeysalt";
+    public static String PREF_DERIVED_KEY_SALT = "derivedkeysalt";
 
     /** A tag to identify the class if it logs anything */
     public static final String TAG = "BankingApplication";
@@ -76,7 +76,7 @@ public class BankingApplication extends Application {
         timingHandler = new Handler();
         foregroundedActivities = 0;
         locked = true;
-        mCipher=new CryptoTool();
+        mCipher = new CryptoTool();
     }
 
     /**
@@ -191,9 +191,17 @@ public class BankingApplication extends Application {
 
     /** Performs all operations necessary to secure the application. */
     public void lockApplication() {
-        cleartextServerUser="";
-        cleartextServerPass="";
+        cleartextServerUser = "";
+        cleartextServerPass = "";
+        sessionKey = "";
+        sessionCreateDate = "";
+        if (mCryptoKey != null) {
+            for (byte b : mCryptoKey) {
+                b = 'x';
+            }
+        }
         locked = true;
+        System.gc();
     }
 
     /**
@@ -209,12 +217,16 @@ public class BankingApplication extends Application {
      * @throws HttpException if the HTTP/S request failed
      */
     public int unlockApplication(String password) throws UnsupportedEncodingException,
-            NoSuchAlgorithmException, IOException, JSONException, KeyManagementException, GeneralSecurityException, HttpException {
-        
+            NoSuchAlgorithmException, IOException, JSONException, KeyManagementException,
+            GeneralSecurityException, HttpException {
+
         if (checkPassword(password)) {
-            mCryptoKey=mCipher.genKeyPwkdf2(password, getPbkSalt(), CryptoTool.NUM_ITERATIONS).getEncoded();
-            cleartextServerUser = mCipher.decryptB64String(getRestUsername(), mCryptoKey, getRestUserNameIv());
-            cleartextServerPass = mCipher.decryptB64String(getRestPassword(), mCryptoKey, getRestPasswordIv());
+            mCryptoKey = mCipher.genKeyPwkdf2(password, getPbkSalt(), CryptoTool.NUM_ITERATIONS)
+                    .getEncoded();
+            cleartextServerUser = mCipher.decryptB64String(getRestUsername(), mCryptoKey,
+                    getRestUserNameIv());
+            cleartextServerPass = mCipher.decryptB64String(getRestPassword(), mCryptoKey,
+                    getRestPasswordIv());
             int statusCode = performLogin(cleartextServerUser, cleartextServerPass);
             if (statusCode == RestClient.NULL_ERROR) {
                 locked = false;
@@ -232,21 +244,22 @@ public class BankingApplication extends Application {
         return locked;
     }
 
-    
-    /**Returns the AES key currently in use.
+    /**
+     * Returns the AES key currently in use.
      * @return The AES key currently in use.
      */
-    public byte[] getCryptoKey(){
+    public byte[] getCryptoKey() {
         return mCryptoKey;
     }
-    
-    /** Returns the salt to be used for the password-generated AES key.
+
+    /**
+     * Returns the salt to be used for the password-generated AES key.
      * @return The salt to be used for the password-generated AES key.
      */
-    public byte[] getPbkSalt(){
+    public byte[] getPbkSalt() {
         return Base64.decode(getSharedPrefs().getString(PREF_DERIVED_KEY_SALT, ""), Base64.DEFAULT);
     }
-    
+
     /**
      * Returns the stored username for the REST service.
      * @return The stored username for the REST service.
@@ -254,12 +267,12 @@ public class BankingApplication extends Application {
     public String getRestUsername() {
         return getSharedPrefs().getString(PREF_REST_USER, "");
     }
-    
+
     /**
      * Returns the IV for the stored username for the REST service.
      * @return The IV for the stored username for the REST service.
      */
-    public byte[] getRestUserNameIv(){
+    public byte[] getRestUserNameIv() {
         return Base64.decode(getSharedPrefs().getString(PREF_REST_USER_IV, ""), Base64.DEFAULT);
     }
 
@@ -270,7 +283,7 @@ public class BankingApplication extends Application {
     public String getRestPassword() {
         return getSharedPrefs().getString(PREF_REST_PASSWORD, "");
     }
-    
+
     /**
      * Returns the IV for the stored password for the REST service.
      * @return The IV for the stored password for the REST service.
@@ -285,14 +298,15 @@ public class BankingApplication extends Application {
      * @param password The password to set.
      * @throws GeneralSecurityException if a cryptographic operation failed
      */
-    public void setServerCredentials(String username, String password) throws GeneralSecurityException {
-        
-        byte[] userIv=mCipher.getIv();
-        byte[] passwordIv=mCipher.getIv();
-        
-        String cryptUsername=mCipher.encryptToB64String(username, mCryptoKey, userIv);
-        String cryptPassword=mCipher.encryptToB64String(password, mCryptoKey, passwordIv);
-        
+    public void setServerCredentials(String username, String password)
+            throws GeneralSecurityException {
+
+        byte[] userIv = mCipher.getIv();
+        byte[] passwordIv = mCipher.getIv();
+
+        String cryptUsername = mCipher.encryptToB64String(username, mCryptoKey, userIv);
+        String cryptPassword = mCipher.encryptToB64String(password, mCryptoKey, passwordIv);
+
         Editor e = getSharedPrefs().edit();
         e.putString(PREF_REST_USER, cryptUsername);
         e.putString(PREF_REST_PASSWORD, cryptPassword);
@@ -300,7 +314,7 @@ public class BankingApplication extends Application {
         e.putString(PREF_REST_PASSWORD_IV, new String(Base64.encode(passwordIv, Base64.DEFAULT)));
         e.commit();
     }
-    
+
     /**
      * Sets the local password, accomplished by storing a hashcode.
      * @param password The plain String version of the password to set.
@@ -309,45 +323,49 @@ public class BankingApplication extends Application {
      */
     public void setLocalPassword(String password) throws NoSuchAlgorithmException,
             UnsupportedEncodingException {
-    
+
         // First we generate a random salt
         SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
         byte[] saltByteArray = new byte[32];
         random.nextBytes(saltByteArray);
-    
+
         // Perform the hash, getting a Base64 encoded String
         String hashString = hash(password, saltByteArray);
-    
+
         // Base64 encode the salt, store our strings
         byte[] b64Salt = Base64.encode(saltByteArray, Base64.DEFAULT);
         String saltString = new String(b64Salt);
-    
+
         Editor e = getSharedPrefs().edit();
         e.putString(PREF_LOCALPASS_HASH, hashString);
         e.putString(PREF_LOCALPASS_SALT, saltString);
         e.commit();
     }
 
-    /** Generates a key using PBKDF2 and uses it to encrypt and set the banking service credentials. Also sets the local password (which will be checked by hash before being used for generating a key).
+    /**
+     * Generates a key using PBKDF2 and uses it to encrypt and set the banking service credentials.
+     * Also sets the local password (which will be checked by hash before being used for generating
+     * a key).
      * @param localPass The local password to set.
      * @param restUser The username for the banking service.
      * @param restPass The password for the banking service.
      * @throws GeneralSecurityException if a cryptographic operation failed.
-     * @throws UnsupportedEncodingException if Base64 encoding  is unavailable.
+     * @throws UnsupportedEncodingException if Base64 encoding is unavailable.
      */
-    public void setCredentials(String localPass, String restUser, String restPass) throws GeneralSecurityException, UnsupportedEncodingException{
-        
-        Editor e=getSharedPrefs().edit();
-        byte[] salt=mCipher.getSalt();
-        String b64Salt=new String(Base64.encode(salt, Base64.DEFAULT));
+    public void setCredentials(String localPass, String restUser, String restPass)
+            throws GeneralSecurityException, UnsupportedEncodingException {
+
+        Editor e = getSharedPrefs().edit();
+        byte[] salt = mCipher.getSalt();
+        String b64Salt = new String(Base64.encode(salt, Base64.DEFAULT));
         e.putString(PREF_DERIVED_KEY_SALT, b64Salt);
         e.commit();
-        
-        mCryptoKey=mCipher.genKeyPwkdf2(localPass, salt, CryptoTool.NUM_ITERATIONS).getEncoded();
-        
+
+        mCryptoKey = mCipher.genKeyPwkdf2(localPass, salt, CryptoTool.NUM_ITERATIONS).getEncoded();
+
         setLocalPassword(localPass);
         setServerCredentials(restUser, restPass);
-        
+
     }
 
     /**
@@ -374,8 +392,7 @@ public class BankingApplication extends Application {
     }
 
     /**
-     * Downloads a statement and displays it.
-     * within this class.
+     * Downloads a statement and displays it. within this class.
      * @throws IOException if network communication failed
      * @throws NoSuchAlgorithmException if the algorithm used to hash the password is unavilable
      * @throws KeyManagementException if the server's SSL certificate couldn't be trusted
@@ -388,18 +405,18 @@ public class BankingApplication extends Application {
 
         String statementHtml = restClient.getStatement(getRestServer(), getPort());
 
-        CryptoTool cipher=new CryptoTool();
-        byte[] iv=cipher.getIv();
+        CryptoTool cipher = new CryptoTool();
+        byte[] iv = cipher.getIv();
         byte[] ciphertext = cipher.encrypt(statementHtml.getBytes(), mCryptoKey, iv);
-        
-        String timestamp=Long.toString(System.currentTimeMillis());
-        
+
+        String timestamp = Long.toString(System.currentTimeMillis());
+
         FileOutputStream outputFileStream = openFileOutput(timestamp + ".statement", MODE_PRIVATE);
 
         outputFileStream.write(ciphertext);
         outputFileStream.flush();
         outputFileStream.close();
-        
+
         outputFileStream = openFileOutput(timestamp + ".iv", MODE_PRIVATE);
 
         outputFileStream.write(iv);
