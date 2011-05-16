@@ -88,7 +88,10 @@ public class SetLocalPasswordActivity extends Activity {
             } catch (JSONException e) {
                 Toast.makeText(mCtx, R.string.error_toast_json_problem, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.toString());
-            } catch (KeyManagementException e) {
+            } catch (HttpException e) {
+                Toast.makeText(mCtx, getString(R.string.error_toast_http_error) + e.getStatusCode(), Toast.LENGTH_SHORT).show();
+                Log.e(TAG, e.toString());
+            } catch (KeyManagementException e){
                 Toast.makeText(mCtx, R.string.error_ssl_keymanagement, Toast.LENGTH_LONG).show();
                 Log.e(TAG, e.toString());
             } catch (IOException e) {
@@ -96,10 +99,6 @@ public class SetLocalPasswordActivity extends Activity {
                 Log.e(TAG, e.toString());
             } catch (GeneralSecurityException e) {
                 Toast.makeText(mCtx, "Crypto failure", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, e.toString());
-            } catch (HttpException e) {
-                Toast.makeText(mCtx, getString(R.string.error_toast_http_error) + e.getStatusCode(),
-                        Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.toString());
             }
 
