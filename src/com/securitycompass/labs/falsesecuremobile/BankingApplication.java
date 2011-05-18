@@ -413,8 +413,10 @@ public class BankingApplication extends Application {
     public void clearStatements() {
         File downloadDir = getFilesDir();
         File[] directoryContents = downloadDir.listFiles();
-        for (File f : directoryContents) {
-            f.delete();
+        if (directoryContents != null) {
+            for (File f : directoryContents) {
+                f.delete();
+            }
         }
     }
 
