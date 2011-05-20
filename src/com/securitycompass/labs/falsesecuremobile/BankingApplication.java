@@ -44,9 +44,6 @@ public class BankingApplication extends Application {
     // How many hashing iterations to perform
     private static final int HASH_ITERATIONS = 1000;
 
-    /** Where we'll store statements */
-    private String mStatementDir;
-
     /* These variables are used for anchoring preference keys */
     /** The name of the shared preferences file for prefs not accessible via the preferences screen */
     public static final String SHARED_PREFS = "preferences";
@@ -71,8 +68,6 @@ public class BankingApplication extends Application {
         timingHandler = new Handler();
         foregroundedActivities = 0;
         locked = true;
-        mStatementDir = Environment.getExternalStorageDirectory().toString()
-                + "/falsesecuremobile/";
     }
 
     /**
