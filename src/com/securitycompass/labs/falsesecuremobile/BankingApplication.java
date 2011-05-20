@@ -196,8 +196,8 @@ public class BankingApplication extends Application {
         sessionKey = "";
         sessionCreateDate = "";
         if (mCryptoKey != null) {
-            for (byte b : mCryptoKey) {
-                b = 'x';
+            for (int count=0; count < mCryptoKey.length; count++) {
+                mCryptoKey[count] = 'x';
             }
         }
         locked = true;
