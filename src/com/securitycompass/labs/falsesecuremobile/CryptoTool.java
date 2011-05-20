@@ -35,9 +35,6 @@ public class CryptoTool {
     public final static int SALT_BYTES = 32;
     public final static int NUM_ITERATIONS = 1000;
 
-    /** Arbitrary key */
-    public static final String DEFAULT_B64_KEY_STRING = "T0xXpDs1lT9q36aPehvDnaX3EgaFlM4JKIGYvqTqld0=";
-
     /** No-argument constuctor. Doesn't do anything. */
     public CryptoTool() {
 
