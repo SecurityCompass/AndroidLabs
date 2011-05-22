@@ -89,13 +89,10 @@ public class SetServerCredentialsActivity extends Activity {
         }
         
         if(statuscode==RestClient.NULL_ERROR){
-            mThisApplication.setServerCredentials(username, password);
-            Editor e=mThisApplication.getSharedPrefs().edit();
-            e.putBoolean(BankingApplication.PREF_FIRST_RUN, false);
-            e.commit();
             mThisApplication.lockApplication();
             Intent i=new Intent(mCtx, SetLocalPasswordActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            i.putExtra("username", username);
+            i.putExtra("password", password);
             startActivity(i);
         } else {
             Toast.makeText(mCtx, R.string.toast_loginfailed, Toast.LENGTH_SHORT).show();
