@@ -97,7 +97,6 @@ public class SetServerCredentialsActivity extends Activity {
             Intent i = new Intent(mCtx, SetLocalPasswordActivity.class);
             i.putExtra("restUser", username);
             i.putExtra("restPass", password);
-            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(i);
         } else {
             Toast.makeText(mCtx, R.string.toast_loginfailed, Toast.LENGTH_SHORT).show();

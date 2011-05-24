@@ -67,6 +67,13 @@ public class LoginActivity extends BankingActivity {
 
     }
 
+    /** Pushes the user to the setup screen whenever they land on this Activity without having set up the app. */
+    @Override
+    public void onResume(){
+        super.onResume();
+        checkFirstRun();
+    }
+    
     /**
      * Checks if the application is running for the first time, and sends the user to the
      * appropriate setup if it is.
@@ -74,7 +81,6 @@ public class LoginActivity extends BankingActivity {
     private void checkFirstRun() {
         if (mSharedPrefs.getBoolean(BankingApplication.PREF_FIRST_RUN, true)) {
             Intent i = new Intent(mCtx, SetServerCredentialsActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(i);
         }
     }
