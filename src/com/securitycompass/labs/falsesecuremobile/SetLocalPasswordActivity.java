@@ -71,6 +71,7 @@ public class SetLocalPasswordActivity extends Activity {
     
     /** Grabs the two passwords entered, and sets them as the local unlock password if they match */
     private void grabAndSetPassword(){
+             
         String pass1=mPasswordField.getText().toString();
         String pass2=mConfirmPasswordField.getText().toString();
         if(!pass1.equals(pass2)){
@@ -102,7 +103,11 @@ public class SetLocalPasswordActivity extends Activity {
                 Log.e(TAG, e.toString());
             }
             
+            //Inform the user that setup is complete and unmark the first run flag
             Toast.makeText(mCtx, R.string.initialsetup_success, Toast.LENGTH_SHORT).show();
+            Editor e=mThisApplication.getSharedPrefs().edit();
+            e.putBoolean(BankingApplication.PREF_FIRST_RUN, false);
+            e.commit();
             Intent i = new Intent(mCtx, SummaryActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
