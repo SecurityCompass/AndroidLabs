@@ -91,20 +91,16 @@ public class SetServerCredentialsActivity extends Activity {
         }
 
         if (statuscode == RestClient.NULL_ERROR) {
-            Editor e = mThisApplication.getSharedPrefs().edit();
-            e.putBoolean(BankingApplication.PREF_FIRST_RUN, false);
-            e.commit();
             mThisApplication.lockApplication();
             Intent i = new Intent(mCtx, SetLocalPasswordActivity.class);
             i.putExtra("restUser", username);
             i.putExtra("restPass", password);
-            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(i);
         } else {
             Toast.makeText(mCtx, R.string.toast_loginfailed, Toast.LENGTH_SHORT).show();
         }
     }
-    
+
     /** Called when an item is selected from the options menu */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -145,12 +141,12 @@ public class SetServerCredentialsActivity extends Activity {
         Intent i = new Intent(this, EditPreferencesActivity.class);
         startActivity(i);
     }
-    
+
     /** Launches the accounts screen, doing any necessary processing first */
     private void launchLoginScreen() {
         Intent launchLogin = new Intent(this, LoginActivity.class);
         launchLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(launchLogin);
     }
-    
+
 }

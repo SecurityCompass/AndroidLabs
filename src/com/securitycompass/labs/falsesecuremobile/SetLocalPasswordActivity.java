@@ -104,8 +104,12 @@ public class SetLocalPasswordActivity extends Activity {
                 Toast.makeText(mCtx, "Crypto failure", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, e.toString());
             }
-
+            
+            //Inform the user that setup is complete and unmark the first run flag
             Toast.makeText(mCtx, R.string.initialsetup_success, Toast.LENGTH_SHORT).show();
+            Editor e=mThisApplication.getSharedPrefs().edit();
+            e.putBoolean(BankingApplication.PREF_FIRST_RUN, false);
+            e.commit();
             Intent i = new Intent(mCtx, SummaryActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
