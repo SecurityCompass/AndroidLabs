@@ -119,7 +119,7 @@ public class SetLocalPasswordActivity extends Activity {
      */
     public boolean isValidPassword(String password) {
         boolean valid = (password.matches(".*[A-Z].*") && password.matches(".*[a-z].*")
-                && password.matches(".*[0-9].*") && password.matches(".*[@#$%\\^&+=].*") && password
+                && password.matches(".*[0-9].*") && password.matches(".*[@#$%\\^&+=!].*") && password
                 .length() >= 6);
         return valid;
     }
