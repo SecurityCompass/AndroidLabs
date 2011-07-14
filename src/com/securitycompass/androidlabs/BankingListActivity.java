@@ -2,9 +2,9 @@
  * Copyright 2011 Security Compass
  */
 
-package com.securitycompass.labs.falsesecuremobile;
+package com.securitycompass.androidlabs.base;
 
-import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -17,8 +17,8 @@ import android.view.View;
  * A superclass containing methods and variables that all Activities in this application will use
  * @author Ewan Sinclair
  */
-public class BankingActivity extends Activity {
-
+public class BankingListActivity extends ListActivity {
+    
     /** Central data store, state, and operations */
     protected BankingApplication mThisApplication;
 
@@ -26,13 +26,8 @@ public class BankingActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mThisApplication = (BankingApplication) getApplication();
-        if (mThisApplication.isLocked() && (this.getClass() != LoginActivity.class)) {
+        if (mThisApplication.isLocked()) {
             launchLoginScreen();
-        } else {
-            View v = findViewById(R.id.root_view);
-            if (v != null) {
-                v.setVisibility(View.VISIBLE);
-            }
         }
     }
 
@@ -48,33 +43,6 @@ public class BankingActivity extends Activity {
         default:
             return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options_menu, menu);
-        return true;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setAppropriateVisibility();
-        mThisApplication.registerActivityForegrounded();
-        if (mThisApplication.isLocked() && (this.getClass() != LoginActivity.class)) {
-            Intent i = new Intent(this, LoginActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(i);
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        setInvisible();
-        mThisApplication.registerActivityBackgrounded();
     }
 
     /**
@@ -97,9 +65,36 @@ public class BankingActivity extends Activity {
     public void setInvisible() {
         View v = findViewById(R.id.root_view);
         if (v != null) {
-            v.setVisibility(View.GONE);
-        }
+                v.setVisibility(View.GONE);
+            } 
 
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+        return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setAppropriateVisibility();
+        mThisApplication.registerActivityForegrounded();
+        if (mThisApplication.isLocked()) {
+            Intent i = new Intent(this, LoginActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        setInvisible();
+        mThisApplication.registerActivityBackgrounded();
     }
 
     private void resetApplication() {
@@ -117,18 +112,15 @@ public class BankingActivity extends Activity {
         startActivity(i);
     }
 
-    /**
-     * Called when the app needs authentication, normally due to a session timeout. The current
-     * activity stack will be cleared, and the login Activity brought to the front.
-     */
-    protected void authenticate() {
-        Intent i = new Intent(this, LoginActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
-    }
-    
     /** Launches the accounts screen, doing any necessary processing first */
-    private void launchLoginScreen() {
+    protected void launchLoginScreen() {
+        Intent launchLogin = new Intent(this, LoginActivity.class);
+        launchLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(launchLogin);
+    }
+
+    /** Launches the accounts screen, doing any necessary processing first */
+    protected void authenticate() {
         Intent launchLogin = new Intent(this, LoginActivity.class);
         launchLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(launchLogin);

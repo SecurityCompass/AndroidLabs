@@ -2,7 +2,7 @@
  * Copyright 2011 Security Compass
  */
 
-package com.securitycompass.labs.falsesecuremobile;
+package com.securitycompass.androidlabs.base;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -70,7 +70,7 @@ public class BankingApplication extends Application {
         timingHandler = new Handler();
         foregroundedActivities = 0;
         locked = true;
-        mStatementDir=Environment.getExternalStorageDirectory().toString()+"/falsesecuremobile/";
+        mStatementDir=Environment.getExternalStorageDirectory().toString()+"/androidlabs/";
         Log.i(TAG, mStatementDir);
     }
 
