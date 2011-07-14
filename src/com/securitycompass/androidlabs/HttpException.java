@@ -1,4 +1,4 @@
-package com.securitycompass.labs.falsesecuremobile;
+package com.securitycompass.androidlabs.basicencryptionsolution;
 
 
 /**
