@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">FalseSecureMobile</string>
+	<string name="app_name">AdvancedEncryptionSolution-AndroidLabs</string>
 
 	<string name="loginscreen_username">Username</string>
 	<string name="loginscreen_password">Password</string>
