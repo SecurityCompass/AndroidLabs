@@ -2,7 +2,7 @@
  * Copyright 2011 Security Compass
  */
 
-package com.securitycompass.labs.falsesecuremobile;
+package com.securitycompass.androidlabs.memoryprotectionsolution;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
