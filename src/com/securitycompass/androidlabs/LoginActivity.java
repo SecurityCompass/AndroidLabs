@@ -2,7 +2,7 @@
  * Copyright 2011 Security Compass
  */
 
-package com.securitycompass.labs.falsesecuremobile;
+package com.securitycompass.androidlabs.filepermissionssolution;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
