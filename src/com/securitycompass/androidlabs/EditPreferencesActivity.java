@@ -2,7 +2,7 @@
  * Copyright 2011 Security Compass
  */
 
-package com.securitycompass.labs.falsesecuremobile;
+package com.securitycompass.androidlabs.passwordcomplexitysolution;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
