@@ -4,5 +4,7 @@
 	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/loginscreen_password" android:textStyle="bold" android:textSize="16dp" android:layout_marginTop="5dp" android:layout_marginBottom="5dp" android:textColor="#FFFFFF"/>
 	<EditText android:id="@+id/loginscreen_password" android:layout_width="fill_parent" android:layout_height="wrap_content" android:password="true" android:imeOptions="actionDone" android:inputType="text"/>
 	<Button android:id="@+id/loginscreen_login_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/loginscreen_login_button" android:paddingLeft="20dp" android:paddingRight="20dp" android:layout_marginTop="8dp"/>
+	<ImageView android:src="@drawable/sclogo" android:layout_height="wrap_content" android:id="@+id/imageView1" android:layout_width="wrap_content"></ImageView>
+	<TextView android:text="@string/securitycompasstitle" android:id="@+id/textView1" android:layout_height="wrap_content" android:layout_width="wrap_content"></TextView>
 	
 </LinearLayout>
