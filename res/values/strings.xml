@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">Base-AndroidLabs</string>
+	<string name="app_name">ExploitMeMobile (Base)</string>
 
 	<string name="loginscreen_username">Username</string>
 	<string name="loginscreen_password">Password</string>
@@ -52,4 +52,5 @@
     <string name="
     "></string>
      -->
+	<string name="securitycompasstitle">ExploitMe Mobile by Security Compass 2011</string>
 </resources>
