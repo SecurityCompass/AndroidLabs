@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">PasswordComplexitySolution-AndroidLabs</string>
+	<string name="app_name">ExploitMe Mobile (PasswordComplexitySolution)</string>
 
 	<string name="loginscreen_username">Username</string>
 	<string name="loginscreen_password">Password</string>
@@ -53,4 +53,5 @@
     <string name="
     "></string>
      -->
+	<string name="securitycompasstitle">ExploitMe Mobile by SecurityCompass 2011</string>
 </resources>
