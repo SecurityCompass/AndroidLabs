@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+	<head>
+		<title>Lab 1 </title>
+		<LINK REL=StyleSheet HREF="style.css" TYPE="text/css">
+	</head>
+	<body>
+	
+<div id="container">
+<div id="header">
+		<h1>
+		ExploitMe Mobile Android Labs
+		</h1>
+	</div>
+	<div id="navigation">
+		<ul>
+			<li><a href="index.html">Home</a></li>
+			<li><a href="setup.html">Setup</a></li>
+			<li><a href="lab1.html">Lab1</a></li>
+			<li><a href="lab2.html">Lab2</a></li>
+			<li><a href="lab3.html">Lab3</a></li>
+			<li><a href="lab4.html">Lab4</a></li>
+			<li><a href="lab5.html">Lab5</a></li>
+			<li><a href="lab6.html">Lab6</a></li>
+		</ul>
+	</div>
+
+	<div id="content">
+		<h2>
+		ExploitMe Mobile Setup guide
+		</h2>
+		<p>
+		Our SC labs are hosted on GitHub, a freely useable source code repository.  We've tried to make the process as seamless as possible for you to contribute to our labs, so there are a couple things you should know in order to get started.
+		</p><p>
+		Our labs are organized within the following branches:
+		<ul>
+		<li>remotes/origin/Base</li>
+		<li>remotes/origin/AdvancedEncryptionSolution</li>
+		<li>remotes/origin/BasicEncryptionSolution</li>
+		<li>remotes/origin/FilePermissionsSolution</li>
+		<li>remotes/origin/MemoryProtectionSolution</li>
+		<li>remotes/origin/PasswordComplexitySolution</li>
+		<li>remotes/origin/SecureLoggingSolution</li>
+		</ul>
+		</p><p>
+		ExploitMeMobile's (EMM) Android app contains six labs within the Base branch.  Each of the other branches are solutions to the vulnerability, how one can fix the security vulnerability demonstrated.
+		</p><p>		
+		We recommend taking the following approach to hacking this Android application.
+		</p><p>
+		<ul>
+  		<li>Download and build the EMM "Base" project and install it to the emulator. This is the vulnerable android app.  It contains all six lab exercises.</li>
+  		<li>Run through each exercise to understand how the Android application works and the vulnerabilities.</li>
+  		<li>Inspect the solutions to each lab and see what the best practices are to securely programming the application.</li>
+		</ul>
+		</p><p>
+		<b>How to build:</b>
+		</p><p>
+		You can build either using your favorite IDE (Eclipse, etc) or command line.
+		</p><p>
+		<b>How to use:</b>
+		</p><p>
+		Note: You must make sure you've installed an configured the Android SDK properly including the Android platform tools, such as "adb" and "emulator".  We can't help too much here, but you can see Google's instructions here.  If you can't run "adb" from the command line, you have likely not configured the SDK properly, or haven't included "adb" in your path.
+		</p><p>
+		Run the emulator by using AVD and emulator:
+		</p><p>
+		If you've never used AVD, you have to create a name and configuration for your emulator.  AVD can be found in your SDK/platform-tools folder.  Run:
+		</p><p>
+		./android.bat
+		</p><p>
+		<img src="img/s_avd.png" width="550" height="284" alt="" border="0">
+		</p><p>
+		After creating your emulator, run it by clicking "Start" or through command line by:
+		</p><p>
+		./emulator -avd <name of emulator> 
+		</p><p>
+		<img src="img/s_emulaunch.png" width="550" height="464" alt="" border="0">
+		</p><p>
+		Now that your emulator is up and running (it will take a while on first start), you can build and push the apk into the emulator by running:
+		</p><p>
+		./adb install emm.apk
+		</p><p>
+		or you could also run through the eclipse debugger as shown below:
+		<img src="img/s_eclipse.png" width="600" height="342" alt="" border="0">
+		</p><p>
+		Now, run lab server
+		</p><p>
+		python app.py
+		</p><p>
+		<img src="img/s_labserver.png" width="500" height="178" alt="" border="0">
+		</p><p>		
+		And finally open the EMM Android application on your emulator device.  Upon first login, you'll be prompted with a login screen.
+		</p><p>
+		The default users as configured with this mobile application server are: 
+		</p><p>
+		jdoe / password <br>
+		bsmith / password <br>
+		</p><p>
+		After entering these banking credentials, you'll be requested to enter a screen lock password which can be anything you wish.  this lock password will be used for any future logins to prevent the need to re-enter your credentials.
+		</p><p>
+		After completing these steps, you'll be presented with the main ExploitMe Mobile screen below.
+		</p><p>
+		<img src="img/s_main.png" width="500" height="465" alt="" border="0">
+		</p><p>
+	
+		</div>
+	</div>
+	</body>
+</html>

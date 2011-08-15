@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<head>
+
+<LINK REL=StyleSheet HREF="style.css" TYPE="text/css">
+</head>
+
+<div id="container">
+	<div id="header">
+		<h1>
+        ExploitMe Mobile Android Labs
+		</h1>
+	</div>
+	<div id="navigation">
+		<ul>
+			<li><a href="index.html">Home</a></li>
+			<li><a href="setup.html">Setup</a></li>
+			<li><a href="lab1.html">Lab1</a></li>
+			<li><a href="lab2.html">Lab2</a></li>
+			<li><a href="lab3.html">Lab3</a></li>
+			<li><a href="lab4.html">Lab4</a></li>
+			<li><a href="lab5.html">Lab5</a></li>
+			<li><a href="lab6.html">Lab6</a></li>
+		</ul>
+	</div>
+	<div id="content">
+		<h2>
+			Lab 1 - Basic Encryption
+		</h2>
+		<p>
+		The android apk that we'll use for most labs is the base.apk
+		</p>
+		This is a basic lab, but it demonstrates a key point that sometimes is forgotten, which is that mobile device traffic can still be sniffed.
+		</p><p>
+		Let's learn how to see the traffic in clear-text using the android emulator.
+		</p><p>
+		The Android emulator has a built in setting to capture network traffic which makes it much easier for us to sniff data from android applications.
+		</p><p>
+		To run, we perform:
+		</p><p>
+		emulator.exe -avd emu -tcpdump test.cap
+		</p><p>
+		<img src="img/1_emulatorrun.png" width="550" height="173" alt="" border="0">
+		</p><p>
+		this will perform a dump of the network traffic into the “test.cap” file.
+		</p><p>
+		Our labs consist of two components ,the lab and the server so make sure the server is running! Again, you can do this by:
+		</p><p>
+		python app.py
+        </p><p>
+		<img src="img/1_labserver.png" width="550" height="175" alt="" border="0">	
+        </p><p>
+		Now, launch the Lab APK file and install it to the emulator through any IDE of your choice, in our case, we'll use Eclipse.
+		</p><p>
+		Upon first launch, the lab will ask for a username and password to your banking account.  This, like in a real application could either be done securely (encrypted) or insecurely.
+		</p><p>
+		The first lab is about network encryption, so clearly we'll have to look at the network TCP dump to see how the application is performing authentication.
+		</p><p>
+		Let's login using:
+		</p><p>
+		username: jdoe<br>
+		pw: password
+		</p><p>
+		<img src="img/1_login.png" width="550" height="511" alt="" border="0">
+		</p><p>
+		Now you'll see the main screen if the login was successful.
+		</p><p>
+		<img src="img/1_mainscreen.png" width="550" height="511" alt="" border="0">
+		</p><p>
+		Let's analyze how the application performed the login procedure.  Open up the cap file in Wireshark.
+		</p><p>
+		Find the HTTP stream where the application logs in within the packet history.  You'll see it highlighted by HTTP and green.
+		</p><p>
+		<img src="img/1_wireshark.png" width="600" height="359" alt="" border="0">
+		</p><p>
+		Once you click on it, observe the contents of the HTTP packet and you'll be able to notice something about how the applicatoin authenticates.
+		</p><p>
+		<img src="img/1_wirepacket.png" width="550" height="290" alt="" border="0">
+		</p><p>
+		do you see it? Authentication is performed in clear-text, allowing anybody on the network to sniff the user's bank credentials.
+		</p>
+		
+		</div>		
+	</div>
+	</body>
+</html>
