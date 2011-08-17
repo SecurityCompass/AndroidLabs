@@ -27,35 +27,22 @@
 		LAB 3 Insecure file storage
 		</h2>
 		<p>
-		One of the key concepts to any mobile hacking attempts is the ability to proxy or intercept traffic to and from the server.  We will be trapping the application traffic using a proxy server in an effort to act as the man in the middle.  Often, you'll be able to see how the mobile application responds when using these techniques.
+		Mobile apps today do a lot of crazy things.  Often, it is a necessity for a developer to store files on the device itself, but there are numerous issues that may arise from doing this.
 		</p><p>
-		For this lab, we will be taking a look at the file permissions and preferences file local to any application.  For any android app, data for the app including application preferences are stored in 
+		One example, is storage on an SD card.  Typically, if we look at a mobile application, its file systems are sandboxed into certain directories preventing other applicaitons that may be malicious from accessing another apps sensitive data.
 		</p><p>
-		/data/data/
+		However, storage on an SD card raises various issues on Android since the card is removable.  If the card is placed in another system that doesn't obey the file permission rules, the files would be openly accessible.  This makes it important to understand why developers should consider where to store their files and whether the files should have added protection.    
 		</p><p>
-		A good way to connect to a device's filesystem is to use the android debugging bridge (adb).  It comes with the Android SDK and can be found in the platform-tools directory.  With the android emulator running, you use adb to browse the device ifle system by: 
+		In this lab, we'll see how Android file permissions are assigned when files are stored on an SD card.
 		</p><p>
-		adb shell
+		Load the base.apk, and open the application.
 		</p><p>
-		Note: If you are testing using a real device you must enable "USB Debugging" under the application development menu on your device.
+		<img src="img/5_mainscreen.png" width="385" height="399" alt="" border="0">
 		</p><p>
-		<img src="img/3_adb.png" width="550" height="147" alt="" border="0">
-		The # denotes that you've successfully entered the device filesystem.  Browse to the /data/data directory and list it.
+		Open the "Statement" menu, and load a statement from the list.  If none exist, then first create a transfer between accounts and a statement will automatically be generated.
 		</p><p>
-		<img src="img/3_datadatafolder.png" width="550" height="318" alt="" border="0">
-		</p><p>
-		If you look into this directory, we can find a list of Java package directories.  Lets go into the com.securitycompass.base directory, which is the directory that Android has given us to store user data.
-		</p><p>
-		<img src="img/3_base_dir.png" width="550" height="183" alt="" border="0">
-		</p><p>
-		Let's go into the shared_prefs directory.  This directory is common to all android applicaitons and holds the application preferences set by the user.
-		</p><p>
-		<img src="img/3_hardcoded.png" width="550" height="273" alt="" border="0">
-		</p><p>
-		The application preferences often hold information that will be disclosed to an attacker.  In this example we can extract the password salt and the username for the last logged in user.  You can see that in this case, it is "jdoe" and the users password of "password" which is what we logged in with in Lab 1.
-		</p><p>
-		Both the password hash and the password salt can be found in this preferences file, stored insecurely.
-		</p><p>
+		You'll notice that these statements are also available offline.
+		</p><p>   
 		Let's go into the SDCARD directory.  SD cards are mounted at /mnt/sdcard for the emulator (this may differ on a real device).
 		</p><p>
 		Also, you'll notice that within the application, statemnets are created in what seems like a webview or HTML file.  We can find this HTML file on the SDCARD which can be accessed by going to
@@ -64,7 +51,7 @@
 		</p><p>
 		the file will be named by number date and opening it will show you the insecurely stored statement file in HTML format.  anyone with access to the sdcard will be able to gain access to this file.  Also other applications could read from the file.
 		<img src="img/3_sdcardperms.png" width="550" height="147" alt="" border="0">
-		Take a look at the file permissoins:
+		Take a look at the file permissions:
 		</p><p>
 		----rwxr-x system   sdcard_rw      160 2011-08-03 16:48 1312361332270.html
 		</p><p>
