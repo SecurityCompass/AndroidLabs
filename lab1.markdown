@@ -56,4 +56,13 @@ Once you click on it, observe the contents of the HTTP packet and you'll be able
 
 do you see it? Authentication is performed in clear-text, allowing anybody on the network to sniff the user's bank credentials.
 
+## Solution
 
+We want to enable HTTPS so that the connection can't be snooped.  We
+do this by first running the server in SSL mode:
+
+`python app.py --ssl --port 8443`
+
+and then by enabling HTTPS in the preferences of the app:
+
+![enable ssl](img/1_enable_https)
