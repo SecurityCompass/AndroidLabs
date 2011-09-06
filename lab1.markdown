@@ -3,7 +3,7 @@ layout: default
 title: Lab 1 - Secure connections
 ---
 
-## Lab
+### Lab
 
 The android apk that we'll use for most labs is the base.apk
 
@@ -56,7 +56,7 @@ Once you click on it, observe the contents of the HTTP packet and you'll be able
 
 do you see it? Authentication is performed in clear-text, allowing anybody on the network to sniff the user's bank credentials.
 
-## Solution
+### Solution
 
 We want to enable HTTPS so that the connection can't be snooped.  We
 do this by first running the server in SSL mode:
