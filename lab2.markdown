@@ -26,7 +26,7 @@ Windows.  Open up the Preferences pane in the menu, set the server
 address to your computer's IP, and make sure HTTPS is enabled.
 
 In my case, my IP address is `192.168.1.29`:
-![set ip](img/2_setip)
+![set ip](img/2_setup.png)
 
 Run the server in HTTPS mode with
 
