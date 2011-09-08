@@ -1,30 +1,56 @@
 ---
 layout: default
-title: Lab 6 - Client-side Password complexity
----
+title: Lab 5 - Advanced Encryption
+---	
 
-The default configuration for the password lock screen is to enforce a password that is not blank.
+## Lab
+	
+This lab uses the solution for the Basic Encryption lab.  Remember when we coded the encryption to use a pre-shared key to encrypt our user credentials? Turns out that wasn't the best idea.
 
-You'll notice in the insecure default ExploitMe Mobile insecure version (base), the password screen allows any number of characters or letters as the lock screen.  Even a password containing only one character is allowed.
+Let's first install the BasicEncryptionSolution.apk on to the emulator.
 
-You can try this by setting a password on the lock screen of a very simple nature such as "1". Often, it is beneficial to enforce a more secure password lock screen depending on the nature of the application and its data sensitivity.
+Configure the BasicEncryptionSolution app, by setting the username and password for the user and configuring a local screen lock password.
 
-![password](img/6_configsimplepassword.png)
+![first login](img/5_firstlogin.png)
 
-In the case above, the local password has been set by the user to be only 1 character.  The password is accepted as can be seen below.
+![set local pw](img/5_setlocalpw.png)
 
-![simple accepted](img/6_simpleaccepted.png)
+When the app has fully loaded, the configuration file for the app will have been set.  Let's take a look and see how the passwords are stored now in the ExploitMe Mobile BasicEncryptionSolution app.
 
-In this lab, you'll learn how to better implement a secure lockscreen in code.
+![main screen](img/5_mainscreen.png)
+
+Browse to the<br><br>
+`/data/data/com.securitycompass.androidlabs.basicencryptionsolution/shared_prefs`
+
+if you remember from the basic encryption lab, the user credentials for this user was stored in a preferences file and stored insecurely on the device.  The solution for the lab resulted in implementing a key based encryption to protect the file from casual prying eyes.
+
+Let's look at preferences.xml
+
+![preferences](img/_preferences_sharedkey.png)
+
+We can see that the configuration file contains encrypted credentials.
+
+There are times when assessing mobile applications you can find that keys are hard coded within the binary itself.  There are numerous reasons for this, but one thing's for sure, its not best practice and should be avoided.
+
+There are a number of ways to discover interesting things about an APK
+file.  One super tool is called apktool.  Learn more about it [here](http://code.google.com/p/android-apktool/).
+
+Apktool will decompile or decode apk files into Android smali format.  The tool itself works on any APK to extract and reinsert code into the APK file without needing to recomiple. It's a very powerful tool but for this lab, we will just use it to open up the APK and get the smali from the BasicEncryptionSolution.apk lab.
+
+To use apktool, we run the following:
+
+`apktool d BasicEncryptionSolution.apk export`
+
+![apktool](img/5_apktool_ext.png)
+
+The smali files will be exported into the directory of your choice.  If we go into the directory package structure we'll find a directory of files like what you see below.  These are all the smali files or pseudo source code from the Android APK.
+
+![smali](img/5_smali_dirlisting.png)
+
+We can look through the entire contents of files, but one file looks particularly interesting and that is CrytoTool.smali.  Let's open that up to see what we can find.
+
+![key found](img/5_keyfound.png)
+
+You can see above that the code for the encryption key has been hardcoded!  Of course, we knew this all along from the solution to the basic encryption lab, but this is an example of how you may be able to find encryption keys from decompiling APKs and looking into their smali files.
 
 ## Solution
-
-Let's first deploy the PasswordComplexitySolution.apk file which contains the more secure password lock screen.
-
-Upon launching and installing into your emulator, you'll notice immediately that the password screen looks different.
-
-The password screen now requires a upper case, lowercase, special character and minimum length requirements.
-
-Now, you may feel this is excessive, but the point is to demonstrate that it is possible to have the same strict requirements as online web banking websites, you can take our solution an adapt it in whichever way you desire.
-
-![needs complex](img/6s_needcomplexpw.png)
