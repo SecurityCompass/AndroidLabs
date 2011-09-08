@@ -39,15 +39,31 @@ Also, you'll notice that within the application, statemnets are created in what 
 `/mnt/sdcard/`
 
 the file will be named by number date and opening it will show you the insecurely stored statement file in HTML format.  anyone with access to the sdcard will be able to gain access to this file.  Also other applications could read from the file.
-[sdcard permissions](img/3_sdcardperms.png)
+![sdcard permissions](img/3_sdcardperms.png)
 Take a look at the file permissions:
 
 `----rwxr-x system   sdcard_rw      160 2011-08-03 16:48 1312361332270.html`
 
 the file is stored as world readable, allowing any other application to access the file. 
 
-<img src="img/3_sdcard_statements.png" width="550" height="147" alt="" border="0">
+![sdcard statements](img/3_sdcard_statements.png)
 
 We could also simply just read the HTML file right away, disclosing information about the user's bank account and statements.
 
 ## Solution
+
+The key lies in setting the permission flags on the sensitive files.
+Obviously an attacker with root access (or an application that can
+root the phone) will still be able to open the file in question, but a
+standard app that doesn't break out of the sandbox will not be able to
+access files that are private.
+
+In the `FilePermissionsSolution` branch of the code repository, you
+will see that we save the file with the private mode set and no longer
+store it on the sdcard:
+
+{% highlight java %}
+` FileOutputStream outputFileStream = openFileOutput(Long
+                .toString(System.currentTimeMillis())
+                + ".html", MODE_PRIVATE);
+{% endhighlight %}
