@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Lab 4 - Insecure Logging
+title: Lab 4 - Secure Logging
 ---
 
 ## Lab
@@ -26,3 +26,9 @@ Visit the account screen and observe the logcat output.
 You can see that the account information is being logged to the logcat file.
 
 ## Solution
+
+It's important to be aware of what you are logging and only log
+non-sensitive information.  Verbose log output is very useful for
+developers, but can be a goldmine of sensitive information for
+attackers.  Be especially careful about logging session keys and URLs
+that may contain important values.
