@@ -3,7 +3,7 @@ layout: default
 title: Lab 8 - Client-side Password complexity
 ---
 
-## Lab
+### Lab
 
 The default configuration for the password lock screen is to enforce a password that is not blank.
 
@@ -19,7 +19,7 @@ In the case above, the local password has been set by the user to be only 1 char
 
 In this lab, you'll learn how to better implement a secure lockscreen in code.
 
-## Solution
+### Solution
 
 Let's first deploy the PasswordComplexitySolution.apk file which contains the more secure password lock screen.
 

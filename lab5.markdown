@@ -42,7 +42,3 @@ The information we want is in the preferences.xml file
 As you can see, the username and password are stored in the strings
 `serveruser` and `serverpass` (these are out of order, but present in
 the XML file).  
-
-## Solution
-
-We want to find some way of 
