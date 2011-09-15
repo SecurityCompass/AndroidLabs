@@ -3,6 +3,8 @@ layout: default
 title: Lab 2 - Parameter Manipulation
 ---
 
+## Lab
+
 The parameter manipulation lab is contained within the bank transfer section.
 
 The purpose of this lab is to demonstrate that many common Android

@@ -1,7 +1,9 @@
 ---
 layout: default
-title: Lab 6 - Client-side Password complexity
+title: Lab 8 - Client-side Password complexity
 ---
+
+## Lab
 
 The default configuration for the password lock screen is to enforce a password that is not blank.
 

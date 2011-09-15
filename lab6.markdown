@@ -52,5 +52,3 @@ We can look through the entire contents of files, but one file looks particularl
 ![key found](img/5_keyfound.png)
 
 You can see above that the code for the encryption key has been hardcoded!  Of course, we knew this all along from the solution to the basic encryption lab, but this is an example of how you may be able to find encryption keys from decompiling APKs and looking into their smali files.
-
-## Solution

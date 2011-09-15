@@ -12,7 +12,7 @@ not be encrypted, and we simply need to find it.
 Connect to the emulator with `adb shell`.  You will be given shell
 access to the Android emulator.Browse to the data store of the app.
 
-{% highligh console %}
+{% highlight console %}
 (server-env)sartre:AndroidLabs2 maxim$ adb shell
 # cd /data/data/com.securitycompass.androidlabs.base
 # ls
