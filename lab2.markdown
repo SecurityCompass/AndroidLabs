@@ -3,7 +3,7 @@ layout: default
 title: Lab 2 - Parameter Manipulation
 ---
 
-## Lab
+### Lab
 
 The parameter manipulation lab is contained within the bank transfer section.
 
@@ -80,7 +80,7 @@ to the account screen, you will see that you successfully transfered
 money without losing any.  If you reset the application and login as
 the other user, you will see they lost money.
 
-## Solution
+### Solution
 
 The solution here is the same as it would be in a regular web app, we
 have to perform some validation on the server.  You can see how it is

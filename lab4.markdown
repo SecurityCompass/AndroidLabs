@@ -3,7 +3,7 @@ layout: default
 title: Lab 4 - Secure Logging
 ---
 
-## Lab
+### Lab
 
 Many developers log information to the android log.  Sometimes sensitive data as well.   To inspect the android emulators log files you have to run the command:
 
@@ -21,11 +21,11 @@ Observe what information is passed within the log file as you execute different 
 
 Visit the account screen and observe the logcat output.
 
-![view console](img/44_viewconsolelog.png)
+![view console](img/4_viewconsolelog.png)
 
 You can see that the account information is being logged to the logcat file.
 
-## Solution
+### Solution
 
 It's important to be aware of what you are logging and only log
 non-sensitive information.  Verbose log output is very useful for
