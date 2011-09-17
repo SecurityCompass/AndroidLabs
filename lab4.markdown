@@ -3,8 +3,6 @@ layout: default
 title: Lab 4 - Secure Logging
 ---
 
-### Lab
-
 Many developers log information to the android log.  Sometimes sensitive data as well.   To inspect the android emulators log files you have to run the command:
 
 `adb logcat`

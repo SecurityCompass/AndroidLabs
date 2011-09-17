@@ -1,0 +1,76 @@
+<html>
+<head>
+  <title> Lab 7 - Memory Protection </title>
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+  <link rel="stylesheet" href="css/syntax.css" type="text/css" />
+</head>
+<body>
+<div id="container">
+  <div id="header">
+  	<a href="http://www.securitycompass.com"><img src="img/sclogo.png"/></a><br/><br/>
+    <h1>
+      ExploitMe Mobile Android Labs
+    </h1>
+  </div>
+  <div id="navigation">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="setup.html">Setup</a></li>
+      <li><a href="lab1.html">Lab 1</a></li>
+      <li><a href="lab2.html">Lab 2</a></li>
+      <li><a href="lab3.html">Lab 3</a></li>
+      <li><a href="lab4.html">Lab 4</a><li>
+      <li><a href="lab5.html">Lab 5</a><li>
+      <li><a href="lab6.html">Lab 6</a><li>
+      <li><a href="lab7.html">Lab 7</a><li>
+      <li><a href="lab8.html">Lab 8</a><li>
+    </ul>
+  </div>
+  <div id="content">
+   <h2>Lab 7 - Memory Protection</h2>
+   <p>This particular lab will teach you how to inspect memory dumps as part of an Android app.</p>
+
+<p>Sometimes you&#8217;ll find that an mobile application contains a lock, however it remains running in the background. You may want to see what information lies beyond that screen, but if you don&#8217;t know the lock you can&#8217;t get to it. You also don&#8217;t want to reset the device due to the information that may still be in memory, so we&#8217;ll learn to dump it.</p>
+
+<p>In this lab, you&#8217;ll use DDMS as part of the Android SDK to obtain a memory dump of the application during runtime. This hopefully will yield some good information!</p>
+
+<p>First, start up the emulator, and ensure that ExploitMe mobile is running.</p>
+
+<p>Next, goto the home screen, and return to the app to ensure that it has been locked. This is the state that we&#8217;ll assume we find the application where we don&#8217;t know the password.</p>
+
+<p>In the Android SDK in the tools folder, you&#8217;ll find DDMS so run it.</p>
+
+<p><img src='img/7_ddms_dump.png' alt='ddms' /></p>
+
+<p>Click on the com.securitycompass.android.base (or whichever version you&#8217;re using) and hit the &#8220;dump hprof&#8221; file.</p>
+
+<p>We&#8217;ll have to load the memory dump into a tool to read it, this tool is part of Eclipse and is called the memory analyzer tool (MAT).</p>
+
+<p>Android HPROF dumps are not in proper JAVA format due to the Dalvik VM, so we&#8217;ll have to convert it. Thankfully Google&#8217;s included the <strong>hprof-conv</strong> tool in the SDK</p>
+
+<pre><code>Run:
+	hprof-conv source dest </code></pre>
+
+<p><img src='img/7_hprofconv.png' alt='hrof' /></p>
+
+<p>Once your file has been converted to Java format, load it up in the MAT.</p>
+
+<p>Load the file</p>
+
+<p><img src='img/7_mat.png' alt='hprof' /></p>
+
+<p>Click the &#8220;demoninator tree&#8221; button Click the &#8220;group by&#8221; button</p>
+
+<p><img src='img/7_mat2.png' alt='hprof' /></p>
+
+<p>Click on the com.securitycompass bundle and inspect the packages. Right click on the bundle and choose &#8220;outgoing references&#8221;</p>
+
+<p><img src='img/7_mat3_reference.png' alt='hprof' /></p>
+
+<p>On the left you&#8217;ll see variables in memory at the current time including the session key! you can now takeover the session of the user!</p>
+  <div id="footer">
+    Copyright &copy; 2011 <a href="http://www.securitycompass.com">Security Compass</a>
+  </div>
+</div>
+</body>
+</html>

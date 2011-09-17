@@ -1,9 +1,7 @@
 ---
 layout: default
-title: Lab 5 - Advanced Encryption
+title: Lab 6 - Advanced Encryption
 ---	
-
-## Lab
 	
 This lab uses the solution for the Basic Encryption lab.  Remember when we coded the encryption to use a pre-shared key to encrypt our user credentials? Turns out that wasn't the best idea.
 
@@ -26,7 +24,7 @@ if you remember from the basic encryption lab, the user credentials for this use
 
 Let's look at preferences.xml
 
-![preferences](img/_preferences_sharedkey.png)
+![preferences](img/5_preferences_sharedkey.png)
 
 We can see that the configuration file contains encrypted credentials.
 

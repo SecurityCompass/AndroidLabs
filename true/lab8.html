@@ -1,0 +1,61 @@
+<html>
+<head>
+  <title> Lab 8 - Client-side Password complexity </title>
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+  <link rel="stylesheet" href="css/syntax.css" type="text/css" />
+</head>
+<body>
+<div id="container">
+  <div id="header">
+  	<a href="http://www.securitycompass.com"><img src="img/sclogo.png"/></a><br/><br/>
+    <h1>
+      ExploitMe Mobile Android Labs
+    </h1>
+  </div>
+  <div id="navigation">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="setup.html">Setup</a></li>
+      <li><a href="lab1.html">Lab 1</a></li>
+      <li><a href="lab2.html">Lab 2</a></li>
+      <li><a href="lab3.html">Lab 3</a></li>
+      <li><a href="lab4.html">Lab 4</a><li>
+      <li><a href="lab5.html">Lab 5</a><li>
+      <li><a href="lab6.html">Lab 6</a><li>
+      <li><a href="lab7.html">Lab 7</a><li>
+      <li><a href="lab8.html">Lab 8</a><li>
+    </ul>
+  </div>
+  <div id="content">
+   <h2>Lab 8 - Client-side Password complexity</h2>
+   <p>The default configuration for the password lock screen is to enforce a password that is not blank.</p>
+
+<p>You&#8217;ll notice in the insecure default ExploitMe Mobile insecure version (base), the password screen allows any number of characters or letters as the lock screen. Even a password containing only one character is allowed.</p>
+
+<p>You can try this by setting a password on the lock screen of a very simple nature such as &#8220;1&#8221;. Often, it is beneficial to enforce a more secure password lock screen depending on the nature of the application and its data sensitivity.</p>
+
+<p><img src='img/6_configsimplepassword.png' alt='password' /></p>
+
+<p>In the case above, the local password has been set by the user to be only 1 character. The password is accepted as can be seen below.</p>
+
+<p><img src='img/6_simpleaccepted.png' alt='simple accepted' /></p>
+
+<p>In this lab, you&#8217;ll learn how to better implement a secure lockscreen in code.</p>
+
+<h3 id='solution'>Solution</h3>
+
+<p>Let&#8217;s first deploy the PasswordComplexitySolution.apk file which contains the more secure password lock screen.</p>
+
+<p>Upon launching and installing into your emulator, you&#8217;ll notice immediately that the password screen looks different.</p>
+
+<p>The password screen now requires a upper case, lowercase, special character and minimum length requirements.</p>
+
+<p>Now, you may feel this is excessive, but the point is to demonstrate that it is possible to have the same strict requirements as online web banking websites, you can take our solution an adapt it in whichever way you desire.</p>
+
+<p><img src='img/6s_needcomplexpw.png' alt='needs complex' /></p>
+  <div id="footer">
+    Copyright &copy; 2011 <a href="http://www.securitycompass.com">Security Compass</a>
+  </div>
+</div>
+</body>
+</html>

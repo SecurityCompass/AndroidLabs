@@ -3,8 +3,6 @@ layout: default
 title: Lab 1 - Secure connections
 ---
 
-### Lab
-
 The android apk that we'll use for most labs is the base.apk
 
 This is a simple lab, but it demonstrates a key point that sometimes is forgotten, which is that mobile device traffic can still be sniffed.
@@ -65,4 +63,4 @@ do this by first running the server in SSL mode:
 
 and then by enabling HTTPS in the preferences of the app:
 
-![enable ssl](img/1_enable_https)
+![enable ssl](img/1_enable_https.png)

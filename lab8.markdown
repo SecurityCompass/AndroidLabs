@@ -3,8 +3,6 @@ layout: default
 title: Lab 8 - Client-side Password complexity
 ---
 
-### Lab
-
 The default configuration for the password lock screen is to enforce a password that is not blank.
 
 You'll notice in the insecure default ExploitMe Mobile insecure version (base), the password screen allows any number of characters or letters as the lock screen.  Even a password containing only one character is allowed.

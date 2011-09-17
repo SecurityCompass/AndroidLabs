@@ -3,8 +3,6 @@ layout: default
 title: Lab 2 - Parameter Manipulation
 ---
 
-### Lab
-
 The parameter manipulation lab is contained within the bank transfer section.
 
 The purpose of this lab is to demonstrate that many common Android
@@ -39,7 +37,7 @@ Setup charles to listen on port 8008:
 
 
 enter the bank money transfer screen within the ExploitMe Mobile app.
-![transfer screen](img/2_transfer_screen.png))
+![transfer screen](img/2_transfer_screen.png)
 
 There are a number of accounts preconfigured in EMM's default Lab
 server configuration.  We've logged in before using the jdoe account.

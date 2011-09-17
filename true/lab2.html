@@ -1,0 +1,103 @@
+<html>
+<head>
+  <title> Lab 2 - Parameter Manipulation </title>
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+  <link rel="stylesheet" href="css/syntax.css" type="text/css" />
+</head>
+<body>
+<div id="container">
+  <div id="header">
+  	<a href="http://www.securitycompass.com"><img src="img/sclogo.png"/></a><br/><br/>
+    <h1>
+      ExploitMe Mobile Android Labs
+    </h1>
+  </div>
+  <div id="navigation">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="setup.html">Setup</a></li>
+      <li><a href="lab1.html">Lab 1</a></li>
+      <li><a href="lab2.html">Lab 2</a></li>
+      <li><a href="lab3.html">Lab 3</a></li>
+      <li><a href="lab4.html">Lab 4</a><li>
+      <li><a href="lab5.html">Lab 5</a><li>
+      <li><a href="lab6.html">Lab 6</a><li>
+      <li><a href="lab7.html">Lab 7</a><li>
+      <li><a href="lab8.html">Lab 8</a><li>
+    </ul>
+  </div>
+  <div id="content">
+   <h2>Lab 2 - Parameter Manipulation</h2>
+   <p>The parameter manipulation lab is contained within the bank transfer section.</p>
+
+<p>The purpose of this lab is to demonstrate that many common Android applications still rely on traditional web architectures or REST interfaces in the back end to perform their tasks. Often, if you&#8217;re able to trap the request, you can make the application or server act in ways it may not have felt possible.</p>
+
+<p>We will pipe communication between the client and server through a proxy and use this to manipulate the data sent. Start your emulator in proxy mode <code>emulator @YOUR_AVD_NAME --http-proxy localhost:8008</code></p>
+
+<p>We will be using Charles proxy for this lab, charles is available <a href='http://www.charlesproxy.com/'>here</a>.</p>
+
+<p>Due to some quirks of how the Android emulator behaves, you will have to modify some settings in the application. First find out the IP address of your computer on the local area network. You can find this out by running <code>ifconfig</code> on Linux/Mac or by running <code>ipconfig</code> on Windows. Open up the Preferences pane in the menu, set the server address to your computer&#8217;s IP, and make sure HTTPS is enabled.</p>
+
+<p>In my case, my IP address is <code>192.168.1.29</code>: <img src='img/2_setup.png' alt='set ip' /></p>
+
+<p>Run the server in HTTPS mode with</p>
+
+<p><code>python app.py --ssl --port 8443</code></p>
+
+<p>Setup charles to listen on port 8008: <img src='img/2_configure_charles.png' alt='charles' /></p>
+
+<p>enter the bank money transfer screen within the ExploitMe Mobile app. <img src='img/2_transfer_screen.png' alt='transfer screen' /></p>
+
+<p>There are a number of accounts preconfigured in EMM&#8217;s default Lab server configuration. We&#8217;ve logged in before using the jdoe account. The two usernames we have preconfigured and their bank account numbers are:</p>
+
+<ol>
+<li>
+<p>jdoe / password</p>
+
+<ul>
+<li>Debit: 123456789</li>
+
+<li>Credit: 987654321</li>
+</ul>
+</li>
+
+<li>
+<p>bsmith / password</p>
+
+<ul>
+<li>Debit: 111111111</li>
+
+<li>Credit: 22222222</li>
+</ul>
+</li>
+</ol>
+
+<p>In this lab, we&#8217;ll try to transfer money between accounts on the server by intercepting the EMM app request. Again, this traditionally isn&#8217;t any different from web exploits, but most apps work in the same manner so it&#8217;ll be good to see how it works on the mobile app space.</p>
+
+<p>Fill in the transfer screen and ensure your proxy is trapping the request.</p>
+
+<p><img src='img/2_transfer.png' alt='Transfer' /></p>
+
+<p>We&#8217;ll transfer $50 between our accounts. Hit the transfer button and trap the request.</p>
+
+<p><img src='img/2_trap_orig.png' alt='Trapping transfer' /></p>
+
+<p>You can see that the app is sending the request to the web server through a standard HTTP POST. Often with these mobile applications they will either be POSTs with a session key or a Web service XML request.</p>
+
+<p>We can now modify the &#8220;from_account&#8221; field to see if we can transfer from another account into our own!</p>
+
+<p><img src='img/2_trap.png' alt='Modifying transfer' /></p>
+
+<p>Notice that the from account is now from another user. If you go back to the account screen, you will see that you successfully transfered money without losing any. If you reset the application and login as the other user, you will see they lost money.</p>
+
+<h3 id='solution'>Solution</h3>
+
+<p>The solution here is the same as it would be in a regular web app, we have to perform some validation on the server. You can see how it is done in the ParameterManipulationSolution branch of the server source, available <a href='https://github.com/SecurityCompass/LabServer/tree/ParameterManipulationSolution'>here</a>.</p>
+
+<p>Liquid error: fork() function is unimplemented on this machine</p>
+  <div id="footer">
+    Copyright &copy; 2011 <a href="http://www.securitycompass.com">Security Compass</a>
+  </div>
+</div>
+</body>
+</html>

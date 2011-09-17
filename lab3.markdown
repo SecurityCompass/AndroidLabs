@@ -2,8 +2,6 @@
 layout: default
 title: Lab 3 - Insecure file storage
 ---
-
-### Lab
 		
 Mobile apps today do a lot of crazy things.  Often, it is a necessity
 for a developer to store files on the device itself, but there are

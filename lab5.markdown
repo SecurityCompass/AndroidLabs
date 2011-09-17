@@ -2,8 +2,6 @@
 layout: default
 title: Lab 5 - Basic Encryption
 ---	
-
-### Lab
 	
 In this lab we will extract some sensitive information from the
 filesystem of the device.  In this case the information we need will

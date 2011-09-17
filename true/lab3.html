@@ -1,0 +1,75 @@
+<html>
+<head>
+  <title> Lab 3 - Insecure file storage </title>
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+  <link rel="stylesheet" href="css/syntax.css" type="text/css" />
+</head>
+<body>
+<div id="container">
+  <div id="header">
+  	<a href="http://www.securitycompass.com"><img src="img/sclogo.png"/></a><br/><br/>
+    <h1>
+      ExploitMe Mobile Android Labs
+    </h1>
+  </div>
+  <div id="navigation">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="setup.html">Setup</a></li>
+      <li><a href="lab1.html">Lab 1</a></li>
+      <li><a href="lab2.html">Lab 2</a></li>
+      <li><a href="lab3.html">Lab 3</a></li>
+      <li><a href="lab4.html">Lab 4</a><li>
+      <li><a href="lab5.html">Lab 5</a><li>
+      <li><a href="lab6.html">Lab 6</a><li>
+      <li><a href="lab7.html">Lab 7</a><li>
+      <li><a href="lab8.html">Lab 8</a><li>
+    </ul>
+  </div>
+  <div id="content">
+   <h2>Lab 3 - Insecure file storage</h2>
+   <p>Mobile apps today do a lot of crazy things. Often, it is a necessity for a developer to store files on the device itself, but there are numerous issues that may arise from doing this.</p>
+
+<p>One example, is storage on an SD card. Typically, if we look at a mobile application, its file systems are sandboxed into certain directories preventing other applicaitons that may be malicious from accessing another apps sensitive data.</p>
+
+<p>However, storage on an SD card raises various issues on Android since the card is removable. If the card is placed in another system that doesn&#8217;t obey the file permission rules, the files would be openly accessible. This makes it important to understand why developers should consider where to store their files and whether the files should have added protection.</p>
+
+<p>In this lab, we&#8217;ll see how Android file permissions are assigned when files are stored on an SD card.</p>
+
+<p>Load the base.apk, and open the application.</p>
+
+<p><img src='img/5_mainscreen.png' alt='main screen' /></p>
+
+<p>Open the &#8220;Statement&#8221; menu, and load a statement from the list. If none exist, then first create a transfer between accounts and a statement will automatically be generated.</p>
+
+<p>You&#8217;ll notice that these statements are also available offline.</p>
+
+<p>Let&#8217;s go into the SDCARD directory. SD cards are mounted at /mnt/sdcard for the emulator (this may differ on a real device).</p>
+
+<p>Also, you&#8217;ll notice that within the application, statemnets are created in what seems like a webview or HTML file. We can find this HTML file on the SDCARD which can be accessed by going to</p>
+
+<p><code>/mnt/sdcard/</code></p>
+
+<p>the file will be named by number date and opening it will show you the insecurely stored statement file in HTML format. anyone with access to the sdcard will be able to gain access to this file. Also other applications could read from the file. <img src='img/3_sdcardperms.png' alt='sdcard permissions' /> Take a look at the file permissions:</p>
+
+<p><code>----rwxr-x system   sdcard_rw      160 2011-08-03 16:48 1312361332270.html</code></p>
+
+<p>the file is stored as world readable, allowing any other application to access the file.</p>
+
+<p><img src='img/3_sdcard_statements.png' alt='sdcard statements' /></p>
+
+<p>We could also simply just read the HTML file right away, disclosing information about the user&#8217;s bank account and statements.</p>
+
+<h3 id='solution'>Solution</h3>
+
+<p>The key lies in setting the permission flags on the sensitive files. Obviously an attacker with root access (or an application that can root the phone) will still be able to open the file in question, but a standard app that doesn&#8217;t break out of the sandbox will not be able to access files that are private.</p>
+
+<p>In the <code>FilePermissionsSolution</code> branch of the code repository, you will see that we save the file with the private mode set and no longer store it on the sdcard:</p>
+
+<p>Liquid error: fork() function is unimplemented on this machine</p>
+  <div id="footer">
+    Copyright &copy; 2011 <a href="http://www.securitycompass.com">Security Compass</a>
+  </div>
+</div>
+</body>
+</html>

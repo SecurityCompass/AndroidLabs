@@ -1,0 +1,99 @@
+<html>
+<head>
+  <title> Lab 1 - Secure connections </title>
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+  <link rel="stylesheet" href="css/syntax.css" type="text/css" />
+</head>
+<body>
+<div id="container">
+  <div id="header">
+  	<a href="http://www.securitycompass.com"><img src="img/sclogo.png"/></a><br/><br/>
+    <h1>
+      ExploitMe Mobile Android Labs
+    </h1>
+  </div>
+  <div id="navigation">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="setup.html">Setup</a></li>
+      <li><a href="lab1.html">Lab 1</a></li>
+      <li><a href="lab2.html">Lab 2</a></li>
+      <li><a href="lab3.html">Lab 3</a></li>
+      <li><a href="lab4.html">Lab 4</a><li>
+      <li><a href="lab5.html">Lab 5</a><li>
+      <li><a href="lab6.html">Lab 6</a><li>
+      <li><a href="lab7.html">Lab 7</a><li>
+      <li><a href="lab8.html">Lab 8</a><li>
+    </ul>
+  </div>
+  <div id="content">
+   <h2>Lab 1 - Secure connections</h2>
+   <p>The android apk that we&#8217;ll use for most labs is the base.apk</p>
+
+<p>This is a simple lab, but it demonstrates a key point that sometimes is forgotten, which is that mobile device traffic can still be sniffed.</p>
+
+<p>Let&#8217;s learn how to see the traffic in clear-text using the android emulator.</p>
+
+<p>The Android emulator has a built in setting to capture network traffic which makes it much easier for us to sniff data from android applications.</p>
+
+<p>To run, we perform:</p>
+
+<p><code>emulator.exe -avd emu -tcpdump test.cap</code></p>
+
+<p><img src='img/1_emulatorrun.png' alt='emulator' /></p>
+
+<p>this will perform a dump of the network traffic into the <code>test.cap</code> file.</p>
+
+<p>Our labs consist of two components ,the lab and the server so make sure the server is running! Again, you can do this by:</p>
+
+<p>python app.py</p>
+
+<p><img src='img/1_labserver.png' alt='lab server' /></p>
+
+<p>Now, launch the Lab APK file and install it to the emulator through any IDE of your choice, in our case, we&#8217;ll use Eclipse.</p>
+
+<p>Upon first launch, the lab will ask for a username and password to your banking account. This, like in a real application could either be done securely (encrypted) or insecurely.</p>
+
+<p>The first lab is about network encryption, so clearly we&#8217;ll have to look at the network TCP dump to see how the application is performing authentication.</p>
+
+<p>Let&#8217;s login using:</p>
+
+<ul>
+<li>username: jdoe</li>
+
+<li>pw: password</li>
+</ul>
+
+<p><img src='img/1_login.png' alt='login' /></p>
+
+<p>Now you&#8217;ll see the main screen if the login was successful.</p>
+
+<p><img src='img/1_mainscreen.png' alt='main screen' /></p>
+
+<p>Let&#8217;s analyze how the application performed the login procedure. Open up the cap file in Wireshark.</p>
+
+<p>Find the HTTP stream where the application logs in within the packet history. You&#8217;ll see it highlighted by HTTP and green.</p>
+
+<p><img src='img/1_wireshark.png' alt='wireshark' /></p>
+
+<p>Once you click on it, observe the contents of the HTTP packet and you&#8217;ll be able to notice something about how the applicatoin authenticates.</p>
+
+<p><img src='img/1_wirepacket.png' alt='wireshark packet' /></p>
+
+<p>do you see it? Authentication is performed in clear-text, allowing anybody on the network to sniff the user&#8217;s bank credentials.</p>
+
+<h3 id='solution'>Solution</h3>
+
+<p>We want to enable HTTPS so that the connection can&#8217;t be snooped. We do this by first running the server in SSL mode:</p>
+
+<p><code>python app.py --ssl --port 8443</code></p>
+
+<p>and then by enabling HTTPS in the preferences of the app:</p>
+
+<p><img src='img/1_enable_https.png' alt='enable ssl' /></p>
+  <div id="footer">
+    Copyright &copy; 2011 <a href="http://www.securitycompass.com">Security Compass</a>
+  </div>
+</div>
+</body>
+</html>
