@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">ExploitMeMobile (Base)</string>
+	<string name="app_name">EMM - Vulnerable</string>
 
 	<string name="loginscreen_username">Username</string>
-	<string name="loginscreen_password">Password</string>
-	<string name="loginscreen_login_button">Login</string>
+	<string name="loginscreen_password">Enter PIN to continue</string>
+	<string name="loginscreen_login_button">Unlock</string>
 
 	<string name="summaryscreen_accounts_button">Accounts</string>
 	<string name="summaryscreen_transfer_button">Transfer</string>
@@ -23,18 +23,18 @@
 		$53.00\n\nAccount 2\n\n\tSavings Account\n\tBalance: $2876.28\n
 	</string>
 
-	<string name="setupunlockactivity_configureprompt">Please configure a local password</string>
-	<string name="setupunlockactivity_password">Password</string>
+	<string name="setupunlockactivity_configureprompt">Setup your keylock (required each time you open EMM)</string>
+	<string name="setupunlockactivity_password">PIN or Password</string>
 	<string name="setupunlockactivity_repeat_password">Confirm</string>
-	<string name="setupunlockactivity_donebutton">Done</string>
+	<string name="setupunlockactivity_donebutton">Set</string>
 
-	<string name="setservercredentialsactivity_configureprompt">Please enter your bank credentials</string>
+	<string name="setservercredentialsactivity_configureprompt">Enter the LabServer bank credentials</string>
 	<string name="setservercredentialsactivity_username">Username</string>
 	<string name="setservercredentialsactivity_password">Password</string>
-	<string name="setservercredentialsactivity_donebutton">Done</string>
+	<string name="setservercredentialsactivity_donebutton">Login</string>
 
 	<!-- Error messages -->
-	<string name="toast_loginfailed">Login failed</string>
+	<string name="setservercredentialsactivity_hint">note: default accounts are\njdoe / password \nbsmith / password\n\nremember to launch LabServer</string><string name="toast_loginfailed">Login failed</string>
 	<string name="error_toast_rest_problem">Couldn\'t communicate with server</string>
 	<string name="error_toast_http_error">HTTP error: </string>
 	<string name="error_toast_json_problem">Couldn\'t interpret server response</string>
@@ -52,5 +52,9 @@
     <string name="
     "></string>
      -->
-	<string name="securitycompasstitle">ExploitMe Mobile by Security Compass 2011</string>
+	<string name="securitycompasstitle">ExploitMe Mobile by Security Compass 2012</string>
+	<string name="developermenu">Developer Debugging</string>
+	<string name="loginscreen_prompt">EMM is locked</string>
+	<string name="sclogo_desc">SCLOGO</string>
+	
 </resources>

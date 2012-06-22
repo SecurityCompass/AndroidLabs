@@ -20,7 +20,15 @@
         <activity android:name=".SetServerCredentialsActivity" android:label="@string/app_name"/>
         <activity android:name=".ViewStatementActivity" android:label="@string/app_name"/>
         <activity android:name=".EditPreferencesActivity" android:label="@string/app_name"/>
-
+		<activity android:name=".DebugActivity" android:label="@string/app_name"/>        
+        <activity android:name=".ContactActivity" android:label="@string/app_name">
+			<intent-filter>
+                <data android:scheme="emm" />
+    			<action android:name="android.intent.action.VIEW" />
+    			<category android:name="android.intent.category.BROWSABLE" />
+    			<category android:name="android.intent.category.DEFAULT" />    			
+            </intent-filter>
+		</activity>
     </application>
     
 <uses-permission android:name="android.permission.INTERNET"/>

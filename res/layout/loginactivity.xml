@@ -1,10 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:gravity="center_horizontal" android:visibility="visible">
 		
-	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/loginscreen_password" android:textStyle="bold" android:textSize="16dp" android:layout_marginTop="5dp" android:layout_marginBottom="5dp" android:textColor="#FFFFFF"/>
-	<EditText android:id="@+id/loginscreen_password" android:layout_width="fill_parent" android:layout_height="wrap_content" android:password="true" android:imeOptions="actionDone" android:inputType="text"/>
+    <TextView
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:padding="10dp"
+	    android:text="@string/loginscreen_prompt"
+	    android:textColor="#FFFFFF"
+	    android:textSize="20sp"
+	    android:textStyle="bold" 
+	    android:gravity="center"/>
+    
+    
+	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/loginscreen_password" android:textStyle="bold" android:textSize="16sp" android:padding="10dp" android:textColor="#FFFFFF"/>
+
+	<EditText
+	    android:id="@+id/loginscreen_password"
+	    android:layout_width="300dp"
+	    android:layout_height="wrap_content"
+	    android:imeOptions="actionDone"
+	    android:inputType="text"
+	    android:password="true" />
+
 	<Button android:id="@+id/loginscreen_login_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/loginscreen_login_button" android:paddingLeft="20dp" android:paddingRight="20dp" android:layout_marginTop="8dp"/>
-	<ImageView android:layout_height="wrap_content" android:id="@+id/imageView1" android:src="@drawable/sclogo" android:layout_width="wrap_content"></ImageView>
-	<TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/textView1" android:textAppearance="?android:attr/textAppearanceSmall" android:text="@string/securitycompasstitle"></TextView>
+	
+	
+	<ImageView android:layout_height="wrap_content" android:id="@+id/imageView1" 
+	    android:contentDescription="@string/sclogo_desc"
+	    android:src="@drawable/sclogo" 	    
+	    android:padding="10dp"
+	    android:layout_width="wrap_content" />
+	
+	<TextView android:layout_height="wrap_content" 
+	    android:layout_width="wrap_content" 
+	    android:id="@+id/textView1" android:textAppearance="?android:attr/textAppearanceSmall" android:padding="10dp" android:text="@string/securitycompasstitle" />
 	
 </LinearLayout>
