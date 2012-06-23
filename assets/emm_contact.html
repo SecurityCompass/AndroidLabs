@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link href="bootstrap/bootstrap.min.css" rel="stylesheet">
+	<style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+	<link href="bootstrap/bootstrap-responsive.min.css" rel="stylesheet">
+	
+	<script type="text/javascript">
+		// taken from http://papermashup.com/read-url-get-variables-withjavascript/
+		function getUrlVars() {
+			var vars = {};
+			var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+				vars[key] = value;
+				
+			});
+			return vars;
+		}
+	</script>
+</head>
+
+
+<body>
+	<script src="jquery.min.js"></script>
+	<script>
+     $(document).ready(function(){
+      
+     });
+   </script>
+   
+	<div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">EMM Bank</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>              
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+<div class="container">
+
+	<h1>Contact Us</h1>
+	
+	<div class="row">
+	
+		<h3 class="name">Hello</h3>
+		<p>We're available 24/7 to help you.  Please contact us at the address below.</p>
+		
+		<address><strong>EMM Bank</strong><br>
+		281828 Bank St.<br>
+		London, UK<br>
+		Phone: 1-866-222-2222<br>
+		</address>
+		
+		<!-- Get the user's name from the URL parameter for a personal touch -->
+		<!-- expoit: file:///C:/Users/securitycompass/git/AndroidLabs/assets/emm_contact.html?name=%3Cscript%3Ealert%28%27test%27%29%3C/script%3E -->
+		<script type="text/javascript">
+		
+			var urlparam = getUrlVars()["name"];
+			if (urlparam != undefined){
+				$('.name').append(decodeURIComponent(urlparam));
+			}
+		</script>
+		
+	</div>
+</div>
+
+</body>
+</html>

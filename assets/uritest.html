@@ -1,0 +1,14 @@
+<html>
+
+<body>
+	<!--  this file is meant to be pushed to the SDCard to test the EMM:// URI handler -->
+	<a href="emm://emmbank/Oliver">emm://emmbank/Oliver - Test URL handler normal case</a><br>
+
+	<a href="emm://emmbank/">emm://emmbank/Oliver - Test blank case</a><br>
+
+	<a href="emm://emmbank/%3Cscript%3Ealert('test')%3C%2Fscript%3E">Malicious alert</a>	<br>
+
+	<a href="emm://emmbank/%3Cscript%3Ewindow.location.replace(%22http%3A%2F%2Fstackoverflow.com%22)%3B%3C%2Fscript%3E">Malicious redit</a>	<br>
+
+</body>
+</html>
